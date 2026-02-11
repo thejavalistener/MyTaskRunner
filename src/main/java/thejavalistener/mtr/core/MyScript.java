@@ -22,13 +22,28 @@ public abstract class MyScript
        Helpers opcionales
        ===================== */
 
-    protected int doAction(MyAction a)
+    protected void doAction(MyAction a)
     {
-        int r = a.run();
-        if (r != MyAction.SUCCESS)
+    	doAction(a,false);
+    }
+    
+    protected void doAction(MyAction a, boolean showProgress)
+    {
+        try
         {
-            throw new RuntimeException("Falló " + a.getClass().getSimpleName() + " (code=" + r + ")");
+            ProgressListener pl = null;
+
+            if (showProgress)
+                pl = new ConsoleProgressBar(a.getVerb(), a.getDescription());
+
+            a.execute(pl);
         }
-        return r;
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Failed " + a.getClass().getSimpleName(),
+                    e
+            );
+        }
     }
 }

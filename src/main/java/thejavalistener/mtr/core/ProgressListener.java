@@ -2,6 +2,7 @@ package thejavalistener.mtr.core;
 
 public interface ProgressListener
 {
-	void onProgress(long done, long total); // total puede ser -1 si no se
-											// conoce
+	public void onStart();
+	public void onProgress(int percent);
+	public void onFinish();			
 }

@@ -3,120 +3,104 @@ package thejavalistener.mtr.actions;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ProgressListener;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.*;
 import java.util.Enumeration;
-import java.util.zip.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class Unzip extends MyAction
 {
-    private final Path zip;
-    private final Path dest;
-    private final ProgressListener progress;
+    private final Path zipPath;
+    private final Path destDir;
 
-    public Unzip(String zipPath, String destDir)
+    public Unzip(String zipFilePath, String destDir)
     {
-        this(zipPath, destDir, null);
-    }
-
-    public Unzip(String zipPath, String destDir, ProgressListener progress)
-    {
-        this.zip = Paths.get(zipPath);
-        this.dest = Paths.get(destDir);
-        this.progress = progress;
+        this.zipPath = Paths.get(zipFilePath);
+        this.destDir = Paths.get(destDir);
     }
 
     @Override
-    public int run()
+    public String getVerb()
     {
-        try
+        return "Unzipping";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return zipPath + " to " + destDir;
+    }
+
+    @Override
+    public void execute(ProgressListener pl) throws Exception
+    {
+        if (pl != null) pl.onStart();
+
+        Files.createDirectories(destDir);
+
+        try (ZipFile zipFile = new ZipFile(zipPath.toFile()))
         {
-            if (!Files.exists(zip)) return IO_ERROR;
-            Files.createDirectories(dest);
+            long totalBytes = zipFile.stream()
+                    .filter(e -> !e.isDirectory())
+                    .mapToLong(ZipEntry::getSize)
+                    .filter(size -> size > 0)
+                    .sum();
 
-            long total = computeTotalUncompressedSize(zip); // puede ser -1
-            long done = 0;
+            AtomicLong extracted = new AtomicLong(0);
+            int lastPct = -1;
 
-            try (InputStream fis = Files.newInputStream(zip);
-                 BufferedInputStream bis = new BufferedInputStream(fis);
-                 ZipInputStream zis = new ZipInputStream(bis))
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+            while (entries.hasMoreElements())
             {
-                ZipEntry e;
-                byte[] buf = new byte[64 * 1024];
+                ZipEntry entry = entries.nextElement();
+                Path outPath = destDir.resolve(entry.getName());
 
-                while ((e = zis.getNextEntry()) != null)
+                if (entry.isDirectory())
                 {
-                    Path outPath = safeResolve(dest, e.getName());
+                    Files.createDirectories(outPath);
+                    continue;
+                }
 
-                    if (e.isDirectory())
+                if (outPath.getParent() != null)
+                    Files.createDirectories(outPath.getParent());
+
+                try (InputStream in = zipFile.getInputStream(entry);
+                     OutputStream out = Files.newOutputStream(outPath,
+                             StandardOpenOption.CREATE,
+                             StandardOpenOption.TRUNCATE_EXISTING,
+                             StandardOpenOption.WRITE))
+                {
+                    byte[] buffer = new byte[64 * 1024];
+                    int n;
+
+                    while ((n = in.read(buffer)) >= 0)
                     {
-                        Files.createDirectories(outPath);
-                        zis.closeEntry();
-                        continue;
-                    }
+                        if (n == 0) continue;
 
-                    if (outPath.getParent() != null)
-                        Files.createDirectories(outPath.getParent());
+                        out.write(buffer, 0, n);
 
-                    try (OutputStream os = new BufferedOutputStream(
-                            Files.newOutputStream(outPath,
-                                    StandardOpenOption.CREATE,
-                                    StandardOpenOption.TRUNCATE_EXISTING,
-                                    StandardOpenOption.WRITE)))
-                    {
-                        int n;
-                        while ((n = zis.read(buf)) > 0)
+                        long current = extracted.addAndGet(n);
+
+                        if (pl != null && totalBytes > 0)
                         {
-                            os.write(buf, 0, n);
-                            done += n;
-                            if (progress != null) progress.onProgress(done, total);
+                            int pct = (int)Math.min(100, (current * 100) / totalBytes);
+
+                            if (pct != lastPct)
+                            {
+                                pl.onProgress(pct);
+                                lastPct = pct;
+                            }
                         }
                     }
-
-                    zis.closeEntry();
                 }
             }
-
-            if (progress != null) progress.onProgress(total < 0 ? done : total, total);
-            return MyAction.SUCCESS;
         }
-        catch (Exception e)
-        {
-            return IO_ERROR;
-        }
-    }
 
-    private static long computeTotalUncompressedSize(Path zipPath)
-    {
-        try (ZipFile zf = new ZipFile(zipPath.toFile()))
-        {
-            long total = 0;
-            Enumeration<? extends ZipEntry> en = zf.entries();
-            while (en.hasMoreElements())
-            {
-                ZipEntry e = en.nextElement();
-                if (e.isDirectory()) continue;
-                long s = e.getSize();
-                if (s < 0) return -1;
-                total += s;
-            }
-            return total;
-        }
-        catch (Exception e)
-        {
-            return -1;
-        }
-    }
-
-    private static Path safeResolve(Path destDir, String entryName) throws IOException
-    {
-        Path resolved = destDir.resolve(entryName).normalize();
-        Path destNorm = destDir.toAbsolutePath().normalize();
-        Path resNorm  = resolved.toAbsolutePath().normalize();
-
-        if (!resNorm.startsWith(destNorm))
-            throw new IOException("Zip Slip detectado: " + entryName);
-
-        return resolved;
+        if (pl != null) pl.onProgress(100);
+        if (pl != null) pl.onFinish();
     }
 }

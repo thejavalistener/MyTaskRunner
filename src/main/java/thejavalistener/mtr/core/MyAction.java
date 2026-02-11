@@ -9,12 +9,16 @@ public abstract class MyAction
 
     protected final String[] args;
 
+    public abstract String getVerb();
+    public abstract String getDescription();
+
+    
     protected MyAction(String... args)
     {
         this.args = (args == null ? new String[0] : args);
     }
 
-    public abstract int run();
+    public abstract void execute(ProgressListener pl) throws Exception;
 
     protected final String arg(int i)
     {

@@ -1,73 +1,112 @@
 package thejavalistener.mtr.actions;
 
 import thejavalistener.mtr.core.MyAction;
+import thejavalistener.mtr.core.ProgressListener;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class Exec extends MyAction
 {
+    public enum ExecOpt { DETACHED, WAIT }
+
     private final String[] command;
+    private final EnumSet<ExecOpt> opts;
 
     public Exec(String... command)
     {
+        this(EnumSet.of(ExecOpt.DETACHED), command); // DEFAULT
+    }
+
+    public Exec(EnumSet<ExecOpt> opts, String... command)
+    {
         this.command = (command == null ? new String[0] : command);
+        this.opts = normalize(opts);
     }
 
     @Override
-    public int run()
+    public String getVerb() { return "Executing"; }
+
+    @Override
+    public String getDescription()
     {
-        if (command.length == 0) return ERROR;
-
-        boolean detached = has("DETACHED");
-        boolean max      = has("MAX");
-
-        try
-        {
-            List<String> cmd = build(detached, max);
-
-            ProcessBuilder pb = new ProcessBuilder(cmd);
-            pb.redirectErrorStream(true);
-
-            Process p = pb.start();
-
-            if (detached || max)
-                return MyAction.SUCCESS;
-
-            int exitCode = p.waitFor();
-            return exitCode == 0 ? MyAction.SUCCESS : exitCode;
-        }
-        catch (Exception e)
-        {
-            return ERROR;
-        }
+        return command.length == 0 ? "" : String.join(" ", command);
     }
 
-    private List<String> build(boolean detached, boolean max)
+    @Override
+    public void execute(ProgressListener pl) throws Exception
     {
-        List<String> out = new ArrayList<>();
+        if (command.length == 0)
+            throw new IllegalArgumentException("Empty command");
 
+        boolean detached = opts.contains(ExecOpt.DETACHED);
+        boolean wait     = opts.contains(ExecOpt.WAIT);
+
+        if (pl != null) pl.onStart();
+
+        List<String> cmd = build(detached);
+
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+        pb.redirectErrorStream(true);
+
+        Process p = pb.start();
+
+        if (!wait) // detached (default)
+        {
+            if (pl != null) pl.onProgress(100);
+            if (pl != null) pl.onFinish();
+            return;
+        }
+
+        int exitCode = p.waitFor();
+        if (exitCode != 0)
+            throw new RuntimeException("Process exited with code: " + exitCode);
+
+        if (pl != null) pl.onProgress(100);
+        if (pl != null) pl.onFinish();
+    }
+
+    private EnumSet<ExecOpt> normalize(EnumSet<ExecOpt> in)
+    {
+        if (in == null || in.isEmpty())
+            return EnumSet.of(ExecOpt.DETACHED);
+
+        EnumSet<ExecOpt> out = EnumSet.copyOf(in);
+
+        // If both are present, WAIT wins (explicit)
+        if (out.contains(ExecOpt.WAIT))
+        {
+            out.remove(ExecOpt.DETACHED);
+            return out;
+        }
+
+        if (!out.contains(ExecOpt.DETACHED))
+            out.add(ExecOpt.DETACHED);
+
+        return out;
+    }
+
+    private List<String> build(boolean detached)
+    {
         boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
 
-        // Filtramos opciones
         List<String> raw = new ArrayList<>();
-        for (String s : command)
-            if (!"DETACHED".equalsIgnoreCase(s) && !"MAX".equalsIgnoreCase(s))
-                raw.add(s);
+        for (String s : command) raw.add(s);
 
-        if (isWin && max)
+        List<String> out = new ArrayList<>();
+
+        if (isWin && detached)
         {
-            // cmd /c start "" /MAX <raw...>
-            out.add("cmd");
-            out.add("/c");
-            out.add("start");
-            out.add("");
-            out.add("/MAX");
+            // real detach
+//            out.add("cmd");
+//            out.add("/c");
+//            out.add("start");
+//            out.add("");
             out.addAll(raw);
             return out;
         }
 
-        // Caso normal: si es .bat/.cmd => cmd /c
         String first = raw.get(0).toLowerCase();
         if (isWin && (first.endsWith(".bat") || first.endsWith(".cmd")))
         {
@@ -77,12 +116,5 @@ public class Exec extends MyAction
 
         out.addAll(raw);
         return out;
-    }
-
-    private boolean has(String opt)
-    {
-        for (String s : command)
-            if (opt.equalsIgnoreCase(s)) return true;
-        return false;
     }
 }

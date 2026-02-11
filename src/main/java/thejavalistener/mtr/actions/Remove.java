@@ -1,6 +1,7 @@
 package thejavalistener.mtr.actions;
 
 import thejavalistener.mtr.core.MyAction;
+import thejavalistener.mtr.core.ProgressListener;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -16,24 +17,37 @@ public class Remove extends MyAction
     }
 
     @Override
-    public int run()
+    public String getVerb()
     {
-        try
-        {
-            if (!Files.exists(target))
-                return SUCCESS;
+        return "Removing";
+    }
 
-            if (Files.isDirectory(target))
-                deleteDir(target);
-            else
-                Files.deleteIfExists(target);
+    @Override
+    public String getDescription()
+    {
+        return target.toString();
+    }
 
-            return SUCCESS;
-        }
-        catch (Exception e)
+    @Override
+    public void execute(ProgressListener pl) throws Exception
+    {
+        // Remove is usually fast; still supports progress, but it might be unused.
+        if (pl != null) pl.onStart();
+
+        if (!Files.exists(target))
         {
-            return IO_ERROR;
+            if (pl != null) pl.onProgress(100);
+            if (pl != null) pl.onFinish();
+            return;
         }
+
+        if (Files.isDirectory(target))
+            deleteDir(target);
+        else
+            Files.deleteIfExists(target);
+
+        if (pl != null) pl.onProgress(100);
+        if (pl != null) pl.onFinish();
     }
 
     private void deleteDir(Path dir) throws IOException
