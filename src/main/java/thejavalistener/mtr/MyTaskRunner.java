@@ -1,11 +1,8 @@
 package thejavalistener.mtr;
 
-import thejavalistener.mtr.core.MyScript;
 import thejavalistener.mtr.core.MyAction;
-
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
+import thejavalistener.mtr.core.MyJsonScriptImple;
+import thejavalistener.mtr.core.MyScript;
 
 public class MyTaskRunner
 {
@@ -21,7 +18,7 @@ public class MyTaskRunner
         {
             System.out.println("Uso:");
             System.out.println("  java thejavalistener.mtr.MyTaskRunner <ClaseScript>");
-            System.out.println("  java thejavalistener.mtr.MyTaskRunner <script.json> [--scriptsDir=DIR]");
+            System.out.println("  java thejavalistener.mtr.MyTaskRunner <script.json>");
             return MyAction.ERROR;
         }
 
@@ -29,23 +26,7 @@ public class MyTaskRunner
 
         try
         {
-            if (target.toLowerCase().endsWith(".json"))
-            {
-                System.out.println("JSON aún no implementado: " + target);
-                return MyAction.ERROR;
-            }
-
-            // Si está en el classpath, basta con Class.forName
-            Class<?> clazz = Class.forName(target);
-            Object o = clazz.getDeclaredConstructor().newInstance();
-
-            if (!(o instanceof MyScript))
-            {
-                System.out.println("La clase no extiende MyScript: " + target);
-                return MyAction.ERROR;
-            }
-
-            MyScript script = (MyScript) o;
+            MyScript script = loadScript(target);
             return script.run();
         }
         catch (Throwable t)
@@ -56,18 +37,26 @@ public class MyTaskRunner
     }
 
     /* =====================
-       (Opcional) cargar scripts externos
+       CARGA UNIFICADA
        ===================== */
 
-    public static MyScript loadFromDir(String scriptsDir, String fqcn) throws Exception
+    private static MyScript loadScript(String target) throws Exception
     {
-        File dir = new File(scriptsDir);
-        URLClassLoader loader = new URLClassLoader(
-                new URL[]{dir.toURI().toURL()},
-                MyTaskRunner.class.getClassLoader()
-        );
+    	MyScript script;
+    	
+        // JSON
+        if (target.toLowerCase().endsWith(".json"))
+        {
 
-        Class<?> clazz = loader.loadClass(fqcn);
-        return (MyScript) clazz.getDeclaredConstructor().newInstance();
+            script = new MyJsonScriptImple(target);
+        }
+        else
+        {
+	        // Script Java normal
+	        Class<?> clazz = Class.forName(target);
+	        script = (MyScript)clazz.getDeclaredConstructor().newInstance();
+        }	
+        
+        return script;
     }
 }

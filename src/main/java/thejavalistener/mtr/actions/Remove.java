@@ -9,11 +9,11 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 public class Remove extends MyAction
 {
-    private final Path target;
+    private String path;
 
-    public Remove(String path)
+    public void setPath(String path)
     {
-        this.target = Paths.get(path);
+        this.path = path;
     }
 
     @Override
@@ -25,13 +25,17 @@ public class Remove extends MyAction
     @Override
     public String getDescription()
     {
-        return target.toString();
+        return path;
     }
 
     @Override
     public void execute(ProgressListener pl) throws Exception
     {
-        // Remove is usually fast; still supports progress, but it might be unused.
+        if (path == null || path.isBlank())
+            throw new IllegalArgumentException("Path not set");
+
+        Path target = Paths.get(path);
+
         if (pl != null) pl.onStart();
 
         if (!Files.exists(target))

@@ -9,11 +9,11 @@ import java.nio.file.Paths;
 
 public class MkDir extends MyAction
 {
-    private final Path dir;
+    private String path;
 
-    public MkDir(String path)
+    public void setPath(String path)
     {
-        this.dir = Paths.get(path);
+        this.path = path;
     }
 
     @Override
@@ -25,12 +25,17 @@ public class MkDir extends MyAction
     @Override
     public String getDescription()
     {
-        return dir.toString();
+        return path;
     }
 
     @Override
     public void execute(ProgressListener pl) throws Exception
     {
+        if (path == null || path.isBlank())
+            throw new IllegalArgumentException("Path is null");
+
+        Path dir = Paths.get(path);
+
         if (pl != null) pl.onStart();
 
         Files.createDirectories(dir);

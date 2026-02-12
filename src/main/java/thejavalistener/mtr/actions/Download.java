@@ -11,13 +11,17 @@ import java.nio.file.*;
 
 public class Download extends MyAction
 {
-    private final String url;
-    private final Path dest;
+    private String url;
+    private String to;   // antes era Path dest
 
-    public Download(String url, String destFile)
+    public void setUrl(String url)
     {
         this.url = url;
-        this.dest = Paths.get(destFile);
+    }
+
+    public void setTo(String to)
+    {
+        this.to = to;
     }
 
     @Override
@@ -29,12 +33,14 @@ public class Download extends MyAction
     @Override
     public String getDescription()
     {
-        return url + " to " + dest;
+        return url + " to " + to;
     }
 
     @Override
     public void execute(ProgressListener pl) throws Exception
     {
+        Path dest = Paths.get(to);
+
         if (dest.getParent() != null)
             Files.createDirectories(dest.getParent());
 
@@ -69,23 +75,19 @@ public class Download extends MyAction
         {
             byte[] buf = new byte[64 * 1024];
             long done = 0;
-
             int lastPct = -1;
 
             int n;
             while ((n = in.read(buf)) >= 0)
             {
                 if (n == 0) continue;
+
                 out.write(buf, 0, n);
                 done += n;
 
-                if (pl != null)
+                if (pl != null && total > 0)
                 {
-                    int pct;
-                    if (total > 0)
-                        pct = (int)Math.min(100, (done * 100) / total);
-                    else
-                        pct = 0; // unknown size
+                    int pct = (int)Math.min(100, (done * 100) / total);
 
                     if (pct != lastPct)
                     {

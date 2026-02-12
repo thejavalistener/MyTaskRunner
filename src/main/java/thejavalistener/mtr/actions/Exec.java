@@ -3,45 +3,47 @@ package thejavalistener.mtr.actions;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ProgressListener;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 public class Exec extends MyAction
 {
     public enum ExecOpt { DETACHED, WAIT }
 
-    private final String[] command;
-    private final EnumSet<ExecOpt> opts;
+    private String command;   // línea completa
+    private String opts;      // "DETACHED", "WAIT" o null
 
-    public Exec(String... command)
+    public void setCommand(String command)
     {
-        this(EnumSet.of(ExecOpt.DETACHED), command); // DEFAULT
+        this.command = command;
     }
 
-    public Exec(EnumSet<ExecOpt> opts, String... command)
+    public void setOpts(String opts)
     {
-        this.command = (command == null ? new String[0] : command);
-        this.opts = normalize(opts);
+        this.opts = opts;
     }
 
     @Override
-    public String getVerb() { return "Executing"; }
+    public String getVerb()
+    {
+        return "Executing";
+    }
 
     @Override
     public String getDescription()
     {
-        return command.length == 0 ? "" : String.join(" ", command);
+        return command;
     }
 
     @Override
     public void execute(ProgressListener pl) throws Exception
     {
-        if (command.length == 0)
+        if (command == null || command.isBlank())
             throw new IllegalArgumentException("Empty command");
 
-        boolean detached = opts.contains(ExecOpt.DETACHED);
-        boolean wait     = opts.contains(ExecOpt.WAIT);
+        EnumSet<ExecOpt> options = parseOpts(opts);
+
+        boolean detached = options.contains(ExecOpt.DETACHED);
+        boolean wait     = options.contains(ExecOpt.WAIT);
 
         if (pl != null) pl.onStart();
 
@@ -52,7 +54,7 @@ public class Exec extends MyAction
 
         Process p = pb.start();
 
-        if (!wait) // detached (default)
+        if (!wait)
         {
             if (pl != null) pl.onProgress(100);
             if (pl != null) pl.onFinish();
@@ -67,47 +69,49 @@ public class Exec extends MyAction
         if (pl != null) pl.onFinish();
     }
 
-    private EnumSet<ExecOpt> normalize(EnumSet<ExecOpt> in)
+    private EnumSet<ExecOpt> parseOpts(String s)
     {
-        if (in == null || in.isEmpty())
+        if (s == null || s.isBlank())
             return EnumSet.of(ExecOpt.DETACHED);
 
-        EnumSet<ExecOpt> out = EnumSet.copyOf(in);
+        EnumSet<ExecOpt> set = EnumSet.noneOf(ExecOpt.class);
 
-        // If both are present, WAIT wins (explicit)
-        if (out.contains(ExecOpt.WAIT))
+        for (String part : s.split(","))
         {
-            out.remove(ExecOpt.DETACHED);
-            return out;
+            part = part.trim().toUpperCase();
+            if (!part.isEmpty())
+                set.add(ExecOpt.valueOf(part));
         }
 
-        if (!out.contains(ExecOpt.DETACHED))
-            out.add(ExecOpt.DETACHED);
+        if (set.contains(ExecOpt.WAIT))
+        {
+            set.remove(ExecOpt.DETACHED);
+            return set;
+        }
 
-        return out;
+        if (!set.contains(ExecOpt.DETACHED))
+            set.add(ExecOpt.DETACHED);
+
+        return set;
     }
 
     private List<String> build(boolean detached)
     {
-        boolean isWin = System.getProperty("os.name").toLowerCase().contains("win");
+        boolean isWin = System.getProperty("os.name")
+                .toLowerCase()
+                .contains("win");
 
-        List<String> raw = new ArrayList<>();
-        for (String s : command) raw.add(s);
-
+        List<String> raw = Arrays.asList(command.split(" "));
         List<String> out = new ArrayList<>();
 
         if (isWin && detached)
         {
-            // real detach
-//            out.add("cmd");
-//            out.add("/c");
-//            out.add("start");
-//            out.add("");
             out.addAll(raw);
             return out;
         }
 
         String first = raw.get(0).toLowerCase();
+
         if (isWin && (first.endsWith(".bat") || first.endsWith(".cmd")))
         {
             out.add("cmd");

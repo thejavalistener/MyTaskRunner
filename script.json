@@ -3,7 +3,7 @@
     "Drive": "D:",
     "TempDir": "${Drive}/temp/VSCodeInstall",
 
-    "SoftRepo": "D:/Soft/IDE",
+    "SoftRepo": "D:/Soft/IDE/VSCode",
     "VSCodeZipFile": "VSCode_v1.9.9.zip",
     "FullProjectZipFile": "AlgoritmosAFondo_FULL_v2.7.27.zip",
 
@@ -12,18 +12,18 @@
   },
 
   "steps": [
-    { "action": "mkdir", "path": "${TempDir}" },
+    { "action": "MkDir", "path": "${TempDir}" },
 
-    { "action": "copy", "from": "${SoftRepo}/${VSCodeZipFile}", "to": "${TempDir}/${VSCodeZipFile}", "progress": true },
-    { "action": "copy", "from": "${SoftRepo}/${FullProjectZipFile}", "to": "${TempDir}/${FullProjectZipFile}", "progress": true },
+    { "action": "Copy", "from": "${SoftRepo}/${VSCodeZipFile}", "to": "${TempDir}/${VSCodeZipFile}", "progress": true },
+    { "action": "Copy", "from": "${SoftRepo}/${FullProjectZipFile}", "to": "${TempDir}/${FullProjectZipFile}", "progress": true },
 
-    { "action": "remove", "path": "${VSCodeHome}" },
+    { "action": "Remove", "path": "${VSCodeHome}" },
 
-    { "action": "unzip", "from": "${TempDir}/${VSCodeZipFile}", "to": "${Drive}/", "progress": true },
-    { "action": "unzip", "from": "${TempDir}/${FullProjectZipFile}", "to": "${VSCodeWorkspace}", "progress": true },
+    { "action": "Unzip", "from": "${TempDir}/${VSCodeZipFile}", "to": "${Drive}/", "progress": true },
+    { "action": "Unzip", "from": "${TempDir}/${FullProjectZipFile}", "to": "${VSCodeWorkspace}", "progress": true },
 
-    { "action": "remove", "path": "${TempDir}" },
+    { "action": "Remove", "path": "${TempDir}" },
 
-    { "action": "exec", "command": "${VSCodeHome}/RunVSCode.bat" }
+    { "action": "Exec", "command": "${VSCodeHome}/RunVSCode.bat" }
   ]
 }

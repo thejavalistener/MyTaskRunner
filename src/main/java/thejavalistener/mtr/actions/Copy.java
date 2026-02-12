@@ -11,14 +11,8 @@ import java.util.stream.Stream;
 
 public class Copy extends MyAction
 {
-    private final Path from;
-    private final Path to;
-
-    public Copy(String from, String to)
-    {
-        this.from = Paths.get(from);
-        this.to   = Paths.get(to);
-    }
+    private String from;
+    private String to;
 
     @Override
     public String getVerb()
@@ -35,23 +29,26 @@ public class Copy extends MyAction
     @Override
     public void execute(ProgressListener pl) throws Exception
     {
-        if (!Files.exists(from))
+    	Path pFrom = Paths.get(from);
+    	Path pTo = Paths.get(to);
+    	
+        if (!Files.exists(pFrom))
             throw new java.io.IOException("Source does not exist: " + from);
 
         if (pl != null) pl.onStart();
 
-        if (Files.isDirectory(from))
+        if (Files.isDirectory(pFrom))
         {
-            long totalBytes = calculateTotalBytes(from);
+            long totalBytes = calculateTotalBytes(pFrom);
             AtomicLong copiedBytes = new AtomicLong(0);
 
-            try (Stream<Path> stream = Files.walk(from))
+            try (Stream<Path> stream = Files.walk(pFrom))
             {
                 stream.forEach(path ->
                 {
                     try
                     {
-                        Path dest = to.resolve(from.relativize(path));
+                        Path dest = pTo.resolve(pFrom.relativize(path));
 
                         if (Files.isDirectory(path))
                         {
@@ -74,13 +71,13 @@ public class Copy extends MyAction
         }
         else
         {
-            long totalBytes = Files.size(from);
+            long totalBytes = Files.size(pFrom);
             AtomicLong copiedBytes = new AtomicLong(0);
 
-            if (to.getParent() != null)
-                Files.createDirectories(to.getParent());
+            if (pTo.getParent() != null)
+                Files.createDirectories(pTo.getParent());
 
-            copyFileWithProgress(from, to, totalBytes, copiedBytes, pl);
+            copyFileWithProgress(pFrom, pTo, totalBytes, copiedBytes, pl);
         }
 
         if (pl != null) pl.onProgress(100);
@@ -145,4 +142,16 @@ public class Copy extends MyAction
                     .sum();
         }
     }
+
+	public void setFrom(String from)
+	{
+		this.from=from;
+	}
+
+	public void setTo(String to)
+	{
+		this.to=to;
+	}
+    
+    
 }

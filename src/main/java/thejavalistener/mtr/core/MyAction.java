@@ -12,7 +12,18 @@ public abstract class MyAction
     public abstract String getVerb();
     public abstract String getDescription();
 
-    
+	private boolean showProgress;
+	
+	public void setProgress(boolean b)
+	{
+		this.showProgress = b;
+	}
+	
+	public boolean getProgress()
+	{
+		return showProgress;
+	}
+	
     protected MyAction(String... args)
     {
         this.args = (args == null ? new String[0] : args);

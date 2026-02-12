@@ -13,13 +13,17 @@ import java.util.zip.ZipFile;
 
 public class Unzip extends MyAction
 {
-    private final Path zipPath;
-    private final Path destDir;
+    private String from;
+    private String to;
 
-    public Unzip(String zipFilePath, String destDir)
+    public void setFrom(String from)
     {
-        this.zipPath = Paths.get(zipFilePath);
-        this.destDir = Paths.get(destDir);
+        this.from = from;
+    }
+
+    public void setTo(String to)
+    {
+        this.to = to;
     }
 
     @Override
@@ -31,12 +35,18 @@ public class Unzip extends MyAction
     @Override
     public String getDescription()
     {
-        return zipPath + " to " + destDir;
+        return from + " to " + to;
     }
 
     @Override
     public void execute(ProgressListener pl) throws Exception
     {
+        if (from == null || to == null)
+            throw new IllegalArgumentException("From/To not set");
+
+        Path zipPath = Paths.get(from);
+        Path destDir = Paths.get(to);
+
         if (pl != null) pl.onStart();
 
         Files.createDirectories(destDir);

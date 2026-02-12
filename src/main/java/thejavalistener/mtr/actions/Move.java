@@ -7,13 +7,17 @@ import java.nio.file.*;
 
 public class Move extends MyAction
 {
-    private final Path from;
-    private final Path to;
+    private String from;
+    private String to;
 
-    public Move(String from, String to)
+    public void setFrom(String from)
     {
-        this.from = Paths.get(from);
-        this.to   = Paths.get(to);
+        this.from = from;
+    }
+
+    public void setTo(String to)
+    {
+        this.to = to;
     }
 
     @Override
@@ -31,15 +35,21 @@ public class Move extends MyAction
     @Override
     public void execute(ProgressListener pl) throws Exception
     {
+        if (from == null || to == null)
+            throw new IllegalArgumentException("From/To not set");
+
+        Path pFrom = Paths.get(from);
+        Path pTo   = Paths.get(to);
+
         if (pl != null) pl.onStart();
 
-        if (!Files.exists(from))
+        if (!Files.exists(pFrom))
             throw new java.io.IOException("Source does not exist: " + from);
 
-        if (to.getParent() != null)
-            Files.createDirectories(to.getParent());
+        if (pTo.getParent() != null)
+            Files.createDirectories(pTo.getParent());
 
-        Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
+        Files.move(pFrom, pTo, StandardCopyOption.REPLACE_EXISTING);
 
         if (pl != null) pl.onProgress(100);
         if (pl != null) pl.onFinish();
