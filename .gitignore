@@ -1,8 +1,16 @@
-/target/
-/bin/
-/.classpath
-/.project
-/.settings/
-/*.iml
-/.idea/
-/out/
+# Gradle
+/build/
+.gradle/
+
+# Java
+*.class
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
