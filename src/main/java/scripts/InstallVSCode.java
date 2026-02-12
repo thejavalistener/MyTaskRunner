@@ -1,7 +1,5 @@
 package scripts;
 
-import java.util.EnumSet;
-
 import thejavalistener.mtr.actions.Copy;
 import thejavalistener.mtr.actions.Exec;
 import thejavalistener.mtr.actions.MkDir;
