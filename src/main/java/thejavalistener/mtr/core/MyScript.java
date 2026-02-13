@@ -22,19 +22,45 @@ public abstract class MyScript
 	 * ===================== Helpers opcionales =====================
 	 */
 
+//	protected void doAction(MyAction a)
+//	{
+//		try
+//		{
+//			ProgressListener pl=null;
+//
+//			if(a.isShowProgresBar()) pl=new ConsoleProgressBar(a.getVerb(),a.getDescription());
+//
+//			a.execute(pl);
+//		}
+//		catch(Exception e)
+//		{
+//			throw new RuntimeException("Failed "+a.getClass().getSimpleName(),e);
+//		}
+//	}
+	
 	protected void doAction(MyAction a)
 	{
 		try
 		{
 			ProgressListener pl=null;
 
-			if(a.getProgress()) pl=new ConsoleProgressBar(a.getVerb(),a.getDescription());
+			if(a.isShowProgresBar()) pl=new ConsoleProgressBar(a.getVerb(),a.getDescription());
 
 			a.execute(pl);
 		}
 		catch(Exception e)
 		{
-			throw new RuntimeException("Failed "+a.getClass().getSimpleName(),e);
+			if( a.isStopScriptOnError() )
+			{
+				throw new RuntimeException("Failed "+a.getClass().getSimpleName(),e);
+			}
+			else
+			{
+				System.out.println("Failed "+a.getClass().getSimpleName()+": "+e.getMessage());
+				e.printStackTrace();
+			}
 		}
 	}
+
+	
 }

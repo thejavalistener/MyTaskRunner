@@ -12,19 +12,27 @@ public abstract class MyAction
     public abstract String getVerb();
     public abstract String getDescription();
 
-	private boolean showProgress;
+	private boolean showProgresBar;
+	private boolean stopScriptOnError;
 	
-	public void setProgress(boolean b)
+	
+    public boolean isShowProgresBar()
 	{
-		this.showProgress = b;
+		return showProgresBar;
 	}
-	
-	public boolean getProgress()
+	public void setShowProgresBar(boolean showProgresBar)
 	{
-		return showProgress;
+		this.showProgresBar=showProgresBar;
 	}
-	
-    protected MyAction(String... args)
+	public boolean isStopScriptOnError()
+	{
+		return stopScriptOnError;
+	}
+	public void setStopScriptOnError(boolean stopScriptOnError)
+	{
+		this.stopScriptOnError=stopScriptOnError;
+	}
+	protected MyAction(String... args)
     {
         this.args = (args == null ? new String[0] : args);
     }
