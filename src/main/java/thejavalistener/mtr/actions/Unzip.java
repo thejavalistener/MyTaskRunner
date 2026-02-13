@@ -1,15 +1,19 @@
 package thejavalistener.mtr.actions;
 
-import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
-
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import thejavalistener.mtr.core.MyAction;
+import thejavalistener.mtr.core.ProgressListener;
+import thejavalistener.mtr.core.ValidationContext;
 
 public class Unzip extends MyAction
 {
@@ -113,4 +117,59 @@ public class Unzip extends MyAction
         if (pl != null) pl.onProgress(100);
         if (pl != null) pl.onFinish();
     }
+    
+    @Override
+    public String validate(ValidationContext ctx)
+    {
+        if(from == null || from.isBlank())
+        {
+            return "'from' es obligatorio";
+        }
+
+        if(to == null || to.isBlank())
+        {
+            return "'to' es obligatorio";
+        }
+
+        Path zipPath;
+        Path destDir;
+
+        try
+        {
+            zipPath = Paths.get(from);
+        }
+        catch(Exception e)
+        {
+            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+        }
+
+        try
+        {
+            destDir = Paths.get(to);
+        }
+        catch(Exception e)
+        {
+            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+        }
+
+        if(!ctx.exists(zipPath))
+        {
+            return "no existe el archivo (según script): " + from;
+        }
+
+        if(!ctx.isFile(zipPath))
+        {
+            return "el origen no es un archivo: " + from;
+        }
+
+        if(ctx.exists(destDir) && !ctx.isDirectory(destDir))
+        {
+            return "el destino existe y no es un directorio: " + to;
+        }
+
+        ctx.addDirectory(destDir);
+
+        return null;
+    }
+
 }

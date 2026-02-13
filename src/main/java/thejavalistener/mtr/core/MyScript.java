@@ -1,15 +1,48 @@
 
 package thejavalistener.mtr.core;
 
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public abstract class MyScript
 {
-	public abstract int script();
+	public abstract List<MyAction> script();
 
 	public int run()
 	{
 		try
 		{
-			return script();
+			List<MyAction> actions = script();
+			
+			
+			ValidationContext ctx = new ValidationContext();
+
+			
+			
+			// valido
+			for(int i=0; i<actions.size(); i++)
+			{
+				MyAction action = actions.get(i);
+				
+				String err = action.validate(ctx);
+				if( err!=null )
+				{
+					int nroPaso = i+1;
+					String mssg = "Paso "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
+					throw new RuntimeException(mssg);
+				}
+			}
+
+			// ejecuto
+			for(MyAction action:actions)
+			{
+				doAction(action);
+			}
+			
+			return 0; // VER ESTO...
+			
 		}
 		catch(Throwable t)
 		{
@@ -22,22 +55,6 @@ public abstract class MyScript
 	 * ===================== Helpers opcionales =====================
 	 */
 
-//	protected void doAction(MyAction a)
-//	{
-//		try
-//		{
-//			ProgressListener pl=null;
-//
-//			if(a.isShowProgresBar()) pl=new ConsoleProgressBar(a.getVerb(),a.getDescription());
-//
-//			a.execute(pl);
-//		}
-//		catch(Exception e)
-//		{
-//			throw new RuntimeException("Failed "+a.getClass().getSimpleName(),e);
-//		}
-//	}
-	
 	protected void doAction(MyAction a)
 	{
 		try
@@ -61,6 +78,4 @@ public abstract class MyScript
 			}
 		}
 	}
-
-	
 }

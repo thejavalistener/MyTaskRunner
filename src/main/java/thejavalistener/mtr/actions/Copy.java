@@ -1,13 +1,17 @@
 package thejavalistener.mtr.actions;
 
-import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
-
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
+
+import thejavalistener.mtr.core.MyAction;
+import thejavalistener.mtr.core.ProgressListener;
+import thejavalistener.mtr.core.ValidationContext;
 
 public class Copy extends MyAction
 {
@@ -151,7 +155,66 @@ public class Copy extends MyAction
 	public void setTo(String to)
 	{
 		this.to=to;
+	}    
+	
+	@Override
+	public String validate(ValidationContext ctx)
+	{
+	    if(from == null || from.isBlank())
+	    {
+	        return "'from' es obligatorio";
+	    }
+
+	    if(to == null || to.isBlank())
+	    {
+	        return "'to' es obligatorio";
+	    }
+
+	    Path pFrom;
+	    Path pTo;
+
+	    try
+	    {
+	        pFrom = Paths.get(from);
+	    }
+	    catch(Exception e)
+	    {
+	        return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+	    }
+
+	    try
+	    {
+	        pTo = Paths.get(to);
+	    }
+	    catch(Exception e)
+	    {
+	        return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+	    }
+
+	    if(!ctx.exists(pFrom))
+	    {
+	        return "no existe el origen (según script): " + from;
+	    }
+
+	    if(ctx.isDirectory(pFrom))
+	    {
+	        if(ctx.exists(pTo) && !ctx.isDirectory(pTo))
+	        {
+	            return "el destino existe y no es un directorio: " + to;
+	        }
+
+	        ctx.addDirectory(pTo);
+	    }
+	    else
+	    {
+	        if(ctx.exists(pTo) && ctx.isDirectory(pTo))
+	        {
+	            return "el destino existe y es un directorio: " + to;
+	        }
+
+	        ctx.addFile(pTo);
+	    }
+
+	    return null;
 	}
-    
-    
 }

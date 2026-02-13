@@ -1,13 +1,19 @@
 package thejavalistener.mtr.actions;
 
-import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.http.*;
-import java.nio.file.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
+import thejavalistener.mtr.core.MyAction;
+import thejavalistener.mtr.core.ProgressListener;
+import thejavalistener.mtr.core.ValidationContext;
 
 public class Download extends MyAction
 {
@@ -101,4 +107,48 @@ public class Download extends MyAction
         if (pl != null) pl.onProgress(100);
         if (pl != null) pl.onFinish();
     }
+    
+    @Override
+    public String validate(ValidationContext ctx)
+    {
+        if(url == null || url.isBlank())
+        {
+            return "'url' es obligatorio";
+        }
+
+        if(to == null || to.isBlank())
+        {
+            return "'to' es obligatorio";
+        }
+
+        try
+        {
+            URI.create(url);
+        }
+        catch(Exception e)
+        {
+            return "url inválida: " + url + " (" + e.getMessage() + ")";
+        }
+
+        Path dest;
+
+        try
+        {
+            dest = Paths.get(to);
+        }
+        catch(Exception e)
+        {
+            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+        }
+
+        if(ctx.exists(dest) && ctx.isDirectory(dest))
+        {
+            return "el destino existe y es un directorio: " + to;
+        }
+
+        ctx.addFile(dest);
+
+        return null;
+    }
+
 }

@@ -11,6 +11,7 @@ public abstract class MyAction
 
     public abstract String getVerb();
     public abstract String getDescription();
+    public abstract String validate(ValidationContext ctx); // null = OK
 
 	private boolean showProgresBar;
 	private boolean stopScriptOnError;

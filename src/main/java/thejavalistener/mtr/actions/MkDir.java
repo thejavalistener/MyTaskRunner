@@ -1,11 +1,12 @@
 package thejavalistener.mtr.actions;
 
-import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import thejavalistener.mtr.core.MyAction;
+import thejavalistener.mtr.core.ProgressListener;
+import thejavalistener.mtr.core.ValidationContext;
 
 public class MkDir extends MyAction
 {
@@ -42,5 +43,36 @@ public class MkDir extends MyAction
 
         if (pl != null) pl.onProgress(100);
         if (pl != null) pl.onFinish();
+    }
+    
+    @Override
+    public String validate(ValidationContext ctx)
+    {
+        if(path == null || path.isBlank())
+        {
+            return "'path' es obligatorio";
+        }
+
+        Path dir;
+        try
+        {
+            dir = Paths.get(path);
+        }
+        catch(Exception e)
+        {
+            return "path inválido: " + path + " (" + e + ")";
+        }
+
+        if(ctx.exists(dir))
+        {
+            if(!ctx.isDirectory(dir))
+            {
+                return "ya existe pero no es un directorio: " + path;
+            }
+        }
+
+        ctx.addDirectory(dir);
+
+        return null;
     }
 }

@@ -1,15 +1,18 @@
 package thejavalistener.mtr.actions;
 
-import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
-
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import java.util.stream.Stream;
+
+import thejavalistener.mtr.core.MyAction;
+import thejavalistener.mtr.core.ProgressListener;
+import thejavalistener.mtr.core.ValidationContext;
 
 public class Zip extends MyAction
 {
@@ -130,5 +133,59 @@ public class Zip extends MyAction
 
         if (pl != null) pl.onProgress(100);
         if (pl != null) pl.onFinish();
+    }
+    
+    @Override
+    public String validate(ValidationContext ctx)
+    {
+        if(from == null || from.isBlank())
+        {
+            return "'from' es obligatorio";
+        }
+
+        if(to == null || to.isBlank())
+        {
+            return "'to' es obligatorio";
+        }
+
+        Path sourcePath;
+        Path zipPath;
+
+        try
+        {
+            sourcePath = Paths.get(from);
+        }
+        catch(Exception e)
+        {
+            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+        }
+
+        try
+        {
+            zipPath = Paths.get(to);
+        }
+        catch(Exception e)
+        {
+            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+        }
+
+        if(!ctx.exists(sourcePath))
+        {
+            return "no existe el origen (según script): " + from;
+        }
+
+        if(!ctx.isDirectory(sourcePath))
+        {
+            return "el origen no es un directorio: " + from;
+        }
+
+        if(ctx.exists(zipPath))
+        {
+            return "el destino ya fue creado previamente en el script: " + to;
+        }
+
+        ctx.addFile(zipPath);
+
+        return null;
     }
 }

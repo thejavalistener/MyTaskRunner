@@ -1,11 +1,16 @@
 package thejavalistener.mtr.actions;
 
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ProgressListener;
-
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import thejavalistener.mtr.core.ValidationContext;
 
 public class Remove extends MyAction
 {
@@ -72,5 +77,43 @@ public class Remove extends MyAction
                 return FileVisitResult.CONTINUE;
             }
         });
+    }
+    
+    @Override
+    public String validate(ValidationContext ctx)
+    {
+        if(path == null || path.isBlank())
+        {
+            return "'path' es obligatorio";
+        }
+
+        Path p;
+
+        try
+        {
+            p = Paths.get(path);
+        }
+        catch(Exception e)
+        {
+            return "path inválido: " + path + " (" + e.getMessage() + ")";
+        }
+
+        if(ctx.exists(p))
+        {
+            ctx.remove(p);
+            return null;
+        }
+
+        if(Files.exists(p))
+        {
+            return null;
+        }
+
+        if(isStopScriptOnError())
+        {
+            return "no existe: " + path;
+        }
+
+        return null;
     }
 }

@@ -1,9 +1,13 @@
 package thejavalistener.mtr.actions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ProgressListener;
-
-import java.util.*;
+import thejavalistener.mtr.core.ValidationContext;
 
 public class Exec extends MyAction
 {
@@ -120,5 +124,25 @@ public class Exec extends MyAction
 
         out.addAll(raw);
         return out;
+    }
+    
+    @Override
+    public String validate(ValidationContext ctx)
+    {
+        if(command == null || command.isBlank())
+        {
+            return "'command' es obligatorio";
+        }
+
+        try
+        {
+            parseOpts(opts);
+        }
+        catch(Exception e)
+        {
+            return "opts inválido: " + opts + " (" + e.getMessage() + ")";
+        }
+
+        return null;
     }
 }

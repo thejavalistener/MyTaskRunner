@@ -3,6 +3,7 @@ package thejavalistener.mtr.core;
 import java.io.FileReader;
 import java.io.Reader;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,50 +34,77 @@ public class MyJsonScriptImple extends MyScript
 	}
 
 	@Override
-	public int script()
+	public List<MyAction> script()
 	{
-		if(sj==null||sj.steps==null) return MyAction.SUCCESS;
+		List<MyAction> ret = new ArrayList<>();
+		
+		if(sj==null||sj.steps==null) return ret;
 
-		for(Step st:sj.steps)
+		
+		// for(Step st:sj.steps)
+		for(Map<String,Object> st:sj.steps)
 		{
 			try
 			{
-				String actionName=resolve(st.action,vars);
+				// String actionName=resolve(st.action,vars);
+				String actionName=resolve((String)st.get("action"),vars);
 
 				Class<?> clazz=Class.forName("thejavalistener.mtr.actions."+actionName);
 
 				MyAction action=(MyAction)clazz.getDeclaredConstructor().newInstance();
 
 				// ====== Mapeo automático de propiedades ======
-				for(var f:st.getClass().getDeclaredFields())
+//				for(var f:st.getClass().getDeclaredFields())
+//				{
+//					f.setAccessible(true);
+//
+//					String name=f.getName();
+//					if("action".equals(name)) continue;
+//
+//					Object raw=f.get(st);
+//					if(raw==null) continue;
+//
+//					Object value=raw;
+//
+//					if(raw instanceof String s) value=resolve(s,vars);
+//
+//					String setter="set"+Character.toUpperCase(name.charAt(0))+name.substring(1);
+//
+//					var m=findSetter(action.getClass(),setter,value);
+//					if(m!=null) m.invoke(action,value);
+//				}
+
+				for (var entry : st.entrySet())
 				{
-					f.setAccessible(true);
+				    String name = entry.getKey();
+				    if ("action".equals(name)) continue;
 
-					String name=f.getName();
-					if("action".equals(name)) continue;
+				    Object raw = entry.getValue();
+				    if (raw == null) continue;
 
-					Object raw=f.get(st);
-					if(raw==null) continue;
+				    Object value = raw;
 
-					Object value=raw;
+				    if (raw instanceof String s)
+				        value = resolve(s, vars);
 
-					if(raw instanceof String s) value=resolve(s,vars);
+				    String setter = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
 
-					String setter="set"+Character.toUpperCase(name.charAt(0))+name.substring(1);
-
-					var m=findSetter(action.getClass(),setter,value);
-					if(m!=null) m.invoke(action,value);
+				    var m = findSetter(action.getClass(), setter, value);
+				    if (m != null)
+				        m.invoke(action, value);
 				}
 
-				doAction(action);
+				
+				
+				ret.add(action);
 			}
 			catch(Exception e)
 			{
-				throw new RuntimeException("Error ejecutando acción: "+st.action,e);
+				throw new RuntimeException("Error ejecutando acción: "+st.get("action"),e);
 			}
 		}
 
-		return MyAction.SUCCESS;
+		return ret;
 	}
 
 	/*
@@ -127,16 +155,16 @@ public class MyJsonScriptImple extends MyScript
 	static class ScriptJson
 	{
 		Map<String,String> vars;
-		List<Step> steps;
+		List<Map<String,Object>> steps;
 	}
 
-	static class Step
-	{
-		String action;
-		String path;
-		String from;
-		String to;
-		String command;
-		Boolean progress;
-	}
+	// static class Step
+	// {
+	// String action;
+	// String path;
+	// String from;
+	// String to;
+	// String command;
+	// Boolean progress;
+	// }
 }

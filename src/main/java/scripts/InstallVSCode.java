@@ -1,5 +1,8 @@
 package scripts;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import thejavalistener.mtr.actions.Copy;
 import thejavalistener.mtr.actions.Exec;
 import thejavalistener.mtr.actions.MkDir;
@@ -11,44 +14,46 @@ import thejavalistener.mtr.core.MyScript;
 public class InstallVSCode extends MyScript
 {
 	@Override
-	public int script()
+	public List<MyAction>script()
 	{
-	    MkDir mk = new MkDir();
+		List<MyAction> ret = new ArrayList<>();
+	    
+		MkDir mk = new MkDir();
 	    mk.setPath("D:\\TEMPPP");
-	    doAction(mk);
-
+	    ret.add(mk);
+	    
 	    Copy c1 = new Copy();
 	    c1.setFrom("D:\\Soft\\IDE\\VSCode\\VSCode_v1.9.9.zip");
 	    c1.setTo("D:\\TEMPPP\\VSCode.zip");
 	    c1.setShowProgresBar(true);
-	    doAction(c1);
+	    ret.add(c1);
 
 	    Copy c2 = new Copy();
 	    c2.setFrom("D:\\Soft\\IDE\\VSCode\\AlgoritmosAFondo_FULL_v2.7.27.zip");
 	    c2.setTo("D:\\TEMPPP\\FULL.zip");
 	    c2.setShowProgresBar(true);
-	    doAction(c2);
+	    ret.add(c2);
 
 	    Remove rm = new Remove();
 	    rm.setPath("D:\\vscode");
-	    doAction(rm);
+	    ret.add(rm);
 
 	    Unzip u1 = new Unzip();
 	    u1.setFrom("D:\\TEMPPP\\VSCode.zip");
 	    u1.setTo("D:\\");
 	    u1.setShowProgresBar(true);
-	    doAction(u1);
+	    ret.add(u1);
 
 	    Unzip u2 = new Unzip();
 	    u2.setFrom("D:\\TEMPPP\\FULL.zip");
 	    u2.setTo("D:\\vscode\\Workspace");
 	    u2.setShowProgresBar(true);
-	    doAction(u2);
+	    ret.add(u2);
 
 	    Exec ex = new Exec();
 	    ex.setCommand("D:\\vscode\\RunVSCode.bat");
-	    doAction(ex);
+	    ret.add(ex);
 
-	    return MyAction.SUCCESS;
+	    return ret;
 	}
 }
