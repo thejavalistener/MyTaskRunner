@@ -33,9 +33,9 @@ public class Exec extends MyAction
     }
 
     @Override
-    public String getDescription()
+    public String[] getDescription()
     {
-        return command;
+        return new String[]{command};
     }
 
     @Override

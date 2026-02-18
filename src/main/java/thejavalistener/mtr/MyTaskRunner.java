@@ -1,6 +1,8 @@
 package thejavalistener.mtr;
 
+import thejavalistener.fwkutils.awt.variuos.MyAwt;
 import thejavalistener.fwkutils.console.MyConsole;
+import thejavalistener.fwkutils.console.MyConsoles;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.MyJsonScriptImple;
 import thejavalistener.mtr.core.MyScript;
@@ -9,6 +11,8 @@ public class MyTaskRunner
 {
     public static void main(String[] args)
     {   
+    	MyAwt.setWindowsLookAndFeel();
+    	
         try
         {
 	    	// usage
@@ -22,20 +26,17 @@ public class MyTaskRunner
 	        
 	        // qué script voy a ejecutar
 	        String targetScript = args[0];
+
+	        MyConsole console = MyConsoles.getOnWindow("MyTaskRunner: "+targetScript);
+	        console.banner("MyTaskRunner");
 	        
 	        // si es json lo levanto dinámicamente, si es Java lo hago por reflection
             MyScript script = loadScript(targetScript);
-
-            
-            MyConsole console = MyConsole.singleton();
-        	console.openWindow("Demo");
-
             
             
             // ejecuto el script
             int returnValue  = script.run();
-            
-            console.print("Toque una tecla para finalizar").pressAnyKey();
+        
             System.exit(returnValue);
         }
         catch (Throwable t)

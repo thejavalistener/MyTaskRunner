@@ -14,14 +14,24 @@ public class MyJsonScriptImple extends MyScript
 {
 	private final ScriptJson sj;
 	private final Map<String,String> vars;
+	private String jsonFile;
+	
 
 	public MyJsonScriptImple(String jsonFile) throws Exception
 	{
 		this(Path.of(jsonFile));
 	}
+	
+	@Override
+	public String getScriptName()
+	{
+		return jsonFile;
+	}
 
 	public MyJsonScriptImple(Path jsonPath) throws Exception
 	{
+		this.jsonFile = jsonPath.getFileName().toString();
+		
 		Gson gson=new Gson();
 
 		try (Reader r=new FileReader(jsonPath.toFile()))

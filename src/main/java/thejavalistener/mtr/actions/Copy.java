@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
 import thejavalistener.mtr.core.ValidationContext;
 
 public class Copy extends MyAction
@@ -26,9 +25,9 @@ public class Copy extends MyAction
     }
 
     @Override
-    public String getDescription()
+    public String[] getDescription()
     {
-        return from + " to " + to;
+        return new String[]{from,"to "+to};
     }
 
     @Override

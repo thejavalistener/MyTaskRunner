@@ -37,9 +37,9 @@ public class Download extends MyAction
     }
 
     @Override
-    public String getDescription()
+    public String[] getDescription()
     {
-        return url + " to " + to;
+        return new String[]{url, "to " + to};
     }
 
     @Override

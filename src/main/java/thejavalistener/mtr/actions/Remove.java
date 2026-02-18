@@ -28,9 +28,9 @@ public class Remove extends MyAction
     }
 
     @Override
-    public String getDescription()
+    public String[] getDescription()
     {
-        return path;
+    	return new String[]{path};
     }
 
     @Override

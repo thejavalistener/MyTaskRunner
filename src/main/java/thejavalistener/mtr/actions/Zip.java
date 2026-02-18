@@ -36,9 +36,9 @@ public class Zip extends MyAction
     }
 
     @Override
-    public String getDescription()
+    public String[] getDescription()
     {
-        return from + " to " + to;
+    	return new String[]{from , "to " + to};
     }
 
     @Override

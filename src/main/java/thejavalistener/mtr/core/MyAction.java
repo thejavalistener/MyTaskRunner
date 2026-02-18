@@ -14,7 +14,7 @@ public abstract class MyAction
     protected final String[] args;
 
     public abstract String getVerb();
-    public abstract String getDescription();
+    public abstract String[] getDescription();
     public abstract String validate(ValidationContext ctx); // null = OK
     public abstract void execute(Progress pl) throws Exception;
 
