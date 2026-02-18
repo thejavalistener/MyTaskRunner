@@ -4,8 +4,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
 import thejavalistener.mtr.core.ValidationContext;
 
 public class MkDir extends MyAction
@@ -30,19 +30,18 @@ public class MkDir extends MyAction
     }
 
     @Override
-    public void execute(ProgressListener pl) throws Exception
+    public void execute(Progress pl) throws Exception
     {
         if (path == null || path.isBlank())
             throw new IllegalArgumentException("Path is null");
 
         Path dir = Paths.get(path);
 
-        if (pl != null) pl.onStart();
+        if (pl != null) pl.begin();
 
         Files.createDirectories(dir);
 
-        if (pl != null) pl.onProgress(100);
-        if (pl != null) pl.onFinish();
+        if (pl != null) pl.setPercent(100,"");
     }
     
     @Override

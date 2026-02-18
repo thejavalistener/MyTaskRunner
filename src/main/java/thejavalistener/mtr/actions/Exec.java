@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
 import thejavalistener.mtr.core.ValidationContext;
 
 public class Exec extends MyAction
@@ -39,7 +39,7 @@ public class Exec extends MyAction
     }
 
     @Override
-    public void execute(ProgressListener pl) throws Exception
+    public void execute(Progress pl) throws Exception
     {
         if (command == null || command.isBlank())
             throw new IllegalArgumentException("Empty command");
@@ -49,7 +49,7 @@ public class Exec extends MyAction
         boolean detached = options.contains(ExecOpt.DETACHED);
         boolean wait     = options.contains(ExecOpt.WAIT);
 
-        if (pl != null) pl.onStart();
+        if (pl != null) pl.begin();
 
         List<String> cmd = build(detached);
 
@@ -60,8 +60,7 @@ public class Exec extends MyAction
 
         if (!wait)
         {
-            if (pl != null) pl.onProgress(100);
-            if (pl != null) pl.onFinish();
+            if (pl != null) pl.setPercent(100,"");
             return;
         }
 
@@ -69,8 +68,7 @@ public class Exec extends MyAction
         if (exitCode != 0)
             throw new RuntimeException("Process exited with code: " + exitCode);
 
-        if (pl != null) pl.onProgress(100);
-        if (pl != null) pl.onFinish();
+        if (pl != null) pl.setPercent(100,"");
     }
 
     private EnumSet<ExecOpt> parseOpts(String s)

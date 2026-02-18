@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
 import thejavalistener.mtr.core.ValidationContext;
 
 public class Unzip extends MyAction
@@ -43,7 +43,7 @@ public class Unzip extends MyAction
     }
 
     @Override
-    public void execute(ProgressListener pl) throws Exception
+    public void execute(Progress pl) throws Exception
     {
         if (from == null || to == null)
             throw new IllegalArgumentException("From/To not set");
@@ -51,7 +51,7 @@ public class Unzip extends MyAction
         Path zipPath = Paths.get(from);
         Path destDir = Paths.get(to);
 
-        if (pl != null) pl.onStart();
+        if (pl != null) pl.begin();
 
         Files.createDirectories(destDir);
 
@@ -105,7 +105,7 @@ public class Unzip extends MyAction
 
                             if (pct != lastPct)
                             {
-                                pl.onProgress(pct);
+                                pl.setPercent(pct,"");
                                 lastPct = pct;
                             }
                         }
@@ -114,8 +114,7 @@ public class Unzip extends MyAction
             }
         }
 
-        if (pl != null) pl.onProgress(100);
-        if (pl != null) pl.onFinish();
+        if (pl != null) pl.setPercent(100,"");
     }
     
     @Override

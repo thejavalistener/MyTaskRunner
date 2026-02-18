@@ -4,15 +4,8 @@ public class ConsoleProgressBar implements ProgressListener
 {
     private static final int WIDTH = 20;
 
-    private final String prefix; // "Unzipping: a to b "
-
     private int lastPct = -1;
     private boolean started = false;
-
-    public ConsoleProgressBar(String verb, String description)
-    {
-        this.prefix = verb + ": " + description + " ";
-    }
 
     @Override
     public void onStart()
@@ -40,7 +33,6 @@ public class ConsoleProgressBar implements ProgressListener
     {
         if (!started) onStart();
         render(100, true);
-        System.out.println();
     }
 
     private void render(int percent, boolean ok)
@@ -48,14 +40,12 @@ public class ConsoleProgressBar implements ProgressListener
         int filled = (percent * WIDTH) / 100;
 
         StringBuilder sb = new StringBuilder();
-        sb.append("\r").append(prefix).append("[");
-
+        sb.append("\r[");
+        
         for (int i = 0; i < WIDTH; i++)
             sb.append(i < filled ? "#" : " ");
 
-        sb.append("]");
-
-        if (ok) sb.append(" OK");
+        sb.append("] ");
 
         System.out.print(sb.toString());
         System.out.flush();

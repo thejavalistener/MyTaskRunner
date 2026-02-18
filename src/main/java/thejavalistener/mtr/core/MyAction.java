@@ -1,5 +1,7 @@
 package thejavalistener.mtr.core;
 
+import thejavalistener.fwkutils.console.Progress;
+
 public abstract class MyAction
 {
     public static final int SUCCESS            = 0;
@@ -7,23 +9,23 @@ public abstract class MyAction
     public static final int IO_ERROR      = 2;
     public static final int NETWORK_ERROR = 3;
 
+    private boolean showProgressBar;
+	private boolean stopScriptOnError;
     protected final String[] args;
 
     public abstract String getVerb();
     public abstract String getDescription();
     public abstract String validate(ValidationContext ctx); // null = OK
+    public abstract void execute(Progress pl) throws Exception;
 
-	private boolean showProgresBar;
-	private boolean stopScriptOnError;
 	
-	
-    public boolean isShowProgresBar()
+    public boolean isShowProgressBar()
 	{
-		return showProgresBar;
+		return showProgressBar;
 	}
-	public void setShowProgresBar(boolean showProgresBar)
+	public void setShowProgressBar(boolean showProgressBar)
 	{
-		this.showProgresBar=showProgresBar;
+		this.showProgressBar=showProgressBar;
 	}
 	public boolean isStopScriptOnError()
 	{
@@ -38,7 +40,6 @@ public abstract class MyAction
         this.args = (args == null ? new String[0] : args);
     }
 
-    public abstract void execute(ProgressListener pl) throws Exception;
 
     protected final String arg(int i)
     {

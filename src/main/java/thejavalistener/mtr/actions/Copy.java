@@ -9,6 +9,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
+import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ProgressListener;
 import thejavalistener.mtr.core.ValidationContext;
@@ -31,7 +32,7 @@ public class Copy extends MyAction
     }
 
     @Override
-    public void execute(ProgressListener pl) throws Exception
+    public void execute(Progress pl) throws Exception
     {
     	Path pFrom = Paths.get(from);
     	Path pTo = Paths.get(to);
@@ -39,7 +40,7 @@ public class Copy extends MyAction
         if (!Files.exists(pFrom))
             throw new java.io.IOException("Source does not exist: " + from);
 
-        if (pl != null) pl.onStart();
+        if (pl != null) pl.begin();
 
         if (Files.isDirectory(pFrom))
         {
@@ -84,15 +85,14 @@ public class Copy extends MyAction
             copyFileWithProgress(pFrom, pTo, totalBytes, copiedBytes, pl);
         }
 
-        if (pl != null) pl.onProgress(100);
-        if (pl != null) pl.onFinish();
+        if (pl != null) pl.setPercent(100,"");
     }
 
     private void copyFileWithProgress(Path source,
                                       Path dest,
                                       long totalBytes,
                                       AtomicLong copiedBytes,
-                                      ProgressListener pl) throws Exception
+                                      Progress pl) throws Exception
     {
         try (InputStream in = Files.newInputStream(source);
              OutputStream out = Files.newOutputStream(dest,
@@ -118,7 +118,7 @@ public class Copy extends MyAction
 
                     if (pct != lastPct)
                     {
-                        pl.onProgress(pct);
+                        pl.setPercent(pct,"");
                         lastPct = pct;
                     }
                 }

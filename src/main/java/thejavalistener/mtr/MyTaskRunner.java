@@ -1,5 +1,6 @@
 package thejavalistener.mtr;
 
+import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.MyJsonScriptImple;
 import thejavalistener.mtr.core.MyScript;
@@ -7,32 +8,40 @@ import thejavalistener.mtr.core.MyScript;
 public class MyTaskRunner
 {
     public static void main(String[] args)
-    {
-        int rc = run(args);
-        System.exit(rc);
-    }
-
-    public static int run(String[] args)
-    {
-        if (args == null || args.length == 0)
-        {
-            System.out.println("Uso:");
-            System.out.println("  java thejavalistener.mtr.MyTaskRunner <ClaseScript>");
-            System.out.println("  java thejavalistener.mtr.MyTaskRunner <script.json>");
-            return MyAction.ERROR;
-        }
-
-        String target = args[0];
-
+    {   
         try
         {
-            MyScript script = loadScript(target);
-            return script.run();
+	    	// usage
+	        if (args == null || args.length == 0)
+	        {
+	            System.out.println("Usage:");
+	            System.out.println(" java thejavalistener.mtr.MyTaskRunner <script.json>");
+	            System.out.println(" java thejavalistener.mtr.MyTaskRunner <ScriptClass>");
+	            System.exit(MyAction.ERROR);
+	        }
+	        
+	        // qué script voy a ejecutar
+	        String targetScript = args[0];
+	        
+	        // si es json lo levanto dinámicamente, si es Java lo hago por reflection
+            MyScript script = loadScript(targetScript);
+
+            
+            MyConsole console = MyConsole.singleton();
+        	console.openWindow("Demo");
+
+            
+            
+            // ejecuto el script
+            int returnValue  = script.run();
+            
+            console.print("Toque una tecla para finalizar").pressAnyKey();
+            System.exit(returnValue);
         }
         catch (Throwable t)
         {
             t.printStackTrace();
-            return MyAction.ERROR;
+            System.exit(MyAction.ERROR);
         }
     }
 

@@ -8,8 +8,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
+import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
 import thejavalistener.mtr.core.ValidationContext;
 
 public class Remove extends MyAction
@@ -34,19 +34,18 @@ public class Remove extends MyAction
     }
 
     @Override
-    public void execute(ProgressListener pl) throws Exception
+    public void execute(Progress pl) throws Exception
     {
         if (path == null || path.isBlank())
             throw new IllegalArgumentException("Path not set");
 
         Path target = Paths.get(path);
 
-        if (pl != null) pl.onStart();
+        if (pl != null) pl.begin();
 
         if (!Files.exists(target))
         {
-            if (pl != null) pl.onProgress(100);
-            if (pl != null) pl.onFinish();
+            if (pl != null) pl.setPercent(100,"");
             return;
         }
 
@@ -55,8 +54,7 @@ public class Remove extends MyAction
         else
             Files.deleteIfExists(target);
 
-        if (pl != null) pl.onProgress(100);
-        if (pl != null) pl.onFinish();
+        if (pl != null) pl.setPercent(100,"");
     }
 
     private void deleteDir(Path dir) throws IOException

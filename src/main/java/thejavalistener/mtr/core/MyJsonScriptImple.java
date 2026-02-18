@@ -34,7 +34,7 @@ public class MyJsonScriptImple extends MyScript
 	}
 
 	@Override
-	public List<MyAction> script()
+	public List<MyAction> getScriptActions()
 	{
 		List<MyAction> ret = new ArrayList<>();
 		
@@ -157,14 +157,4 @@ public class MyJsonScriptImple extends MyScript
 		Map<String,String> vars;
 		List<Map<String,Object>> steps;
 	}
-
-	// static class Step
-	// {
-	// String action;
-	// String path;
-	// String from;
-	// String to;
-	// String command;
-	// Boolean progress;
-	// }
 }

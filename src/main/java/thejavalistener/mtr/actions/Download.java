@@ -11,8 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
+import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
 import thejavalistener.mtr.core.ValidationContext;
 
 public class Download extends MyAction
@@ -43,15 +43,16 @@ public class Download extends MyAction
     }
 
     @Override
-    public void execute(ProgressListener pl) throws Exception
+    public void execute(Progress pl) throws Exception
     {
         Path dest = Paths.get(to);
 
         if (dest.getParent() != null)
             Files.createDirectories(dest.getParent());
 
-        if (pl != null) pl.onStart();
 
+        
+        
         HttpClient client = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.ALWAYS)
                 .build();
@@ -72,6 +73,8 @@ public class Download extends MyAction
                 .firstValue("Content-Length")
                 .map(Long::parseLong)
                 .orElse(-1L);
+
+        if( pl!=null ) pl.begin();
 
         try (InputStream in = response.body();
              OutputStream out = Files.newOutputStream(dest,
@@ -97,15 +100,18 @@ public class Download extends MyAction
 
                     if (pct != lastPct)
                     {
-                        pl.onProgress(pct);
+                    	pl.setPercent(pct,"");
                         lastPct = pct;
                     }
                 }
             }
         }
 
-        if (pl != null) pl.onProgress(100);
-        if (pl != null) pl.onFinish();
+//        pl.setPercent(100,"");
+//        if (pl != null) pl.onProgress(100);
+//        if (pl != null) pl.onFinish();
+        
+        System.out.println(".,.,");
     }
     
     @Override

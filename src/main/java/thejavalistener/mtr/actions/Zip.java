@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
 import thejavalistener.mtr.core.ValidationContext;
 
 public class Zip extends MyAction
@@ -42,7 +42,7 @@ public class Zip extends MyAction
     }
 
     @Override
-    public void execute(ProgressListener pl) throws Exception
+    public void execute(Progress pl) throws Exception
     {
         if (from == null || to == null)
             throw new IllegalArgumentException("From/To not set");
@@ -50,7 +50,7 @@ public class Zip extends MyAction
         Path sourcePath = Paths.get(from);
         Path zipPath = Paths.get(to);
 
-        if (pl != null) pl.onStart();
+        if (pl != null) pl.begin();
 
         long totalBytes;
         try (Stream<Path> s = Files.walk(sourcePath))
@@ -114,7 +114,7 @@ public class Zip extends MyAction
 
                                     if (pct != lastPct[0])
                                     {
-                                        pl.onProgress(pct);
+                                        pl.setPercent(pct,"");
                                         lastPct[0] = pct;
                                     }
                                 }
@@ -131,8 +131,7 @@ public class Zip extends MyAction
             }
         }
 
-        if (pl != null) pl.onProgress(100);
-        if (pl != null) pl.onFinish();
+        if (pl != null) pl.setPercent(100,"");
     }
     
     @Override

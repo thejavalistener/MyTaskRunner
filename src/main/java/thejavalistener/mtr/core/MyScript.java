@@ -1,72 +1,94 @@
 
 package thejavalistener.mtr.core;
 
-import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import thejavalistener.fwkutils.console.MyConsole;
+import thejavalistener.fwkutils.console.Progress;
 
 public abstract class MyScript
 {
-	public abstract List<MyAction> script();
-
+	public static final int SUCCESS = 0;
+	public static final int ERROR = 1;
+	public abstract List<MyAction> getScriptActions();
+	
 	public int run()
 	{
 		try
 		{
-			List<MyAction> actions = script();
+			// obtengo la lista de acciones del script
+			List<MyAction> actions = getScriptActions();
 			
-			
+			// creo un FS ficticio para validar los parámetros
 			ValidationContext ctx = new ValidationContext();
-
 			
-			
-			// valido
+			// valido cada acción del script
 			for(int i=0; i<actions.size(); i++)
 			{
 				MyAction action = actions.get(i);
 				
+				// cada acción se valida a sí misma
 				String err = action.validate(ctx);
 				if( err!=null )
 				{
 					int nroPaso = i+1;
+					
+					// Paso 4. Remove: No existe el archivo o carpeta a remover 
 					String mssg = "Paso "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
 					throw new RuntimeException(mssg);
 				}
 			}
 
-			// ejecuto
+			// ejecuto cada acción del script
 			for(MyAction action:actions)
 			{
-				doAction(action);
+				_executeAction(action);
 			}
 			
-			return 0; // VER ESTO...
-			
+			return SUCCESS;
 		}
 		catch(Throwable t)
 		{
 			t.printStackTrace();
-			return MyAction.ERROR;
+			return ERROR;
 		}
 	}
 
-	/*
-	 * ===================== Helpers opcionales =====================
-	 */
-
-	protected void doAction(MyAction a)
+	private void _executeAction(MyAction a) throws Exception
 	{
+		MyConsole console = MyConsole.singleton();
+
 		try
 		{
-			ProgressListener pl=null;
+//			if( a instanceof Zip)
+//			{
+//				System.out.println("XX");
+//			}
+			
+			
+			// Copiando D:/temp/equis a C:/unDir/zeta
+//			System.out.print(a.getVerb() + ": " + a.getDescription()+" ");
 
-			if(a.isShowProgresBar()) pl=new ConsoleProgressBar(a.getVerb(),a.getDescription());
-
-			a.execute(pl);
+			console.print(a.getVerb()+": "+a.getDescription()+" ");
+			
+			
+			// si hay progress => [#####       ]
+			Progress p = null;
+			if(a.isShowProgressBar())
+			{
+				p = console.progressBar(20,100);
+				p.setUsingThread(false);
+			}
+			
+			// ejecuto
+			a.execute(p);
+			
+//			System.out.print("OK ");
+			console.println("OK ");
 		}
 		catch(Exception e)
 		{
+			System.out.print("ERROR");
 			if( a.isStopScriptOnError() )
 			{
 				throw new RuntimeException("Failed "+a.getClass().getSimpleName(),e);
@@ -76,6 +98,10 @@ public abstract class MyScript
 				System.out.println("Failed "+a.getClass().getSimpleName()+": "+e.getMessage());
 				e.printStackTrace();
 			}
-		}
+		}	
+		
+		System.out.println();
+		System.out.flush();
+
 	}
 }

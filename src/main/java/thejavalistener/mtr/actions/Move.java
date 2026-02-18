@@ -5,8 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ProgressListener;
 import thejavalistener.mtr.core.ValidationContext;
 
 public class Move extends MyAction
@@ -37,7 +37,7 @@ public class Move extends MyAction
     }
 
     @Override
-    public void execute(ProgressListener pl) throws Exception
+    public void execute(Progress pl) throws Exception
     {
         if (from == null || to == null)
             throw new IllegalArgumentException("From/To not set");
@@ -45,7 +45,7 @@ public class Move extends MyAction
         Path pFrom = Paths.get(from);
         Path pTo   = Paths.get(to);
 
-        if (pl != null) pl.onStart();
+        if (pl != null) pl.begin();
 
         if (!Files.exists(pFrom))
             throw new java.io.IOException("Source does not exist: " + from);
@@ -55,8 +55,7 @@ public class Move extends MyAction
 
         Files.move(pFrom, pTo, StandardCopyOption.REPLACE_EXISTING);
 
-        if (pl != null) pl.onProgress(100);
-        if (pl != null) pl.onFinish();
+        if (pl != null) pl.setPercent(100,"");
     }
     
     @Override
