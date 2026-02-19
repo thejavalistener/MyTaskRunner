@@ -92,9 +92,10 @@ public abstract class MyScript
 			// ejecuto
 			a.execute(p);
 			
+			if( p!=null ) p.finish();
+
 			console.println("[b][fg(BLUE)]OK[x][x] ");
 			
-			if( p!=null ) p.finish();
 		}
 		catch(Exception e)
 		{
@@ -110,10 +111,6 @@ public abstract class MyScript
 				e.printStackTrace();
 			}
 		}	
-		
-		System.out.println();
-		System.out.flush();
-
 	}
 	
 	private void _log(MyAction a)
