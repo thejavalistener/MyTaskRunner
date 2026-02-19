@@ -82,17 +82,17 @@ public abstract class MyScript
 			
 			// si hay progress => [#####       ]
 			Progress p = null;
-			if(a.isShowProgressBar())
+			if(a.isShowProgress())
 			{
-				p = console.progressBar(20,100);
-//				p = console.progressMeter(100);
+//				p = console.progressBar(20,100);
+				p = console.progressMeter(100);
 				p.setUsingThread(false);
 			}
 			
 			// ejecuto
 			a.execute(p);
 			
-			console.println("OK ");
+			console.println("[b][fg(BLUE)]OK[x][x] ");
 		}
 		catch(Exception e)
 		{
@@ -104,6 +104,7 @@ public abstract class MyScript
 			else
 			{
 				System.out.println("Failed "+a.getClass().getSimpleName()+": "+e.getMessage());
+				console.println("[b][fg(RED)]FAILED[x][x] ");
 				e.printStackTrace();
 			}
 		}	

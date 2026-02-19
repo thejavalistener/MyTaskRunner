@@ -190,7 +190,7 @@ public class Copy extends MyAction
 	        return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
 	    }
 
-	    if(!ctx.exists(pFrom))
+	    if(!ctx.exists(pFrom) && !Files.exists(pFrom))
 	    {
 	        return "no existe el origen (según script): " + from;
 	    }

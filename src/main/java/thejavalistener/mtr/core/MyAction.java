@@ -9,7 +9,7 @@ public abstract class MyAction
     public static final int IO_ERROR      = 2;
     public static final int NETWORK_ERROR = 3;
 
-    private boolean showProgressBar;
+    private boolean showProgress;
 	private boolean stopScriptOnError;
     protected final String[] args;
 
@@ -19,13 +19,13 @@ public abstract class MyAction
     public abstract void execute(Progress pl) throws Exception;
 
 	
-    public boolean isShowProgressBar()
+    public boolean isShowProgress()
 	{
-		return showProgressBar;
+		return showProgress;
 	}
-	public void setShowProgressBar(boolean showProgressBar)
+	public void setShowProgress(boolean showProgress)
 	{
-		this.showProgressBar=showProgressBar;
+		this.showProgress=showProgress;
 	}
 	public boolean isStopScriptOnError()
 	{
