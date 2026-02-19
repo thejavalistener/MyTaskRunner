@@ -49,8 +49,6 @@ public class Exec extends MyAction
         boolean detached = options.contains(ExecOpt.DETACHED);
         boolean wait     = options.contains(ExecOpt.WAIT);
 
-        if (pl != null) pl.begin();
-
         List<String> cmd = build(detached);
 
         ProcessBuilder pb = new ProcessBuilder(cmd);

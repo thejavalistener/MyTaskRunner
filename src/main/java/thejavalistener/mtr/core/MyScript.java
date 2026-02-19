@@ -1,4 +1,3 @@
-
 package thejavalistener.mtr.core;
 
 import java.util.List;
@@ -58,7 +57,9 @@ public abstract class MyScript
 			}
 			
 			
-            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").countdown(9);
+            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").countdown(20);
+            System.out.println(console.getTextPane().getText());
+            
 			return SUCCESS;
 		}
 		catch(Throwable t)
@@ -66,6 +67,7 @@ public abstract class MyScript
 			t.printStackTrace();
 	        MyConsole console = MyConsoles.get();
             console.print("[fg(YELLOW)]Returned value: [x][b]ERROR[x]. Closing in ").countdown(9);
+            System.out.println(console.getTextPane().getText());
 			return ERROR;
 		}
 	}
@@ -84,15 +86,15 @@ public abstract class MyScript
 			Progress p = null;
 			if(a.isShowProgress())
 			{
-//				p = console.progressBar(20,100);
 				p = console.progressMeter(100);
-				p.setUsingThread(false);
 			}
 			
 			// ejecuto
 			a.execute(p);
 			
 			console.println("[b][fg(BLUE)]OK[x][x] ");
+			
+			if( p!=null ) p.finish();
 		}
 		catch(Exception e)
 		{

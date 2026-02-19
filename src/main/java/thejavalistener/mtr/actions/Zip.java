@@ -50,8 +50,6 @@ public class Zip extends MyAction
         Path sourcePath = Paths.get(from);
         Path zipPath = Paths.get(to);
 
-        if (pl != null) pl.begin();
-
         long totalBytes;
         try (Stream<Path> s = Files.walk(sourcePath))
         {

@@ -41,8 +41,6 @@ public class Remove extends MyAction
 
         Path target = Paths.get(path);
 
-        if (pl != null) pl.begin();
-
         if (!Files.exists(target))
         {
             if (pl != null) pl.setPercent(100,"");

@@ -37,8 +37,6 @@ public class MkDir extends MyAction
 
         Path dir = Paths.get(path);
 
-        if (pl != null) pl.begin();
-
         Files.createDirectories(dir);
 
         if (pl != null) pl.setPercent(100,"");

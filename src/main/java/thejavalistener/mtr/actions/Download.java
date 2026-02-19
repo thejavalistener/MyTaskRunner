@@ -74,8 +74,6 @@ public class Download extends MyAction
                 .map(Long::parseLong)
                 .orElse(-1L);
 
-        if( pl!=null ) pl.begin();
-
         try (InputStream in = response.body();
              OutputStream out = Files.newOutputStream(dest,
                      StandardOpenOption.CREATE,
@@ -101,16 +99,13 @@ public class Download extends MyAction
                     if (pct != lastPct)
                     {
                     	pl.setPercent(pct,"");
+                    	
                         lastPct = pct;
                     }
                 }
             }
         }
 
-//        pl.setPercent(100,"");
-//        if (pl != null) pl.onProgress(100);
-//        if (pl != null) pl.onFinish();
-        
         System.out.println(".,.,");
     }
     

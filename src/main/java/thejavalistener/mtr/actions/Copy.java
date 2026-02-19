@@ -39,8 +39,6 @@ public class Copy extends MyAction
         if (!Files.exists(pFrom))
             throw new java.io.IOException("Source does not exist: " + from);
 
-        if (pl != null) pl.begin();
-
         if (Files.isDirectory(pFrom))
         {
             long totalBytes = calculateTotalBytes(pFrom);

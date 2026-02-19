@@ -51,8 +51,6 @@ public class Unzip extends MyAction
         Path zipPath = Paths.get(from);
         Path destDir = Paths.get(to);
 
-        if (pl != null) pl.begin();
-
         Files.createDirectories(destDir);
 
         try (ZipFile zipFile = new ZipFile(zipPath.toFile()))

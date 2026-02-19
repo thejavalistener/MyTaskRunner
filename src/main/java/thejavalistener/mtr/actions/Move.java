@@ -45,8 +45,6 @@ public class Move extends MyAction
         Path pFrom = Paths.get(from);
         Path pTo   = Paths.get(to);
 
-        if (pl != null) pl.begin();
-
         if (!Files.exists(pFrom))
             throw new java.io.IOException("Source does not exist: " + from);
 
