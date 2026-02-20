@@ -58,7 +58,7 @@ public abstract class MyScript
 				step++;
 			}
 			
-            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").countdown(100);
+            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").countdown(10);
             System.out.println(console.getTextPane().getText());
             
 			return SUCCESS;
