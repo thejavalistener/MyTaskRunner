@@ -1,5 +1,7 @@
 package thejavalistener.mtr;
 
+import java.awt.Color;
+
 import thejavalistener.fwkutils.awt.variuos.MyAwt;
 import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.fwkutils.console.MyConsoles;
@@ -28,7 +30,9 @@ public class MyTaskRunner
 	        String targetScript = args[0];
 
 	        MyConsole console = MyConsoles.getOnWindow("MyTaskRunner: "+targetScript);
+	        console.fg(Color.GRAY);
 	        console.banner("MyTaskRunner");
+	        console.x();
 	        
 	        // si es json lo levanto dinámicamente, si es Java lo hago por reflection
             MyScript script = loadScript(targetScript);

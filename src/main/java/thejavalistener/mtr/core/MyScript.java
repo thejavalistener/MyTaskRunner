@@ -48,15 +48,17 @@ public abstract class MyScript
 	        MyConsole console = MyConsoles.get();
 	        console.println("[fg(YELLOW)]Running: [x][b]"+getScriptName()+"[x]");
 	        
-
+	        int step = 1;
+	        
 			// ejecuto cada acción del script
 			for(MyAction action:actions)
 			{
+				console.print("[fg(CYAN)]Step: "+step+".[x] ");
 				_executeAction(action);
+				step++;
 			}
 			
-//            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").countdown(10);
-            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").pressAnyKey('P');
+            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").countdown(100);
             System.out.println(console.getTextPane().getText());
             
 			return SUCCESS;
@@ -84,7 +86,7 @@ public abstract class MyScript
 			a.execute();
 
 			// exito
-			console.println("[b][fg(BLUE)]OK[x][x] ");
+			console.println("[b][fg(GREEN)]OK[x][x] ");
 			
 		}
 		catch(Exception e)
