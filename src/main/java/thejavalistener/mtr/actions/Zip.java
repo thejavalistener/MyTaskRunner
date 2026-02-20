@@ -42,7 +42,7 @@ public class Zip extends MyAction
     }
 
     @Override
-    public void execute(Progress pl) throws Exception
+    protected void doAction(Progress pl) throws Exception
     {
         if (from == null || to == null)
             throw new IllegalArgumentException("From/To not set");

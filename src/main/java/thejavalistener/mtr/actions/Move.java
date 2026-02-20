@@ -37,7 +37,7 @@ public class Move extends MyAction
     }
 
     @Override
-    public void execute(Progress pl) throws Exception
+    protected void doAction(Progress p) throws Exception
     {
         if (from == null || to == null)
             throw new IllegalArgumentException("From/To not set");
@@ -53,7 +53,7 @@ public class Move extends MyAction
 
         Files.move(pFrom, pTo, StandardCopyOption.REPLACE_EXISTING);
 
-        if (pl != null) pl.setPercent(100,"");
+        if (p != null) p.setPercent(100,"");
     }
     
     @Override

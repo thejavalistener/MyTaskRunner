@@ -34,7 +34,7 @@ public class Remove extends MyAction
     }
 
     @Override
-    public void execute(Progress pl) throws Exception
+    protected void doAction(Progress p) throws Exception
     {
         if (path == null || path.isBlank())
             throw new IllegalArgumentException("Path not set");
@@ -43,7 +43,7 @@ public class Remove extends MyAction
 
         if (!Files.exists(target))
         {
-            if (pl != null) pl.setPercent(100,"");
+            if (p != null) p.setPercent(100,"");
             return;
         }
 
@@ -52,7 +52,7 @@ public class Remove extends MyAction
         else
             Files.deleteIfExists(target);
 
-        if (pl != null) pl.setPercent(100,"");
+        if (p != null) p.setPercent(100,"");
     }
 
     private void deleteDir(Path dir) throws IOException

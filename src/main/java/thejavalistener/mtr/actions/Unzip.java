@@ -43,7 +43,7 @@ public class Unzip extends MyAction
     }
 
     @Override
-    public void execute(Progress pl) throws Exception
+    protected void doAction(Progress p) throws Exception
     {
         if (from == null || to == null)
             throw new IllegalArgumentException("From/To not set");
@@ -97,13 +97,13 @@ public class Unzip extends MyAction
 
                         long current = extracted.addAndGet(n);
 
-                        if (pl != null && totalBytes > 0)
+                        if (p != null && totalBytes > 0)
                         {
                             int pct = (int)Math.min(100, (current * 100) / totalBytes);
 
                             if (pct != lastPct)
                             {
-                                pl.setPercent(pct,"");
+                                p.setPercent(pct,"");
                                 lastPct = pct;
                             }
                         }
@@ -112,7 +112,7 @@ public class Unzip extends MyAction
             }
         }
 
-        if (pl != null) pl.setPercent(100,"");
+        if (p != null) p.setPercent(100,"");
     }
     
     @Override

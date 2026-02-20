@@ -43,7 +43,7 @@ public class Download extends MyAction
     }
 
     @Override
-    public void execute(Progress pl) throws Exception
+    protected void doAction(Progress p) throws Exception
     {
         Path dest = Paths.get(to);
 
@@ -92,13 +92,13 @@ public class Download extends MyAction
                 out.write(buf, 0, n);
                 done += n;
 
-                if (pl != null && total > 0)
+                if (p != null && total > 0)
                 {
                     int pct = (int)Math.min(100, (done * 100) / total);
 
                     if (pct != lastPct)
                     {
-                    	pl.setPercent(pct,"");
+                    	p.setPercent(pct,"");
                     	
                         lastPct = pct;
                     }

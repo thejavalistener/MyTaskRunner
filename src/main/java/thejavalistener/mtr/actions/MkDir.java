@@ -30,7 +30,7 @@ public class MkDir extends MyAction
     }
 
     @Override
-    public void execute(Progress pl) throws Exception
+    protected void doAction(Progress p) throws Exception
     {
         if (path == null || path.isBlank())
             throw new IllegalArgumentException("Path is null");
@@ -39,7 +39,7 @@ public class MkDir extends MyAction
 
         Files.createDirectories(dir);
 
-        if (pl != null) pl.setPercent(100,"");
+        if (p != null) p.setPercent(100,"");
     }
     
     @Override

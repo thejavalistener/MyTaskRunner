@@ -78,29 +78,19 @@ public abstract class MyScript
 
 		try
 		{
-			// Copiando D:/temp/equis a C:/unDir/zeta
+			// presentación: Copiando D:/temp/equis a C:/unDir/zeta    	
+	    	_log(a);
+	    	
+			// ejecuto la acción
+			a.execute();
 
-			_log(a);
-			
-			// si hay progress => [#####       ]
-			Progress p = null;
-			if(a.isShowProgress())
-			{
-				p = console.progressMeter(100);
-//				p = console.progressBar(20,100);
-			}
-			
-			// ejecuto
-			a.execute(p);
-			
-			if( p!=null ) p.finish();
-
-			String space = p!=null?" ":"";
-			console.println(space+"[b][fg(BLUE)]OK[x][x] ");
+			// exito
+			console.println("[b][fg(BLUE)]OK[x][x] ");
 			
 		}
 		catch(Exception e)
 		{
+			// error (fatal o recuperable)
 			System.out.print("ERROR");
 			if( a.isStopScriptOnError() )
 			{
@@ -108,8 +98,8 @@ public abstract class MyScript
 			}
 			else
 			{
-				System.out.println("Failed "+a.getClass().getSimpleName()+": "+e.getMessage());
-				console.println("[b][fg(RED)]FAILED[x][x] ");
+				String errMssg = a.getClass().getSimpleName()+": "+e.getMessage();
+				console.println("[fg(RED)][b]FAILED[x]"+errMssg+"[x] ");
 				e.printStackTrace();
 			}
 		}	

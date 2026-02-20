@@ -1,5 +1,7 @@
 package thejavalistener.mtr.core;
 
+import thejavalistener.fwkutils.console.MyConsole;
+import thejavalistener.fwkutils.console.MyConsoles;
 import thejavalistener.fwkutils.console.Progress;
 
 public abstract class MyAction
@@ -16,8 +18,29 @@ public abstract class MyAction
     public abstract String getVerb();
     public abstract String[] getDescription();
     public abstract String validate(ValidationContext ctx); // null = OK
-    public abstract void execute(Progress pl) throws Exception;
+    protected abstract void doAction(Progress p) throws Exception;
 
+    public void execute() throws Exception
+    {
+    	MyConsole console = MyConsoles.get();
+    	
+		Progress p = null;
+		if(isShowProgress())
+		{
+			p = console.progressMeter(100);
+		}
+		
+		// ejecuto
+		doAction(p);
+		
+		if( p!=null ) p.finish();
+
+		// agrego un espacio si hubo progress
+		String space = p!=null?" ":"";
+		console.print(space);
+    }
+    
+    
 	
     public boolean isShowProgress()
 	{

@@ -31,7 +31,7 @@ public class Copy extends MyAction
     }
 
     @Override
-    public void execute(Progress pl) throws Exception
+    protected void doAction(Progress p) throws Exception
     {
     	Path pFrom = Paths.get(from);
     	Path pTo = Paths.get(to);
@@ -61,7 +61,7 @@ public class Copy extends MyAction
                             if (dest.getParent() != null)
                                 Files.createDirectories(dest.getParent());
 
-                            copyFileWithProgress(path, dest, totalBytes, copiedBytes, pl);
+                            copyFileWithProgress(path, dest, totalBytes, copiedBytes, p);
                         }
                     }
                     catch (Exception e)
@@ -79,10 +79,10 @@ public class Copy extends MyAction
             if (pTo.getParent() != null)
                 Files.createDirectories(pTo.getParent());
 
-            copyFileWithProgress(pFrom, pTo, totalBytes, copiedBytes, pl);
+            copyFileWithProgress(pFrom, pTo, totalBytes, copiedBytes, p);
         }
 
-        if (pl != null) pl.setPercent(100,"");
+        if (p != null) p.setPercent(100,"");
     }
 
     private void copyFileWithProgress(Path source,

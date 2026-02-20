@@ -39,7 +39,7 @@ public class Exec extends MyAction
     }
 
     @Override
-    public void execute(Progress pl) throws Exception
+    public void doAction(Progress pl) throws Exception
     {
         if (command == null || command.isBlank())
             throw new IllegalArgumentException("Empty command");
