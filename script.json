@@ -14,8 +14,8 @@
   "steps": [
     { "action": "MkDir", "path": "${TempDir}" },
 
-    { "action": "Copy", "from": "${SoftRepo}/${VSCodeZipFile}", "to": "${TempDir}/${VSCodeZipFile}", "showProgress": true },
-    { "action": "Copy", "from": "${SoftRepo}/${FullProjectZipFile}", "to": "${TempDir}/${FullProjectZipFile}", "showProgress": true },
+    { "action": "FileCopy", "from": "${SoftRepo}/${VSCodeZipFile}", "to": "${TempDir}/${VSCodeZipFile}", "showProgress": true },
+    { "action": "FileCopy", "from": "${SoftRepo}/${FullProjectZipFile}", "to": "${TempDir}/${FullProjectZipFile}", "showProgress": true },
 
     { "action": "Remove", "path": "${VSCodeHome}" },
 

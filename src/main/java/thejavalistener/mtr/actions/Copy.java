@@ -30,12 +30,67 @@ public class Copy extends MyAction
         return new String[]{from,"to "+to};
     }
 
+//    @Override
+//    protected void doAction(Progress p) throws Exception
+//    {
+//    	Path pFrom = Paths.get(from);
+//    	Path pTo = Paths.get(to);
+//    	
+//        if (!Files.exists(pFrom))
+//            throw new java.io.IOException("Source does not exist: " + from);
+//
+//        if (Files.isDirectory(pFrom))
+//        {
+//            long totalBytes = calculateTotalBytes(pFrom);
+//            AtomicLong copiedBytes = new AtomicLong(0);
+//
+//            try (Stream<Path> stream = Files.walk(pFrom))
+//            {
+//                stream.forEach(path ->
+//                {
+//                    try
+//                    {
+//                        Path dest = pTo.resolve(pFrom.relativize(path));
+//
+//                        if (Files.isDirectory(path))
+//                        {
+//                            Files.createDirectories(dest);
+//                        }
+//                        else
+//                        {
+//                            if (dest.getParent() != null)
+//                                Files.createDirectories(dest.getParent());
+//
+//                            copyFileWithProgress(path, dest, totalBytes, copiedBytes, p);
+//                        }
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        throw new RuntimeException(e);
+//                    }
+//                });
+//            }
+//        }
+//        else
+//        {
+//            long totalBytes = Files.size(pFrom);
+//            AtomicLong copiedBytes = new AtomicLong(0);
+//
+//            if (pTo.getParent() != null)
+//                Files.createDirectories(pTo.getParent());
+//
+//            copyFileWithProgress(pFrom, pTo, totalBytes, copiedBytes, p);
+//        }
+//
+//        if (p != null) p.setPercent(100,"");
+//    }
+
     @Override
     protected void doAction(Progress p) throws Exception
     {
-    	Path pFrom = Paths.get(from);
-    	Path pTo = Paths.get(to);
-    	
+        Path pFrom = Paths.get(from);
+        Path pTo   = Paths.get(to);
+
         if (!Files.exists(pFrom))
             throw new java.io.IOException("Source does not exist: " + from);
 
@@ -46,11 +101,12 @@ public class Copy extends MyAction
 
             try (Stream<Path> stream = Files.walk(pFrom))
             {
+            	final Path pToo = pTo;
                 stream.forEach(path ->
                 {
                     try
                     {
-                        Path dest = pTo.resolve(pFrom.relativize(path));
+                        Path dest = pToo.resolve(pFrom.relativize(path));
 
                         if (Files.isDirectory(path))
                         {
@@ -76,15 +132,21 @@ public class Copy extends MyAction
             long totalBytes = Files.size(pFrom);
             AtomicLong copiedBytes = new AtomicLong(0);
 
+            // 🔴 FIX: si el destino es un directorio, agregar nombre del archivo
+            if (Files.exists(pTo) && Files.isDirectory(pTo))
+            {
+                pTo = pTo.resolve(pFrom.getFileName());
+            }
+
             if (pTo.getParent() != null)
                 Files.createDirectories(pTo.getParent());
 
             copyFileWithProgress(pFrom, pTo, totalBytes, copiedBytes, p);
         }
 
-        if (p != null) p.setPercent(100,"");
+        if (p != null) p.setPercent(100, "");
     }
-
+    
     private void copyFileWithProgress(Path source,
                                       Path dest,
                                       long totalBytes,

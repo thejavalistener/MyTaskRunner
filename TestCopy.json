@@ -1,0 +1,12 @@
+{
+  "vars": {
+    "DirFrom": "D:/temp/dir1",
+    "DirTo":   "D:/temp/dir2"
+  },
+
+  "steps": [
+    { "action": "Copy", "from": "${DirFrom}", "to":"${DirTo}" },
+    { "action": "Copy", "from": "${DirFrom}/1_1.txt", "to":"${DirTo}/2_1.pepino" },
+    { "action": "Copy", "from": "${DirFrom}/dir11/dir111/dir1111/1111_1.txt", "to":"${DirTo}/" }
+  ]
+}
