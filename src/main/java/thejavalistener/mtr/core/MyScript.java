@@ -22,7 +22,6 @@ public abstract class MyScript
 	{
 		try
 		{
-			
 			// obtengo la lista de acciones del script
 			List<MyAction> actions = getScriptActions();
 
@@ -56,8 +55,8 @@ public abstract class MyScript
 				_executeAction(action);
 			}
 			
-			
-            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").countdown(20);
+//            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").countdown(10);
+            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").pressAnyKey('P');
             System.out.println(console.getTextPane().getText());
             
 			return SUCCESS;
@@ -66,7 +65,7 @@ public abstract class MyScript
 		{
 			t.printStackTrace();
 	        MyConsole console = MyConsoles.get();
-            console.print("[fg(YELLOW)]Returned value: [x][b]ERROR[x]. Closing in ").countdown(9);
+            console.print("[fg(YELLOW)]Returned value: [x][b]ERROR[x]. Closing in ").countdown(10);
             System.out.println(console.getTextPane().getText());
 			return ERROR;
 		}
