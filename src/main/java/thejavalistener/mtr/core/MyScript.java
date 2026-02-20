@@ -87,6 +87,7 @@ public abstract class MyScript
 			if(a.isShowProgress())
 			{
 				p = console.progressMeter(100);
+//				p = console.progressBar(20,100);
 			}
 			
 			// ejecuto
@@ -94,7 +95,8 @@ public abstract class MyScript
 			
 			if( p!=null ) p.finish();
 
-			console.println("[b][fg(BLUE)]OK[x][x] ");
+			String space = p!=null?" ":"";
+			console.println(space+"[b][fg(BLUE)]OK[x][x] ");
 			
 		}
 		catch(Exception e)
