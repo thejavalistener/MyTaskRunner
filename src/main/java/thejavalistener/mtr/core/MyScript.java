@@ -6,6 +6,7 @@ import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.fwkutils.console.MyConsoles;
 import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.fwkutils.string.MyString;
+import thejavalistener.fwkutils.various.MyException;
 
 public abstract class MyScript
 {
@@ -20,8 +21,13 @@ public abstract class MyScript
 	
 	public int run()
 	{
+        MyConsole console = MyConsoles.get();
+		
 		try
 		{
+			// comienza script
+	        console.println("[fg(YELLOW)]Running: [x][b]"+getScriptName()+"[x]");
+
 			// obtengo la lista de acciones del script
 			List<MyAction> actions = getScriptActions();
 
@@ -44,10 +50,7 @@ public abstract class MyScript
 					throw new RuntimeException(mssg);
 				}
 			}
-			
-	        MyConsole console = MyConsoles.get();
-	        console.println("[fg(YELLOW)]Running: [x][b]"+getScriptName()+"[x]");
-	        
+				        
 	        int step = 1;
 	        
 			// ejecuto cada acción del script
@@ -58,17 +61,24 @@ public abstract class MyScript
 				step++;
 			}
 			
-            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. Closing in ").countdown(10);
+			
+			
+			// finaliza script OK
+            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. ");
             System.out.println(console.getTextPane().getText());
-            
+
+            console.print("Closing in ").countdown(10);
 			return SUCCESS;
 		}
-		catch(Throwable t)
+		catch(Exception e)
 		{
-			t.printStackTrace();
-	        MyConsole console = MyConsoles.get();
-            console.print("[fg(YELLOW)]Returned value: [x][b]ERROR[x]. Closing in ").countdown(10);
+	        // finaliza script ERROR
+			String err = MyException.stackTraceToString(e);
+            console.println("[fg(RED)]"+err+"[x]");
+            console.print("[fg(YELLOW)]Returned value: [x][fg(RED)][b]ERROR[x][x]. ");
             System.out.println(console.getTextPane().getText());
+
+            console.print("Closing in ").countdown(10);
 			return ERROR;
 		}
 	}
@@ -90,18 +100,17 @@ public abstract class MyScript
 			
 		}
 		catch(Exception e)
-		{
+		{				
 			// error (fatal o recuperable)
-			System.out.print("ERROR");
+			console.println("[fg(RED)][b]FAILED:[x] "+e.getMessage()+"[x] ");
+			
+			// stacktrace
+			String stackTrace = MyException.stackTraceToString(e);
+			console.println("[fg(RED)]"+stackTrace+"[x]");
+
 			if( a.isStopScriptOnError() )
 			{
-				throw new RuntimeException("Failed "+a.getClass().getSimpleName(),e);
-			}
-			else
-			{
-				String errMssg = a.getClass().getSimpleName()+": "+e.getMessage();
-				console.println("[fg(RED)][b]FAILED[x]"+errMssg+"[x] ");
-				e.printStackTrace();
+				 throw new IllegalStateException(e);
 			}
 		}	
 	}

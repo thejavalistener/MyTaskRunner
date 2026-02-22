@@ -41,97 +41,6 @@ public class Zip extends MyAction
     	return new String[]{from , "to " + to};
     }
 
-//    @Override
-//    protected void doAction(Progress pl) throws Exception
-//    {
-//        if (from == null || to == null)
-//            throw new IllegalArgumentException("From/To not set");
-//
-//        Path sourcePath = Paths.get(from);
-//        Path zipPath = Paths.get(to);
-//
-//        long totalBytes;
-//        try (Stream<Path> s = Files.walk(sourcePath))
-//        {
-//            totalBytes = s
-//                    .filter(Files::isRegularFile)
-//                    .mapToLong(p -> {
-//                        try { return Files.size(p); }
-//                        catch (Exception e) { return 0L; }
-//                    })
-//                    .sum();
-//        }
-//
-//        AtomicLong processed = new AtomicLong(0);
-//        int[] lastPct = { -1 };
-//
-//        if (zipPath.getParent() != null)
-//            Files.createDirectories(zipPath.getParent());
-//
-//        try (ZipOutputStream zos = new ZipOutputStream(
-//                Files.newOutputStream(zipPath,
-//                        StandardOpenOption.CREATE,
-//                        StandardOpenOption.TRUNCATE_EXISTING,
-//                        StandardOpenOption.WRITE)))
-//        {
-//            try (Stream<Path> paths = Files.walk(sourcePath))
-//            {
-//                paths.forEach(path -> {
-//                    try
-//                    {
-//                        Path rel = sourcePath.relativize(path);
-//
-//                        if (Files.isDirectory(path))
-//                        {
-//                            if (!rel.toString().isEmpty())
-//                            {
-//                                zos.putNextEntry(new ZipEntry(rel.toString() + "/"));
-//                                zos.closeEntry();
-//                            }
-//                            return;
-//                        }
-//
-//                        zos.putNextEntry(new ZipEntry(rel.toString()));
-//
-//                        try (InputStream in = Files.newInputStream(path))
-//                        {
-//                            byte[] buffer = new byte[64 * 1024];
-//                            int n;
-//
-//                            while ((n = in.read(buffer)) >= 0)
-//                            {
-//                                if (n == 0) continue;
-//
-//                                zos.write(buffer, 0, n);
-//
-//                                long current = processed.addAndGet(n);
-//
-//                                if (pl != null && totalBytes > 0)
-//                                {
-//                                    int pct = (int)Math.min(100, (current * 100) / totalBytes);
-//
-//                                    if (pct != lastPct[0])
-//                                    {
-//                                        pl.setPercent(pct,"");
-//                                        lastPct[0] = pct;
-//                                    }
-//                                }
-//                            }
-//                        }
-//
-//                        zos.closeEntry();
-//                    }
-//                    catch (Exception e)
-//                    {
-//                        throw new RuntimeException(e);
-//                    }
-//                });
-//            }
-//        }
-//
-//        if (pl != null) pl.setPercent(100,"");
-//    }
-
     @Override
     protected void doAction(Progress pl) throws Exception
     {
@@ -288,20 +197,25 @@ public class Zip extends MyAction
             return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
         }
 
-        if(!ctx.exists(sourcePath))
+        if(!ctx.exists(sourcePath) && !java.nio.file.Files.exists(sourcePath))
         {
-            return "no existe el origen (según script): " + from;
+            return "no existe el origen: " + from;
         }
 
+        if(!ctx.isDirectory(sourcePath) && !java.nio.file.Files.isDirectory(sourcePath))
+        {
+            return "el origen no es un directorio: " + from;
+        }
+        
         if(!ctx.isDirectory(sourcePath))
         {
             return "el origen no es un directorio: " + from;
         }
 
-        if(ctx.exists(zipPath))
-        {
-            return "el destino ya fue creado previamente en el script: " + to;
-        }
+//        if(ctx.exists(zipPath))
+//        {
+//            return "el destino ya fue creado previamente en el script: " + to;
+//        }
 
         ctx.addFile(zipPath);
 

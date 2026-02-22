@@ -1,13 +1,16 @@
 package thejavalistener.mtr.core;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ValidationContext
+public class ValidationContextBKP
 {
-    public enum Type { FILE, DIRECTORY }
+    public enum Type
+    {
+        FILE,
+        DIRECTORY
+    }
 
     public static class Entry
     {
@@ -25,40 +28,27 @@ public class ValidationContext
 
     public boolean exists(Path p)
     {
-    	return exists(p,true);
-    }
-
-    public boolean exists(Path p, boolean alsoVerifyInFS)
-    {
-        if (entries.containsKey(p)) return true;
-        if (alsoVerifyInFS) return Files.exists(p);
-        return false;
+        return entries.containsKey(p);
     }
 
     public boolean isDirectory(Path p)
     {
-    	return isDirectory(p,true);
-    }
-
-    public boolean isDirectory(Path p, boolean alsoVerifyInFS)
-    {
         Entry e = entries.get(p);
-        if (e != null) return e.type == Type.DIRECTORY;
-        if (alsoVerifyInFS) return Files.isDirectory(p);
-        return false;
+        if(e == null)
+        {
+            return false;
+        }
+        return e.type == Type.DIRECTORY;
     }
 
     public boolean isFile(Path p)
     {
-    	return isFile(p,true);
-    }
-    
-    public boolean isFile(Path p, boolean alsoVerifyInFS)
-    {
         Entry e = entries.get(p);
-        if (e != null) return e.type == Type.FILE;
-        if (alsoVerifyInFS) return Files.isRegularFile(p);
-        return false;
+        if(e == null)
+        {
+            return false;
+        }
+        return e.type == Type.FILE;
     }
 
     public void addDirectory(Path p)
@@ -70,9 +60,10 @@ public class ValidationContext
     {
         entries.put(p, new Entry(p, Type.FILE));
     }
-
+    
     public void remove(Path p)
     {
         entries.remove(p);
     }
+
 }

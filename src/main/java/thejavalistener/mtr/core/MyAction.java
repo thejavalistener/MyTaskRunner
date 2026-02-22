@@ -11,8 +11,8 @@ public abstract class MyAction
     public static final int IO_ERROR      = 2;
     public static final int NETWORK_ERROR = 3;
 
-    private boolean showProgress;
-	private boolean stopScriptOnError;
+    private boolean showProgress = false;
+	private boolean stopScriptOnError = true;
     protected final String[] args;
 
     public abstract String getVerb();

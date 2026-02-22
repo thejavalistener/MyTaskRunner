@@ -3,12 +3,11 @@
     "Drive": "D:",
     "BaseDir": "${Drive}/temp/DemoScript",
     "DownloadDir": "${BaseDir}/download",
-    "ZipFile": "${BaseDir}/sample.zip",
+    "ZipFile": "${BaseDir}/sample_${now:yyyyMMdd-HHmm}.zip",
     "UnzipDir": "${BaseDir}/unzipped"
   },
 
   "steps": [
-
     { "action": "MkDir", "path": "${BaseDir}" },
     { "action": "MkDir", "path": "${DownloadDir}" },
 

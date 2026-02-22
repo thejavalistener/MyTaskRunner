@@ -6,18 +6,19 @@
     "SoftRepo": "D:/Soft/IDE/VSCode",
     "VSCodeZipFile": "VSCode_v1.9.9.zip",
     "FullProjectZipFile": "AlgoritmosAFondo_FULL_v2.7.27.zip",
-
     "VSCodeHome": "${Drive}/vscode",
-    "VSCodeWorkspace": "${VSCodeHome}/Workspace"
+    "VSCodeWorkspace": "${VSCodeHome}/Workspace",
+    "BackupWorkspaceFileName":"workspaceBackup_${now:yyyyMMdd-HHmm}.zip"
   },
 
-  "steps": [
+  "steps": [    
+    { "action": "Zip", "from": "${VSCodeWorkspace}","to":"${BackupWorkspaceFileName}" },
     { "action": "MkDir", "path": "${TempDir}" },
 
-    { "action": "FileCopy", "from": "${SoftRepo}/${VSCodeZipFile}", "to": "${TempDir}/${VSCodeZipFile}", "showProgress": true },
-    { "action": "FileCopy", "from": "${SoftRepo}/${FullProjectZipFile}", "to": "${TempDir}/${FullProjectZipFile}", "showProgress": true },
+    { "action": "Copy", "from": "${SoftRepo}/${VSCodeZipFile}", "to": "${TempDir}/${VSCodeZipFile}", "showProgress": true },
+    { "action": "Copy", "from": "${SoftRepo}/${FullProjectZipFile}", "to": "${TempDir}/${FullProjectZipFile}", "showProgress": true },
 
-    { "action": "Remove", "path": "${VSCodeHome}" },
+    { "action": "Remove", "path": "${VSCodeHome}","stopScriptOnError":true },
 
     { "action": "Unzip", "from": "${TempDir}/${VSCodeZipFile}", "to": "${Drive}/", "showProgress": true },
     { "action": "Unzip", "from": "${TempDir}/${FullProjectZipFile}", "to": "${VSCodeWorkspace}", "showProgress": true },
