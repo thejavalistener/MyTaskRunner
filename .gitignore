@@ -19,3 +19,6 @@ Thumbs.db
 .classpath
 .project
 .settings/
+
+#App
+*.zip
