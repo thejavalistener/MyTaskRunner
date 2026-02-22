@@ -1,291 +1,197 @@
 package thejavalistener.mtr.core;
 
+import com.google.gson.Gson;
+import thejavalistener.mtr.expr.ExpressionEngine;
+import thejavalistener.mtr.expr.ns.SysNamespaceHandler;
+import thejavalistener.mtr.expr.ns.TimeNamespaceHandler;
+import thejavalistener.mtr.expr.ns.VarsNamespaceHandler;
+
 import java.io.FileReader;
 import java.io.Reader;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.google.gson.Gson;
+import java.util.*;
 
 public class MyJsonScriptImple extends MyScript
 {
-	private final ScriptJson sj;
-	private final Map<String,String> vars;
-	private String jsonFile;
-	
+    private final ScriptJson sj;
+    private final Map<String,String> vars;
+    private final String jsonFile;
 
-	public MyJsonScriptImple(String jsonFile) throws Exception
-	{
-		this(Path.of(jsonFile));
-	}
-	
-	@Override
-	public String getScriptName()
-	{
-		return jsonFile;
-	}
+    private final ExpressionEngine engine;
 
-	public MyJsonScriptImple(Path jsonPath) throws Exception
-	{
-		this.jsonFile = jsonPath.getFileName().toString();
-		
-		Gson gson=new Gson();
+    public MyJsonScriptImple(String jsonFile) throws Exception
+    {
+        this(Path.of(jsonFile));
+    }
 
-		try (Reader r=new FileReader(jsonPath.toFile()))
+    @Override
+    public String getScriptName()
+    {
+        return jsonFile;
+    }
+
+    public MyJsonScriptImple(Path jsonPath) throws Exception
+    {
+        this.jsonFile = jsonPath.getFileName().toString();
+
+        Gson gson = new Gson();
+
+        try (Reader r = new FileReader(jsonPath.toFile()))
+        {
+            this.sj = gson.fromJson(r, ScriptJson.class);
+        }
+
+        this.vars = new HashMap<>();
+        if (sj != null && sj.vars != null)
+            this.vars.putAll(sj.vars);
+
+        this.engine = new ExpressionEngine()
+                .register(new SysNamespaceHandler())
+                .register(new TimeNamespaceHandler())
+                .register(new VarsNamespaceHandler(this.vars));
+    }
+
+    @Override
+    public List<MyAction> getScriptActions()
+    {
+        List<MyAction> ret = new ArrayList<>();
+
+        if (sj == null || sj.steps == null)
+            return ret;
+
+        for (Map<String,Object> st : sj.steps)
+        {
+            try
+            {
+                String actionName = engine.resolve((String) st.get("action"));
+
+                Class<?> clazz =
+                        Class.forName("thejavalistener.mtr.actions." + actionName);
+
+                MyAction action =
+                        (MyAction) clazz.getDeclaredConstructor().newInstance();
+
+                for (var entry : st.entrySet())
+                {
+                    String name = entry.getKey();
+                    if ("action".equals(name)) continue;
+
+                    Object raw = entry.getValue();
+                    if (raw == null) continue;
+
+                    Object value = raw;
+
+                    if (raw instanceof String s)
+                        value = engine.resolve(s);
+
+                    String setter =
+                            "set" + Character.toUpperCase(name.charAt(0))
+                                    + name.substring(1);
+
+                    var m = findSetter(action.getClass(), setter, value);
+
+                    if (m != null)
+                        m.invoke(action, value);
+                }
+
+                ret.add(action);
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException(
+                        "Error ejecutando acción: " + st.get("action"), e);
+            }
+        }
+
+        return ret;
+    }
+
+    /*
+     * ===================== Reflection helper =====================
+     */
+
+    private static java.lang.reflect.Method findSetter(
+            Class<?> clazz, String name, Object value)
+    {
+        for (var m : clazz.getMethods())
+        {
+            if (!m.getName().equals(name)) continue;
+            if (m.getParameterCount() != 1) continue;
+
+            Class<?> pt = m.getParameterTypes()[0];
+
+            if (value == null) return m;
+            if (pt.isAssignableFrom(value.getClass())) return m;
+
+            if (pt == boolean.class && value instanceof Boolean) return m;
+            if (pt == int.class && value instanceof Integer) return m;
+            if (pt == long.class && value instanceof Long) return m;
+        }
+        return null;
+    }
+    
+    public void validateActions() throws Exception
+    {
+		// creo un FS ficticio para validar los parámetros
+		ValidationContext ctx = new ValidationContext();
+
+    	List<MyAction> actions = getScriptActions();
+		for(int i=0; i<actions.size(); i++)
 		{
-			this.sj=gson.fromJson(r,ScriptJson.class);
-		}
-
-		this.vars=new HashMap<>();
-		if(sj!=null&&sj.vars!=null) this.vars.putAll(sj.vars);
-	}
-
-	@Override
-	public List<MyAction> getScriptActions()
-	{
-		List<MyAction> ret = new ArrayList<>();
-		
-		if(sj==null||sj.steps==null) return ret;
-
-		
-		// for(Step st:sj.steps)
-		for(Map<String,Object> st:sj.steps)
-		{
-			try
+			MyAction action = actions.get(i);
+			
+			// cada acción se valida a sí misma
+			String err = action.validate(ctx);
+			if( err!=null )
 			{
-				// String actionName=resolve(st.action,vars);
-				String actionName=resolve((String)st.get("action"),vars);
-
-				Class<?> clazz=Class.forName("thejavalistener.mtr.actions."+actionName);
-
-				MyAction action=(MyAction)clazz.getDeclaredConstructor().newInstance();
-
-				// ====== Mapeo automático de propiedades ======
-//				for(var f:st.getClass().getDeclaredFields())
-//				{
-//					f.setAccessible(true);
-//
-//					String name=f.getName();
-//					if("action".equals(name)) continue;
-//
-//					Object raw=f.get(st);
-//					if(raw==null) continue;
-//
-//					Object value=raw;
-//
-//					if(raw instanceof String s) value=resolve(s,vars);
-//
-//					String setter="set"+Character.toUpperCase(name.charAt(0))+name.substring(1);
-//
-//					var m=findSetter(action.getClass(),setter,value);
-//					if(m!=null) m.invoke(action,value);
-//				}
-
-				for (var entry : st.entrySet())
-				{
-				    String name = entry.getKey();
-				    if ("action".equals(name)) continue;
-
-				    Object raw = entry.getValue();
-				    if (raw == null) continue;
-
-				    Object value = raw;
-
-				    if (raw instanceof String s)
-				        value = resolve(s, vars);
-
-				    String setter = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
-
-				    var m = findSetter(action.getClass(), setter, value);
-				    if (m != null)
-				        m.invoke(action, value);
-				}
-
+				int nroPaso = i+1;
 				
-				
-				ret.add(action);
-			}
-			catch(Exception e)
-			{
-				throw new RuntimeException("Error ejecutando acción: "+st.get("action"),e);
+				// Paso 4. Remove: No existe el archivo o carpeta a remover 
+				String mssg = "Step "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
+				throw new RuntimeException(mssg);
 			}
 		}
+    	
+    }
 
-		return ret;
-	}
+    
+    public void validateSyntax() throws Exception
+    {
+        if (sj == null)
+            return;
 
-	/*
-	 * ===================== Reflection helper =====================
-	 */
+        // Validar vars
+        if (sj.vars != null)
+        {
+            for (var e : sj.vars.entrySet())
+            {
+                String value = e.getValue();
+                if (value != null)
+                    engine.resolve(value);
+            }
+        }
 
-	private static java.lang.reflect.Method findSetter(Class<?> clazz, String name, Object value)
-	{
-		for(var m:clazz.getMethods())
-		{
-			if(!m.getName().equals(name)) continue;
-			if(m.getParameterCount()!=1) continue;
+        // Validar steps
+        if (sj.steps != null)
+        {
+            for (Map<String,Object> step : sj.steps)
+            {
+                for (var entry : step.entrySet())
+                {
+                    Object raw = entry.getValue();
 
-			Class<?> pt=m.getParameterTypes()[0];
+                    if (raw instanceof String s)
+                    {
+                        engine.resolve(s);
+                    }
+                }
+            }
+        }
+    }    
 
-			if(value==null) return m;
-			if(pt.isAssignableFrom(value.getClass())) return m;
-
-			if(pt==boolean.class&&value instanceof Boolean) return m;
-			if(pt==int.class&&value instanceof Integer) return m;
-			if(pt==long.class&&value instanceof Long) return m;
-		}
-		return null;
-	}
-
-	/*
-	 * ===================== Variable resolution =====================
-	 */
-
-//	private static String resolve(String s, Map<String,String> vars)
-//	{
-//		if(s==null) return null;
-//
-//		for(int i=0; i<10; i++)
-//		{
-//			String before=s;
-//			for(var e:vars.entrySet())
-//				s=s.replace("${"+e.getKey()+"}",e.getValue());
-//			if(s.equals(before)) break;
-//		}
-//		return s;
-//	}
-
-//	private static String resolve(String s, Map<String,String> vars)
-//	{
-//	    if (s == null) return null;
-//
-//	    for (int pass = 0; pass < 10; pass++)
-//	    {
-//	        String before = s;
-//
-//	        // 1) vars: ${BaseDir}, ${ZipFile}, etc.
-//	        for (var e : vars.entrySet())
-//	            s = s.replace("${" + e.getKey() + "}", e.getValue());
-//
-//	        // 2) now: ${now:yyyyMMdd_HHmm}
-//	        s = resolveNow(s);
-//
-//	        if (s.equals(before)) break;
-//	    }
-//
-//	    return s;
-//	}
-
-//	private static String resolveNow(String s)
-//	{
-//	    while (true)
-//	    {
-//	        int i = s.indexOf("${now:");
-//	        if (i < 0) break;
-//
-//	        int j = s.indexOf("}", i);
-//	        if (j < 0) break;
-//
-//	        String pattern = s.substring(i + 6, j);
-//	        String formatted = java.time.LocalDateTime.now()
-//	                .format(java.time.format.DateTimeFormatter.ofPattern(pattern));
-//
-//	        s = s.substring(0, i) + formatted + s.substring(j + 1);
-//	    }
-//	    return s;
-//	}	
-	
-//	private static String resolveSys(String s)
-//	{
-//	    while (true)
-//	    {
-//	        int i = s.indexOf("${sys:");
-//	        if (i < 0) break;
-//
-//	        int j = s.indexOf("}", i);
-//	        if (j < 0) break;
-//
-//	        String key = s.substring(i + 6, j);
-//
-//	        String val = System.getProperty(key, "");
-//	        val = val.replace("\\", "/");
-//
-//	        s = s.substring(0, i) + val + s.substring(j + 1);
-//	    }
-//	    return s;
-//	}	
-	
-	/*
-	 * ===================== POJOs JSON =====================
-	 */
-
-	
-	private static String resolve(String s, Map<String,String> vars)
-	{
-	    if (s == null) return null;
-
-	    for (int pass = 0; pass < 10; pass++)
-	    {
-	        String before = s;
-
-	        s = resolveSys(s);
-	        s = resolveNow(s);
-
-	        for (var e : vars.entrySet())
-	            s = s.replace("${" + e.getKey() + "}", e.getValue());
-
-	        if (s.equals(before)) break;
-	    }
-
-	    return s;
-	}
-
-	private static String resolveSys(String s)
-	{
-	    while (true)
-	    {
-	        int i = s.indexOf("${sys:");
-	        if (i < 0) break;
-
-	        int j = s.indexOf("}", i);
-	        if (j < 0) break;
-
-	        String key = s.substring(i + 6, j);
-
-	        String val = System.getProperty(key, "");
-	        val = val.replace("\\", "/");
-
-	        s = s.substring(0, i) + val + s.substring(j + 1);
-	    }
-	    return s;
-	}
-
-	private static String resolveNow(String s)
-	{
-	    while (true)
-	    {
-	        int i = s.indexOf("${now:");
-	        if (i < 0) break;
-
-	        int j = s.indexOf("}", i);
-	        if (j < 0) break;
-
-	        String pattern = s.substring(i + 6, j);
-
-	        String formatted = java.time.LocalDateTime.now()
-	                .format(java.time.format.DateTimeFormatter.ofPattern(pattern));
-
-	        s = s.substring(0, i) + formatted + s.substring(j + 1);
-	    }
-	    return s;
-	}	
-	
-	static class ScriptJson
-	{
-		Map<String,String> vars;
-		List<Map<String,Object>> steps;
-	}
+    static class ScriptJson
+    {
+        Map<String,String> vars;
+        List<Map<String,Object>> steps;
+    }
 }

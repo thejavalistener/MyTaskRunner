@@ -1,0 +1,192 @@
+//package thejavalistener.mtr.core;
+//
+//import java.io.FileReader;
+//import java.io.Reader;
+//import java.nio.file.Path;
+//import java.util.ArrayList;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
+//
+//import com.google.gson.Gson;
+//
+//public class MyJsonScriptImpleBKP extends MyScript
+//{
+//	private final ScriptJson sj;
+//	private final Map<String,String> vars;
+//	private String jsonFile;
+//	
+//
+//	public MyJsonScriptImpleBKP(String jsonFile) throws Exception
+//	{
+//		this(Path.of(jsonFile));
+//	}
+//	
+//	@Override
+//	public String getScriptName()
+//	{
+//		return jsonFile;
+//	}
+//
+//	public MyJsonScriptImpleBKP(Path jsonPath) throws Exception
+//	{
+//		this.jsonFile = jsonPath.getFileName().toString();
+//		
+//		Gson gson=new Gson();
+//
+//		try (Reader r=new FileReader(jsonPath.toFile()))
+//		{
+//			this.sj=gson.fromJson(r,ScriptJson.class);
+//		}
+//
+//		this.vars=new HashMap<>();
+//		if(sj!=null&&sj.vars!=null) this.vars.putAll(sj.vars);
+//	}
+//
+//	@Override
+//	public List<MyAction> getScriptActions()
+//	{
+//		List<MyAction> ret = new ArrayList<>();
+//		
+//		if(sj==null||sj.steps==null) return ret;
+//
+//		
+//		// for(Step st:sj.steps)
+//		for(Map<String,Object> st:sj.steps)
+//		{
+//			try
+//			{
+//				// String actionName=resolve(st.action,vars);
+//				String actionName=resolve((String)st.get("action"),vars);
+//
+//				Class<?> clazz=Class.forName("thejavalistener.mtr.actions."+actionName);
+//
+//				MyAction action=(MyAction)clazz.getDeclaredConstructor().newInstance();
+//
+//				for (var entry : st.entrySet())
+//				{
+//				    String name = entry.getKey();
+//				    if ("action".equals(name)) continue;
+//
+//				    Object raw = entry.getValue();
+//				    if (raw == null) continue;
+//
+//				    Object value = raw;
+//
+//				    if (raw instanceof String s)
+//				        value = resolve(s, vars);
+//
+//				    String setter = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+//
+//				    var m = findSetter(action.getClass(), setter, value);
+//				    if (m != null)
+//				        m.invoke(action, value);
+//				}
+//
+//				
+//				
+//				ret.add(action);
+//			}
+//			catch(Exception e)
+//			{
+//				throw new RuntimeException("Error ejecutando acción: "+st.get("action"),e);
+//			}
+//		}
+//
+//		return ret;
+//	}
+//
+//	/*
+//	 * ===================== Reflection helper =====================
+//	 */
+//
+//	private static java.lang.reflect.Method findSetter(Class<?> clazz, String name, Object value)
+//	{
+//		for(var m:clazz.getMethods())
+//		{
+//			if(!m.getName().equals(name)) continue;
+//			if(m.getParameterCount()!=1) continue;
+//
+//			Class<?> pt=m.getParameterTypes()[0];
+//
+//			if(value==null) return m;
+//			if(pt.isAssignableFrom(value.getClass())) return m;
+//
+//			if(pt==boolean.class&&value instanceof Boolean) return m;
+//			if(pt==int.class&&value instanceof Integer) return m;
+//			if(pt==long.class&&value instanceof Long) return m;
+//		}
+//		return null;
+//	}
+//
+//	/*
+//	 * ===================== Variable resolution =====================
+//	 */
+//
+//	
+//	private static String resolve(String s, Map<String,String> vars)
+//	{
+//	    if (s == null) return null;
+//
+//	    for (int pass = 0; pass < 10; pass++)
+//	    {
+//	        String before = s;
+//
+//	        s = resolveSys(s);
+//	        s = resolveNow(s);
+//
+//	        for (var e : vars.entrySet())
+//	            s = s.replace("${" + e.getKey() + "}", e.getValue());
+//
+//	        if (s.equals(before)) break;
+//	    }
+//
+//	    return s;
+//	}
+//
+//	private static String resolveSys(String s)
+//	{
+//	    while (true)
+//	    {
+//	        int i = s.indexOf("${sys:");
+//	        if (i < 0) break;
+//
+//	        int j = s.indexOf("}", i);
+//	        if (j < 0) break;
+//
+//	        String key = s.substring(i + 6, j);
+//
+//	        String val = System.getProperty(key, "");
+//	        val = val.replace("\\", "/");
+//
+//	        s = s.substring(0, i) + val + s.substring(j + 1);
+//	    }
+//	    return s;
+//	}
+//
+//	private static String resolveNow(String s)
+//	{
+//	    while (true)
+//	    {
+//	        int i = s.indexOf("${now:");
+//	        if (i < 0) break;
+//
+//	        int j = s.indexOf("}", i);
+//	        if (j < 0) break;
+//
+//	        String pattern = s.substring(i + 6, j);
+//
+//	        String formatted = java.time.LocalDateTime.now()
+//	                .format(java.time.format.DateTimeFormatter.ofPattern(pattern));
+//
+//	        s = s.substring(0, i) + formatted + s.substring(j + 1);
+//	    }
+//	    return s;
+//	}	
+//	
+//	static class ScriptJson
+//	{
+//		Map<String,String> vars;
+//		List<Map<String,Object>> steps;
+//	}
+//}

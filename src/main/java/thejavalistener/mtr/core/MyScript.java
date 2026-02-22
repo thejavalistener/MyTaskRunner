@@ -12,7 +12,10 @@ public abstract class MyScript
 {
 	public static final int SUCCESS = 0;
 	public static final int ERROR = 1;
+
 	public abstract List<MyAction> getScriptActions();
+    public abstract void validateSyntax() throws Exception;
+    public abstract void validateActions() throws Exception;
 	
 	public String getScriptName()
 	{
@@ -31,26 +34,13 @@ public abstract class MyScript
 			// obtengo la lista de acciones del script
 			List<MyAction> actions = getScriptActions();
 
-			// creo un FS ficticio para validar los parámetros
-			ValidationContext ctx = new ValidationContext();
+			// valido la sintaxis del script
+			validateSyntax();
 			
-			// valido cada acción del script
-			for(int i=0; i<actions.size(); i++)
-			{
-				MyAction action = actions.get(i);
-				
-				// cada acción se valida a sí misma
-				String err = action.validate(ctx);
-				if( err!=null )
-				{
-					int nroPaso = i+1;
-					
-					// Paso 4. Remove: No existe el archivo o carpeta a remover 
-					String mssg = "Paso "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
-					throw new RuntimeException(mssg);
-				}
-			}
-				        
+			// valido las acciones del script
+			validateActions();
+			
+			
 	        int step = 1;
 	        
 			// ejecuto cada acción del script

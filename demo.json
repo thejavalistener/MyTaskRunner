@@ -1,49 +1,48 @@
 {
   "vars": {
-    "Drive": "D:",
-    "BaseDir": "${Drive}/temp/DemoScript",
-    "DownloadDir": "${BaseDir}/download",
-    "ZipFile": "${BaseDir}/sample_${now:yyyyMMdd-HHmm}.zip",
-    "UnzipDir": "${BaseDir}/unzipped"
+    "drive": "D:",
+    "baseDir": "${vars:drive}/temp/DemoScript",
+    "downloadDir": "${vars:baseDir}/download",
+    "zipFile": "${vars:baseDir}/sample_${time:now:format:yyyyMMdd-HHmm}.zip",
+    "unzipDir": "${vars:baseDir}/unzipped"
   },
-
   "steps": [
-    { "action": "MkDir", "path": "${BaseDir}" },
-    { "action": "MkDir", "path": "${DownloadDir}" },
+    { "action": "MkDir", "path": "${vars:baseDir}" },
+    { "action": "MkDir", "path": "${vars:downloadDir}" },
 
     {
       "action": "Download",
       "url": "https://github.com/githubtraining/hellogitworld/archive/refs/heads/master.zip",
-      "to": "${DownloadDir}/original.zip",
+      "to": "${vars:downloadDir}/original.zip",
       "showProgress": true,
       "stopScriptOnError": true
     },
 
     {
       "action": "Zip",
-      "from": "${DownloadDir}",
-      "to": "${ZipFile}",
+      "from": "${vars:downloadDir}",
+      "to": "${vars:zipFile}",
       "showProgress": true,
       "stopScriptOnError": true
     },
 
     {
       "action": "Remove",
-      "path": "${BaseDir}/noExiste",
+      "path": "${vars:baseDir}/noExiste",
       "stopScriptOnError": false
     },
 
     {
       "action": "Unzip",
-      "from": "${ZipFile}",
-      "to": "${UnzipDir}",
+      "from": "${vars:zipFile}",
+      "to": "${vars:unzipDir}",
       "showProgress": true,
       "stopScriptOnError": true
     },
 
     {
       "action": "Remove",
-      "path": "${DownloadDir}",
+      "path": "${vars:downloadDir}",
       "stopScriptOnError": true
     }
   ]
