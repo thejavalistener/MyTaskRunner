@@ -12,7 +12,7 @@
   },
 
   "steps": [    
-    { "action": "Zip", "from": "${VSCodeWorkspace}","to":"${BackupWorkspaceFileName}" },
+    { "action": "Zip", "from": "${VSCodeWorkspace}","to":"${sys:user.home}/${BackupWorkspaceFileName}" },
     { "action": "MkDir", "path": "${TempDir}" },
 
     { "action": "Copy", "from": "${SoftRepo}/${VSCodeZipFile}", "to": "${TempDir}/${VSCodeZipFile}", "showProgress": true },

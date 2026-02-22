@@ -158,6 +158,71 @@ public class MyJsonScriptImple extends MyScript
 //		return s;
 //	}
 
+//	private static String resolve(String s, Map<String,String> vars)
+//	{
+//	    if (s == null) return null;
+//
+//	    for (int pass = 0; pass < 10; pass++)
+//	    {
+//	        String before = s;
+//
+//	        // 1) vars: ${BaseDir}, ${ZipFile}, etc.
+//	        for (var e : vars.entrySet())
+//	            s = s.replace("${" + e.getKey() + "}", e.getValue());
+//
+//	        // 2) now: ${now:yyyyMMdd_HHmm}
+//	        s = resolveNow(s);
+//
+//	        if (s.equals(before)) break;
+//	    }
+//
+//	    return s;
+//	}
+
+//	private static String resolveNow(String s)
+//	{
+//	    while (true)
+//	    {
+//	        int i = s.indexOf("${now:");
+//	        if (i < 0) break;
+//
+//	        int j = s.indexOf("}", i);
+//	        if (j < 0) break;
+//
+//	        String pattern = s.substring(i + 6, j);
+//	        String formatted = java.time.LocalDateTime.now()
+//	                .format(java.time.format.DateTimeFormatter.ofPattern(pattern));
+//
+//	        s = s.substring(0, i) + formatted + s.substring(j + 1);
+//	    }
+//	    return s;
+//	}	
+	
+//	private static String resolveSys(String s)
+//	{
+//	    while (true)
+//	    {
+//	        int i = s.indexOf("${sys:");
+//	        if (i < 0) break;
+//
+//	        int j = s.indexOf("}", i);
+//	        if (j < 0) break;
+//
+//	        String key = s.substring(i + 6, j);
+//
+//	        String val = System.getProperty(key, "");
+//	        val = val.replace("\\", "/");
+//
+//	        s = s.substring(0, i) + val + s.substring(j + 1);
+//	    }
+//	    return s;
+//	}	
+	
+	/*
+	 * ===================== POJOs JSON =====================
+	 */
+
+	
 	private static String resolve(String s, Map<String,String> vars)
 	{
 	    if (s == null) return null;
@@ -166,16 +231,35 @@ public class MyJsonScriptImple extends MyScript
 	    {
 	        String before = s;
 
-	        // 1) vars: ${BaseDir}, ${ZipFile}, etc.
+	        s = resolveSys(s);
+	        s = resolveNow(s);
+
 	        for (var e : vars.entrySet())
 	            s = s.replace("${" + e.getKey() + "}", e.getValue());
-
-	        // 2) now: ${now:yyyyMMdd_HHmm}
-	        s = resolveNow(s);
 
 	        if (s.equals(before)) break;
 	    }
 
+	    return s;
+	}
+
+	private static String resolveSys(String s)
+	{
+	    while (true)
+	    {
+	        int i = s.indexOf("${sys:");
+	        if (i < 0) break;
+
+	        int j = s.indexOf("}", i);
+	        if (j < 0) break;
+
+	        String key = s.substring(i + 6, j);
+
+	        String val = System.getProperty(key, "");
+	        val = val.replace("\\", "/");
+
+	        s = s.substring(0, i) + val + s.substring(j + 1);
+	    }
 	    return s;
 	}
 
@@ -190,6 +274,7 @@ public class MyJsonScriptImple extends MyScript
 	        if (j < 0) break;
 
 	        String pattern = s.substring(i + 6, j);
+
 	        String formatted = java.time.LocalDateTime.now()
 	                .format(java.time.format.DateTimeFormatter.ofPattern(pattern));
 
@@ -197,10 +282,7 @@ public class MyJsonScriptImple extends MyScript
 	    }
 	    return s;
 	}	
-	/*
-	 * ===================== POJOs JSON =====================
-	 */
-
+	
 	static class ScriptJson
 	{
 		Map<String,String> vars;
