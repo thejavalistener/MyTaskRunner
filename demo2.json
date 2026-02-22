@@ -1,0 +1,74 @@
+{
+  "vars": {
+    "drive": "D:",
+    "baseDir": "${vars:drive}/temp/DemoScript",
+    "downloadDir": "${vars:baseDir}/download",
+    "workDir": "${vars:baseDir}/work",
+    "backupDir": "${vars:baseDir}/backup",
+
+    "userHome": "${sys:prop:user.home}",
+    "pathEnv": "${sys:env:PATH}",
+
+    "stampNow": "${time:now:format:yyyyMMdd-HHmmss}",
+    "stampToday": "${time:today:format:yyyyMMdd}",
+    "stampTomorrow": "${time:tomorrow:format:yyyyMMdd}",
+    "ms": "${time:epochMillis}",
+
+    "downloadFile": "${vars:downloadDir}/original_${vars:stampNow}.zip",
+    "unzippedDir": "${vars:workDir}/unzipped_${vars:stampNow}",
+    "zippedDirFile": "${vars:backupDir}/backup_${vars:stampNow}.zip",
+
+    "copyOfZip": "${vars:backupDir}/copy_${vars:ms}.zip",
+    "logFile": "${vars:baseDir}/log_${vars:stampToday}.txt"
+  },
+
+  "steps": [
+    { "action": "MkDir", "path": "${vars:baseDir}" },
+    { "action": "MkDir", "path": "${vars:downloadDir}" },
+    { "action": "MkDir", "path": "${vars:workDir}" },
+    { "action": "MkDir", "path": "${vars:backupDir}" },
+
+    {
+      "action": "Download",
+      "url": "https://github.com/githubtraining/hellogitworld/archive/refs/heads/master.zip",
+      "to": "${vars:downloadFile}",
+      "showProgress": true,
+      "stopScriptOnError": true
+    },
+
+    {
+      "action": "Unzip",
+      "from": "${vars:downloadFile}",
+      "to": "${vars:unzippedDir}",
+      "showProgress": true,
+      "stopScriptOnError": true
+    },
+
+    {
+      "action": "Zip",
+      "from": "${vars:unzippedDir}",
+      "to": "${vars:zippedDirFile}",
+      "showProgress": true,
+      "stopScriptOnError": true
+    },
+
+    {
+      "action": "Copy",
+      "from": "${vars:zippedDirFile}",
+      "to": "${vars:copyOfZip}",
+      "showProgress": true,
+      "stopScriptOnError": true
+    },
+
+    {
+      "action": "Remove",
+      "path": "${vars:baseDir}/noExiste_${vars:ms}",
+      "stopScriptOnError": false
+    },
+
+    {
+      "action": "Exec",
+      "command": "cmd /c echo userHome=${vars:userHome} && echo today=${vars:stampToday} && echo tomorrow=${vars:stampTomorrow} && echo now=${vars:stampNow} && echo path=${vars:pathEnv} > \"${vars:logFile}\""
+    }
+  ]
+}
