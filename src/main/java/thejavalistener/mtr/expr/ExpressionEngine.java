@@ -13,7 +13,7 @@ public class ExpressionEngine
         return this;
     }
 
-    public String resolve(String input)
+    public String resolve(String input) throws Exception
     {
         if (input == null) return null;
 
@@ -29,7 +29,7 @@ public class ExpressionEngine
         return result;
     }
 
-    private String resolveOnce(String s)
+    private String resolveOnce(String s) throws Exception
     {
         int start = s.indexOf("${");
         if (start < 0) return s;
@@ -55,7 +55,7 @@ public class ExpressionEngine
         return out.toString();
     }
 
-    private String evaluate(String expr)
+    private String evaluate(String expr) throws Exception
     {
         int k = expr.indexOf(':');
         if (k < 0)

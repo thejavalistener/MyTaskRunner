@@ -4,7 +4,6 @@ import java.util.List;
 
 import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.fwkutils.console.MyConsoles;
-import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.fwkutils.various.MyException;
 
@@ -14,8 +13,7 @@ public abstract class MyScript
 	public static final int ERROR = 1;
 
 	public abstract List<MyAction> getScriptActions();
-    public abstract void validateSyntax() throws Exception;
-    public abstract void validateActions() throws Exception;
+    public void validateSyntax() throws Exception {};
 	
 	public String getScriptName()
 	{
@@ -40,7 +38,6 @@ public abstract class MyScript
 			// valido las acciones del script
 			validateActions();
 			
-			
 	        int step = 1;
 	        
 			// ejecuto cada acción del script
@@ -50,8 +47,6 @@ public abstract class MyScript
 				_executeAction(action);
 				step++;
 			}
-			
-			
 			
 			// finaliza script OK
             console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. ");
@@ -130,4 +125,28 @@ public abstract class MyScript
 
 		console.print(mssg);
 	}
+	
+    public void validateActions() throws Exception
+    {
+		// creo un FS ficticio para validar los parámetros
+		ValidationContext ctx = new ValidationContext();
+
+    	List<MyAction> actions = getScriptActions();
+		for(int i=0; i<actions.size(); i++)
+		{
+			MyAction action = actions.get(i);
+			
+			// cada acción se valida a sí misma
+			String err = action.validate(ctx);
+			if( err!=null )
+			{
+				int nroPaso = i+1;
+				
+				// Paso 4. Remove: No existe el archivo o carpeta a remover 
+				String mssg = "Step "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
+				throw new RuntimeException(mssg);
+			}
+		}
+    	
+    }
 }

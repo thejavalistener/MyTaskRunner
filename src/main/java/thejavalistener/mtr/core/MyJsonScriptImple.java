@@ -1,15 +1,19 @@
 package thejavalistener.mtr.core;
 
-import com.google.gson.Gson;
-import thejavalistener.mtr.expr.ExpressionEngine;
-import thejavalistener.mtr.expr.ns.SysNamespaceHandler;
-import thejavalistener.mtr.expr.ns.TimeNamespaceHandler;
-import thejavalistener.mtr.expr.ns.VarsNamespaceHandler;
-
 import java.io.FileReader;
 import java.io.Reader;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.gson.Gson;
+
+import thejavalistener.mtr.expr.ExpressionEngine;
+import thejavalistener.mtr.expr.ns.SysNamespaceHandler;
+import thejavalistener.mtr.expr.ns.TimeNamespaceHandler;
+import thejavalistener.mtr.expr.ns.VarNamespaceHandler;
 
 public class MyJsonScriptImple extends MyScript
 {
@@ -17,6 +21,7 @@ public class MyJsonScriptImple extends MyScript
     private final Map<String,String> vars;
     private final String jsonFile;
 
+//    private final ExpressionEngine engine;
     private final ExpressionEngine engine;
 
     public MyJsonScriptImple(String jsonFile) throws Exception
@@ -45,10 +50,14 @@ public class MyJsonScriptImple extends MyScript
         if (sj != null && sj.vars != null)
             this.vars.putAll(sj.vars);
 
-        this.engine = new ExpressionEngine()
-                .register(new SysNamespaceHandler())
-                .register(new TimeNamespaceHandler())
-                .register(new VarsNamespaceHandler(this.vars));
+//        this.engine = new ExpressionEngine()
+//                .register(new SysNamespaceHandler())
+//                .register(new TimeNamespaceHandler())
+//                .register(new VarsNamespaceHandler(this.vars));
+	      this.engine = new ExpressionEngine()
+		      .register(new SysNamespaceHandler())
+		      .register(new TimeNamespaceHandler())
+		      .register(new VarNamespaceHandler(this.vars));
     }
 
     @Override
@@ -130,31 +139,7 @@ public class MyJsonScriptImple extends MyScript
         return null;
     }
     
-    public void validateActions() throws Exception
-    {
-		// creo un FS ficticio para validar los parámetros
-		ValidationContext ctx = new ValidationContext();
-
-    	List<MyAction> actions = getScriptActions();
-		for(int i=0; i<actions.size(); i++)
-		{
-			MyAction action = actions.get(i);
-			
-			// cada acción se valida a sí misma
-			String err = action.validate(ctx);
-			if( err!=null )
-			{
-				int nroPaso = i+1;
-				
-				// Paso 4. Remove: No existe el archivo o carpeta a remover 
-				String mssg = "Step "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
-				throw new RuntimeException(mssg);
-			}
-		}
-    	
-    }
-
-    
+    @Override
     public void validateSyntax() throws Exception
     {
         if (sj == null)

@@ -1,53 +1,23 @@
 package thejavalistener.mtr.expr.ns;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import thejavalistener.mtr.expr.NamespaceHandler;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
 public class SysNamespaceHandler implements NamespaceHandler
 {
-    private final Map<String, Function<String[], String>> operations = new HashMap<>();
+    private final Map<String, NamespaceOperation> operations = new HashMap<>();
 
     public SysNamespaceHandler()
     {
-        // sys:prop:user.home[:default]
-        operations.put("prop", args ->
-        {
-            if (args.length < 1)
-                throw new RuntimeException("sys:prop requires a key");
+        register(new Prop());
+        register(new Env());
+    }
 
-            String key = args[0];
-            String def = args.length >= 2 ? args[1] : "";
-
-            String val = System.getProperty(key, def);
-            if (val == null) val = "";
-
-            return val.replace("\\", "/");
-        });
-
-        // sys:env:PATH[:default]
-        operations.put("env", args ->
-        {
-            if (args.length < 1)
-                throw new RuntimeException("sys:env requires a variable name");
-
-            String key = args[0];
-            String def = args.length >= 2 ? args[1] : "";
-
-            String val = System.getenv(key);
-            if (val == null) val = def;
-
-            if (val == null) val = "";
-
-            return val.replace("\\", "/");
-        });
-
-        // atajo opcional
-        operations.put("home", args ->
-                System.getProperty("user.home", "").replace("\\", "/")
-        );
+    private void register(NamespaceOperation op)
+    {
+        operations.put(op.getName(), op);
     }
 
     @Override
@@ -57,22 +27,64 @@ public class SysNamespaceHandler implements NamespaceHandler
     }
 
     @Override
-    public String resolve(String payload)
+    public String resolve(String payload) throws Exception
     {
         if (payload == null || payload.isBlank())
-            throw new RuntimeException("sys namespace requires arguments");
+            throw new IllegalArgumentException("sys namespace requires arguments");
 
         String[] parts = payload.split(":");
-        String op = parts[0];
 
-        Function<String[], String> fn = operations.get(op);
+        String opName = parts[0];
 
-        if (fn == null)
-            throw new RuntimeException("Unknown sys operation: " + op);
+        NamespaceOperation op = operations.get(opName);
 
-        String[] args = new String[parts.length - 1];
-        System.arraycopy(parts, 1, args, 0, args.length);
+        if (op == null)
+            throw new IllegalArgumentException("Unknown sys operation: " + opName);
 
-        return fn.apply(args);
+        String[] args = Arrays.copyOfRange(parts, 1, parts.length);
+
+        return op.resolve(args);
+    }
+
+    class Prop implements NamespaceOperation
+    {
+        @Override
+        public String getName() { return "prop"; }
+
+        @Override
+        public String resolve(String[] args)
+        {
+            if (args.length != 1)
+                throw new IllegalArgumentException("prop requires 1 argument");
+
+            String key = args[0];
+            String val = System.getProperty(key);
+
+            if (val == null)
+                throw new IllegalArgumentException("System property not found: " + key);
+
+            return val.replace("\\", "/");
+        }
+    }
+
+    class Env implements NamespaceOperation
+    {
+        @Override
+        public String getName() { return "env"; }
+
+        @Override
+        public String resolve(String[] args)
+        {
+            if (args.length != 1)
+                throw new IllegalArgumentException("env requires 1 argument");
+
+            String var = args[0];
+            String val = System.getenv(var);
+
+            if (val == null)
+                throw new IllegalArgumentException("Environment variable not found: " + var);
+
+            return val.replace("\\", "/");
+        }
     }
 }

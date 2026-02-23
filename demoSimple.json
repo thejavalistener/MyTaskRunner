@@ -1,0 +1,17 @@
+{
+  "vars": {
+    "hoy": "${time:now:yyyyMMdd}",
+    "bkpFile": "bkp_${var:get:hoy}.zip",
+    "toBkp":"D:/temp/importante",
+    "bkpFolder":"D:/temp/misBackups"
+  },
+  "steps": [
+    {
+      "action": "Zip",
+      "from": "${var:get:toBkp}",
+      "to": "${var:get:bkpFolder}/${var:get:bkpFile}",
+      "showProgress": true,
+      "stopScriptOnError": true
+    }
+  ]
+}

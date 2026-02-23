@@ -3,11 +3,31 @@ package thejavalistener.mtr.expr.ns;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import thejavalistener.mtr.expr.NamespaceHandler;
 
+
 public class TimeNamespaceHandler implements NamespaceHandler
 {
+    private final Map<String, NamespaceOperation> operations = new HashMap<>();
+
+    public TimeNamespaceHandler()
+    {
+        register(new EpochMillis());
+        register(new Now());
+        register(new Today());
+        register(new Tomorrow());
+        register(new Yesterday());
+    }
+
+    private void register(NamespaceOperation op)
+    {
+        operations.put(op.getName(), op);
+    }
+
     @Override
     public String getNamespace()
     {
@@ -15,60 +35,95 @@ public class TimeNamespaceHandler implements NamespaceHandler
     }
 
     @Override
-    public String resolve(String payload)
+    public String resolve(String payload) throws Exception
     {
         if (payload == null || payload.isBlank())
-            throw new RuntimeException("time namespace requires arguments");
+            throw new IllegalArgumentException("time namespace requires arguments");
 
         String[] parts = payload.split(":");
+        String opName = parts[0];
 
-        // special case
-        if ("epochMillis".equals(parts[0]))
+        NamespaceOperation op = operations.get(opName);
+        if (op == null)
+            throw new IllegalArgumentException("Unknown time operation: " + opName);
+
+        String[] args = Arrays.copyOfRange(parts, 1, parts.length);
+        return op.resolve(args);
+    }
+
+    private static String format(LocalDateTime dt, String[] args)
+    {
+        if (args.length == 0)
+            return dt.toString();
+
+        // patrón puede contener ':' => reconstruyo
+        String pattern = String.join(":", args);
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern(pattern);
+        return dt.format(fmt);
+    }
+
+    public interface NamespaceOperation
+    {
+        String getName();
+        String resolve(String[] args) throws Exception;
+    }
+
+    class EpochMillis implements NamespaceOperation
+    {
+        @Override public String getName() { return "epochMillis"; }
+
+        @Override
+        public String resolve(String[] args)
+        {
+            if (args.length != 0)
+                throw new IllegalArgumentException("time:epochMillis takes no arguments");
+
             return String.valueOf(System.currentTimeMillis());
-
-        if (parts.length < 2)
-            throw new RuntimeException("Invalid time expression: " + payload);
-
-        String base = parts[0];
-
-        LocalDateTime dt;
-
-        switch (base)
-        {
-            case "now":
-                dt = LocalDateTime.now();
-                break;
-
-            case "today":
-                dt = LocalDate.now().atStartOfDay();
-                break;
-
-            case "tomorrow":
-                dt = LocalDate.now().plusDays(1).atStartOfDay();
-                break;
-
-            case "yesterday":
-                dt = LocalDate.now().minusDays(1).atStartOfDay();
-                break;
-
-            default:
-                throw new RuntimeException("Unknown time base: " + base);
         }
+    }
 
-        // soporta: time:today:format:yyyyMMdd
-        if ("format".equals(parts[1]))
+    class Now implements NamespaceOperation
+    {
+        @Override public String getName() { return "now"; }
+
+        @Override
+        public String resolve(String[] args)
         {
-            if (parts.length < 3)
-                throw new RuntimeException("Missing format pattern in time expression: " + payload);
-
-            String pattern = payload.substring(
-                    payload.indexOf("format:") + 7
-            );
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-            return dt.format(formatter);
+            return format(LocalDateTime.now(), args);
         }
+    }
 
-        throw new RuntimeException("Unknown time operation: " + parts[1]);
+    class Today implements NamespaceOperation
+    {
+        @Override public String getName() { return "today"; }
+
+        @Override
+        public String resolve(String[] args)
+        {
+            return format(LocalDate.now().atStartOfDay(), args);
+        }
+    }
+
+    class Tomorrow implements NamespaceOperation
+    {
+        @Override public String getName() { return "tomorrow"; }
+
+        @Override
+        public String resolve(String[] args)
+        {
+            return format(LocalDate.now().plusDays(1).atStartOfDay(), args);
+        }
+    }
+
+    class Yesterday implements NamespaceOperation
+    {
+        @Override public String getName() { return "yesterday"; }
+
+        @Override
+        public String resolve(String[] args)
+        {
+            return format(LocalDate.now().minusDays(1).atStartOfDay(), args);
+        }
     }
 }
