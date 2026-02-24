@@ -1,4 +1,4 @@
-package thejavalistener.mtr.expr.ns;
+package thejavalistener.mtr.expr;
 
 public interface NamespaceOperation
 {

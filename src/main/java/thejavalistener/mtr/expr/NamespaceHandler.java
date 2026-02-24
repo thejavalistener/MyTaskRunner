@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import thejavalistener.fwkutils.various.MyReflection;
-import thejavalistener.mtr.expr.ns.NamespaceOperation;
 
 public abstract class NamespaceHandler
 {

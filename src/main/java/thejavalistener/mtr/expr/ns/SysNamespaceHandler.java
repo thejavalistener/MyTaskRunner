@@ -2,6 +2,7 @@ package thejavalistener.mtr.expr.ns;
 import java.util.Arrays;
 
 import thejavalistener.mtr.expr.NamespaceHandler;
+import thejavalistener.mtr.expr.NamespaceOperation;
 
 public class SysNamespaceHandler extends NamespaceHandler
 {

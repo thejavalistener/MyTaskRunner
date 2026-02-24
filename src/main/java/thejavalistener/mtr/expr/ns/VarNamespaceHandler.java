@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import thejavalistener.mtr.expr.NamespaceHandler;
+import thejavalistener.mtr.expr.NamespaceOperation;
 
 public class VarNamespaceHandler extends NamespaceHandler
 {
