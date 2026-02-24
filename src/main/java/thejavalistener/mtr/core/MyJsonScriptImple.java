@@ -50,14 +50,10 @@ public class MyJsonScriptImple extends MyScript
         if (sj != null && sj.vars != null)
             this.vars.putAll(sj.vars);
 
-//        this.engine = new ExpressionEngine()
-//                .register(new SysNamespaceHandler())
-//                .register(new TimeNamespaceHandler())
-//                .register(new VarsNamespaceHandler(this.vars));
 	      this.engine = new ExpressionEngine()
 		      .register(new SysNamespaceHandler())
 		      .register(new TimeNamespaceHandler())
-		      .register(new VarNamespaceHandler(this.vars));
+		      .register(new VarNamespaceHandler().setVars(vars));
     }
 
     @Override

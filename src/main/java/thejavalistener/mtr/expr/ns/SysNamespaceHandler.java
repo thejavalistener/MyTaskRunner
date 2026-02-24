@@ -1,29 +1,22 @@
 package thejavalistener.mtr.expr.ns;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import thejavalistener.mtr.expr.NamespaceHandler;
 
-public class SysNamespaceHandler implements NamespaceHandler
+public class SysNamespaceHandler extends NamespaceHandler
 {
-    private final Map<String, NamespaceOperation> operations = new HashMap<>();
-
-    public SysNamespaceHandler()
-    {
-        register(new Prop());
-        register(new Env());
-    }
-
-    private void register(NamespaceOperation op)
-    {
-        operations.put(op.getName(), op);
-    }
-
     @Override
     public String getNamespace()
     {
         return "sys";
+    }
+    
+    @Override
+    public String getDocumentation(String opName)
+    {
+    	NamespaceOperation op = getOperation(opName);
+    	
+    	return null;
     }
 
     @Override
@@ -36,7 +29,7 @@ public class SysNamespaceHandler implements NamespaceHandler
 
         String opName = parts[0];
 
-        NamespaceOperation op = operations.get(opName);
+        NamespaceOperation op = getOperation(opName);
 
         if (op == null)
             throw new IllegalArgumentException("Unknown sys operation: " + opName);
@@ -64,7 +57,7 @@ public class SysNamespaceHandler implements NamespaceHandler
                 throw new IllegalArgumentException("System property not found: " + key);
 
             return val.replace("\\", "/");
-        }
+        }        
     }
 
     class Env implements NamespaceOperation

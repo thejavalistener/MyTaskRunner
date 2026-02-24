@@ -1,12 +1,33 @@
 package thejavalistener.mtr.expr;
 
-public interface NamespaceHandler
-{
-    public String getNamespace();
+import java.util.HashMap;
+import java.util.Map;
 
-    /**
-     * Recibe TODO lo que sigue al namespace.
-     * Ej: ${time:today:format:yyyyMMdd} => payload = "today:format:yyyyMMdd"
-     */
-    public String resolve(String payload) throws Exception;
+import thejavalistener.fwkutils.various.MyReflection;
+import thejavalistener.mtr.expr.ns.NamespaceOperation;
+
+public abstract class NamespaceHandler
+{
+	public abstract String getNamespace();
+	public abstract String resolve(String payload) throws Exception;
+	public abstract String getDocumentation(String opName);
+
+	private Map<String,NamespaceOperation> operations=new HashMap<>();
+
+	public NamespaceHandler()
+	{
+		operations=new HashMap<>();
+
+		for(Class<?> inner:MyReflection.clasz.getInnerClasses(getClass()))
+		{
+			NamespaceOperation nso=(NamespaceOperation)MyReflection.clasz.innerClassNewInstance(this,inner);
+			operations.put(nso.getName(),nso);
+		}
+	}
+	
+	public NamespaceOperation getOperation(String opName)
+	{
+		return operations.get(opName);
+	}
+
 }

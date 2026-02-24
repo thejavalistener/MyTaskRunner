@@ -6,24 +6,14 @@ import java.util.Map;
 
 import thejavalistener.mtr.expr.NamespaceHandler;
 
-public class VarNamespaceHandler implements NamespaceHandler
+public class VarNamespaceHandler extends NamespaceHandler
 {
-    private final Map<String, String> vars;
-    private final Map<String, NamespaceOperation> operations = new HashMap<>();
+    private Map<String, String> vars = null;
 
-    public VarNamespaceHandler(Map<String, String> vars)
+    public VarNamespaceHandler setVars(Map<String,String> vars)
     {
-        if (vars == null)
-            throw new IllegalArgumentException("vars map cannot be null");
-
-        this.vars = vars;
-
-        register(new Get());
-    }
-
-    private void register(NamespaceOperation op)
-    {
-        operations.put(op.getName(), op);
+    	this.vars = vars;
+    	return this;
     }
 
     @Override
@@ -42,11 +32,11 @@ public class VarNamespaceHandler implements NamespaceHandler
 
         // soporte compatibilidad: var:directorio  => get implícito
         if (parts.length == 1)
-            return operations.get("get").resolve(new String[]{parts[0]});
+            return getOperation("get").resolve(new String[]{parts[0]});
 
         String opName = parts[0];
 
-        NamespaceOperation op = operations.get(opName);
+        NamespaceOperation op = getOperation(opName);
 
         if (op == null)
             throw new IllegalArgumentException("Unknown var operation: " + opName);
@@ -55,6 +45,13 @@ public class VarNamespaceHandler implements NamespaceHandler
 
         return op.resolve(args);
     }
+
+    @Override
+	public String getDocumentation(String opName)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     class Get implements NamespaceOperation
     {
@@ -79,11 +76,5 @@ public class VarNamespaceHandler implements NamespaceHandler
 
             return value;
         }
-    }
-
-    public interface NamespaceOperation
-    {
-        String getName();
-        String resolve(String[] args) throws Exception;
     }
 }

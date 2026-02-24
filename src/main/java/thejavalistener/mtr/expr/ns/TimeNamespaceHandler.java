@@ -4,30 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import thejavalistener.mtr.expr.NamespaceHandler;
 
-
-public class TimeNamespaceHandler implements NamespaceHandler
+public class TimeNamespaceHandler extends NamespaceHandler
 {
-    private final Map<String, NamespaceOperation> operations = new HashMap<>();
-
-    public TimeNamespaceHandler()
-    {
-        register(new EpochMillis());
-        register(new Now());
-        register(new Today());
-        register(new Tomorrow());
-        register(new Yesterday());
-    }
-
-    private void register(NamespaceOperation op)
-    {
-        operations.put(op.getName(), op);
-    }
-
     @Override
     public String getNamespace()
     {
@@ -43,7 +24,7 @@ public class TimeNamespaceHandler implements NamespaceHandler
         String[] parts = payload.split(":");
         String opName = parts[0];
 
-        NamespaceOperation op = operations.get(opName);
+        NamespaceOperation op = getOperation(opName);
         if (op == null)
             throw new IllegalArgumentException("Unknown time operation: " + opName);
 
@@ -62,12 +43,13 @@ public class TimeNamespaceHandler implements NamespaceHandler
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern(pattern);
         return dt.format(fmt);
     }
-
-    public interface NamespaceOperation
-    {
-        String getName();
-        String resolve(String[] args) throws Exception;
-    }
+    
+	@Override
+	public String getDocumentation(String opName)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 
     class EpochMillis implements NamespaceOperation
     {
