@@ -14,11 +14,12 @@ public abstract class MyScript
 
 	public abstract List<MyAction> getScriptActions();
     public void validateSyntax() throws Exception {};
-	
+
 	public String getScriptName()
 	{
 		return getClass().getSimpleName();
 	}
+	
 	
 	public int run()
 	{

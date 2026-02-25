@@ -1,12 +1,12 @@
-package thejavalistener.mtr.expr.ns;
+package thejavalistener.mtr.json.expr.ns;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
-import thejavalistener.mtr.expr.NamespaceHandler;
-import thejavalistener.mtr.expr.NamespaceOperation;
+import thejavalistener.mtr.json.expr.NamespaceHandler;
+import thejavalistener.mtr.json.expr.NamespaceOperation;
 
 public class TimeNamespaceHandler extends NamespaceHandler
 {

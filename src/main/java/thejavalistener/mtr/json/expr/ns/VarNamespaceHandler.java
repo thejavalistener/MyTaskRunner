@@ -1,11 +1,11 @@
-package thejavalistener.mtr.expr.ns;
+package thejavalistener.mtr.json.expr.ns;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import thejavalistener.mtr.expr.NamespaceHandler;
-import thejavalistener.mtr.expr.NamespaceOperation;
+import thejavalistener.mtr.json.expr.NamespaceHandler;
+import thejavalistener.mtr.json.expr.NamespaceOperation;
 
 public class VarNamespaceHandler extends NamespaceHandler
 {

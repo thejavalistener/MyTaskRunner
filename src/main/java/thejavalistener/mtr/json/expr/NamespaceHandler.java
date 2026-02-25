@@ -1,4 +1,4 @@
-package thejavalistener.mtr.expr;
+package thejavalistener.mtr.json.expr;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,6 @@ public abstract class NamespaceHandler
 {
 	public abstract String getNamespace();
 	public abstract String resolve(String payload) throws Exception;
-	public abstract String getDocumentation(String opName);
 
 	private Map<String,NamespaceOperation> operations=new HashMap<>();
 
@@ -28,5 +27,9 @@ public abstract class NamespaceHandler
 	{
 		return operations.get(opName);
 	}
-
+	
+	public String getDocumentation(String ns)
+	{
+		return null;
+	}
 }

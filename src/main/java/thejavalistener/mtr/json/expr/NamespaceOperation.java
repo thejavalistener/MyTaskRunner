@@ -1,4 +1,4 @@
-package thejavalistener.mtr.expr;
+package thejavalistener.mtr.json.expr;
 
 public interface NamespaceOperation
 {

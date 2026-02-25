@@ -2,6 +2,8 @@ package thejavalistener.mtr.core;
 
 import java.nio.file.Path;
 
+import thejavalistener.mtr.json.MyJsonScriptImple;
+
 public class JsonScriptLoader
 {
     public static MyScript load(String jsonFile) throws Exception
