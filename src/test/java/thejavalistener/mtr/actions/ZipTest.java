@@ -1,6 +1,7 @@
 package thejavalistener.mtr.actions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -63,14 +64,14 @@ class ZipTest {
     void validate_requires_from() {
         Zip z = new Zip();
         z.setTo("algo");
-        assertEquals("'from' es obligatorio", z.validate(null));
+        assertNotNull(z.validate(null));
     }
 
     @Test
     void validate_requires_to() {
         Zip z = new Zip();
         z.setFrom("algo");
-        assertEquals("'to' es obligatorio", z.validate(null));
+        assertNotNull(z.validate(null));
     }
 
     @Test

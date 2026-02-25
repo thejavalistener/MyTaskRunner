@@ -1,0 +1,45 @@
+{
+  "vars": {
+    -- carpeta donde tengo los instaladores
+    "sourceDir":"D:/Soft/IDE/VSCode", 
+    
+    -- instalador de vscode
+    "vscodeZip": "VSCode_v1.9.9.zip",
+
+    -- en qué disco voy a instalar
+    "targetDrive": "D:",
+    
+    -- carpeta temporal donde voy a copiar todo provisoriamente
+    "tempDir": "${sys:prop:java.io.tmpdir}/vscodeInstall",
+    
+    -- dónde quedará instalado vscode
+    "vscodeHome": "${targetDrive}/vscode",
+    
+    -- vscode workspace 
+    "vscodeWorkspace": "${vscodeHome}/Workspace",
+
+	-- backup del viejo workspace (antes de borrarlo)
+    "workspaceBkp":"${sys:prop:user.home}/workspaceBkp_${time:now:yyyyMMdd-HHmm}.zip"	
+  },
+
+  "steps": [    
+    
+	-- copio el instalador a la carpeta temporal
+    { "action":"FileCopy","from":"${sourceDir}/${vscodeZip}","to":"${tempDir}/","showProgress": true},
+
+    -- backupeo el workspace actual
+    { "action": "Zip", "from":"${vscodeWorkspace}","to":"${workspaceBkp}","showProgress":true},
+    
+    -- borro instalación anterior
+    { "action":"Remove","from":"${vscodeHome}"},
+
+    -- descomprimo el instalador
+    { "action":"Unzip","from":"${tempDir}/${vscodeZip}","to":"${targetDrive}/","showProgress": true },
+
+    -- remuevo la carpeta temporal
+    { "action":"Remove","from":"${tempDir}" },
+
+    -- levanto vscode
+    { "action":"Exec","command":"${vscodeHome}/RunVSCode.bat" }
+  ]
+}

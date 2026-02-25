@@ -12,17 +12,18 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import thejavalistener.fwkutils.console.Progress;
+import thejavalistener.fwkutils.various.MyFile;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ValidationContext;
 
 public class Download extends MyAction
 {
-    private String url;
+    private String from;
     private String to;   // antes era Path dest
 
-    public void setUrl(String url)
+    public void setFrom(String from)
     {
-        this.url = url;
+    	this.from = from;
     }
 
     public void setTo(String to)
@@ -39,7 +40,7 @@ public class Download extends MyAction
     @Override
     public String[] getDescription()
     {
-        return new String[]{url, "to " + to};
+        return new String[]{from, "to " + to};
     }
 
     @Override
@@ -50,15 +51,12 @@ public class Download extends MyAction
         if (dest.getParent() != null)
             Files.createDirectories(dest.getParent());
 
-
-        
-        
         HttpClient client = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.ALWAYS)
                 .build();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
+                .uri(URI.create(from))
                 .GET()
                 .build();
 
@@ -112,9 +110,9 @@ public class Download extends MyAction
     @Override
     public String validate(ValidationContext ctx)
     {
-        if(url == null || url.isBlank())
+        if(from == null || from.isBlank())
         {
-            return "'url' es obligatorio";
+            return "'from' es obligatorio";
         }
 
         if(to == null || to.isBlank())
@@ -124,11 +122,11 @@ public class Download extends MyAction
 
         try
         {
-            URI.create(url);
+            URI.create(from);
         }
         catch(Exception e)
         {
-            return "url inválida: " + url + " (" + e.getMessage() + ")";
+            return "url inválida: " + from + " (" + e.getMessage() + ")";
         }
 
         Path dest;

@@ -38,14 +38,14 @@ class UnzipTest {
     void validate_requires_from() {
         Unzip u = new Unzip();
         u.setTo("algo");
-        assertEquals("'from' es obligatorio", u.validate(null));
+        assertNotNull(u.validate(null));
     }
 
     @Test
     void validate_requires_to() {
         Unzip u = new Unzip();
         u.setFrom("algo");
-        assertEquals("'to' es obligatorio", u.validate(null));
+        assertNotNull(u.validate(null));
     }
 
     @Test

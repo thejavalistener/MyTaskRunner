@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import thejavalistener.fwkutils.console.Progress;
+import thejavalistener.fwkutils.various.MyFile;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ValidationContext;
 

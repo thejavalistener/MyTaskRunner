@@ -3,6 +3,7 @@ package thejavalistener.mtr.core;
 import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.fwkutils.console.MyConsoles;
 import thejavalistener.fwkutils.console.Progress;
+import thejavalistener.fwkutils.string.MyString;
 
 public abstract class MyAction
 {
@@ -39,8 +40,6 @@ public abstract class MyAction
 		String space = p!=null?" ":"";
 		console.print(space);
     }
-    
-    
 	
     public boolean isShowProgress()
 	{
@@ -63,7 +62,6 @@ public abstract class MyAction
         this.args = (args == null ? new String[0] : args);
     }
 
-
     protected final String arg(int i)
     {
         return args[i];
@@ -72,5 +70,5 @@ public abstract class MyAction
     protected final boolean hasArg(int i)
     {
         return i >= 0 && i < args.length;
-    }
+    }    
 }

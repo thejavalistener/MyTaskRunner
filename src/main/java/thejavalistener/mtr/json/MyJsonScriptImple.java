@@ -1,7 +1,6 @@
 package thejavalistener.mtr.json;
 
-import java.io.FileReader;
-import java.io.Reader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.MyScript;
 import thejavalistener.mtr.json.expr.ExpressionEngine;
@@ -24,36 +24,55 @@ public class MyJsonScriptImple extends MyScript
 	private final String jsonFile;
 	
 	private ExpressionEngine engine;
-	
 
 	public MyJsonScriptImple(String jsonFile) throws Exception
 	{
 		this(Path.of(jsonFile));
 	}
 
+//	public MyJsonScriptImple(Path jsonPath) throws Exception
+//	{
+//		this.jsonFile=jsonPath.getFileName().toString();
+//		
+//		Gson gson=new Gson();
+//
+//		try (Reader r=new FileReader(jsonPath.toFile()))
+//		{
+//			this.sj=gson.fromJson(r,ScriptJson.class);
+//		}
+//
+//		this.vars=new HashMap<>();
+//		if(sj!=null&&sj.vars!=null)
+//		{
+//			this.vars.putAll(sj.vars);
+//		}
+//		
+//		engine = new ExpressionEngine();
+//		engine.register(new SysNamespaceHandler());
+//		engine.register(new TimeNamespaceHandler());
+//		engine.register(new VarNamespaceHandler().setVars(vars));
+//	}
+
 	public MyJsonScriptImple(Path jsonPath) throws Exception
 	{
-		this.jsonFile=jsonPath.getFileName().toString();
-		
-		Gson gson=new Gson();
+	    this.jsonFile = jsonPath.getFileName().toString();
 
-		try (Reader r=new FileReader(jsonPath.toFile()))
-		{
-			this.sj=gson.fromJson(r,ScriptJson.class);
-		}
+	    String raw = Files.readString(jsonPath);
+	    raw = MyString.removeLinesWithPrefix(raw, new String[]{"--","//","#"}, true);
 
-		this.vars=new HashMap<>();
-		if(sj!=null&&sj.vars!=null)
-		{
-			this.vars.putAll(sj.vars);
-		}
-		
-		engine = new ExpressionEngine();
-		engine.register(new SysNamespaceHandler());
-		engine.register(new TimeNamespaceHandler());
-		engine.register(new VarNamespaceHandler().setVars(vars));
+	    Gson gson = new Gson();
+	    this.sj = gson.fromJson(raw, ScriptJson.class);
+
+	    this.vars = new HashMap<>();
+	    if (sj != null && sj.vars != null)
+	        this.vars.putAll(sj.vars);
+
+	    engine = new ExpressionEngine();
+	    engine.register(new SysNamespaceHandler());
+	    engine.register(new TimeNamespaceHandler());
+	    engine.register(new VarNamespaceHandler().setVars(vars));
 	}
-
+	
 	@Override
 	public String getScriptName()
 	{

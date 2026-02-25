@@ -1,17 +1,25 @@
 package thejavalistener.mtr.actions;
 
-import com.sun.net.httpserver.HttpServer;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import com.sun.net.httpserver.HttpServer;
+
+import thejavalistener.mtr.core.ValidationContext;
 
 class DownloadTest {
 
@@ -50,7 +58,7 @@ class DownloadTest {
         Path dest = tmp.resolve("a/b/c.txt");
 
         Download d = new Download();
-        d.setUrl(url);                 // <-- tu setter real
+        d.setFrom(url);                 // <-- tu setter real
         d.setTo(dest.toString());      // <-- tu setter real
 
         d.doAction(null);
@@ -65,11 +73,27 @@ class DownloadTest {
         Path dest = tmp.resolve("out.txt");
 
         Download d = new Download();
-        d.setUrl(url);                 // <-- tu setter real
+        d.setFrom(url);                 // <-- tu setter real
         d.setTo(dest.toString());      // <-- tu setter real
 
         assertThrows(Exception.class, () -> d.doAction(null));
         // si tu implementación NO lanza excepción y sólo retorna error,
         // cambiamos este assert al comportamiento real.
+    }
+    
+    
+    @Test
+    void validate_requires_from_and_to() {
+        Download d = new Download();
+        ValidationContext ctx = new ValidationContext();
+
+        assertNotNull(d.validate(ctx)); // sin from ni to
+
+        d.setFrom("http://x");
+        assertNotNull(d.validate(ctx)); // falta to
+
+        d = new Download();
+        d.setTo("x.txt");
+        assertNotNull(d.validate(ctx)); // falta from
     }
 }

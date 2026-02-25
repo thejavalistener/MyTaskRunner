@@ -48,8 +48,8 @@ public class Unzip extends MyAction
         if (from == null || to == null)
             throw new IllegalArgumentException("From/To not set");
 
-        Path zipPath = Paths.get(from);
-        Path destDir = Paths.get(to);
+        Path zipPath = Paths.get(from).normalize();
+        Path destDir = Paths.get(to).normalize();
 
         Files.createDirectories(destDir);
 
@@ -133,7 +133,7 @@ public class Unzip extends MyAction
 
         try
         {
-            zipPath = Paths.get(from);
+            zipPath = Paths.get(from).normalize();
         }
         catch(Exception e)
         {
@@ -142,7 +142,7 @@ public class Unzip extends MyAction
 
         try
         {
-            destDir = Paths.get(to);
+            destDir = Paths.get(to).normalize();
         }
         catch(Exception e)
         {

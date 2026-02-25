@@ -14,11 +14,11 @@ import thejavalistener.mtr.core.ValidationContext;
 
 public class Remove extends MyAction
 {
-    private String path;
+    private String from;
 
-    public void setPath(String path)
+    public void setFrom(String from)
     {
-        this.path = path;
+        this.from = from;
     }
 
     @Override
@@ -30,16 +30,16 @@ public class Remove extends MyAction
     @Override
     public String[] getDescription()
     {
-    	return new String[]{path};
+    	return new String[]{from};
     }
 
     @Override
     protected void doAction(Progress p) throws Exception
     {
-        if (path == null || path.isBlank())
-            throw new IllegalArgumentException("Path not set");
+        if (from == null || from.isBlank())
+            throw new IllegalArgumentException("From not set");
 
-        Path target = Paths.get(path);
+        Path target = Paths.get(from);
 
         if (!Files.exists(target))
         {
@@ -78,20 +78,20 @@ public class Remove extends MyAction
     @Override
     public String validate(ValidationContext ctx)
     {
-        if(path == null || path.isBlank())
+        if(from == null || from.isBlank())
         {
-            return "'path' es obligatorio";
+            return "'from' es obligatorio";
         }
 
         Path p;
 
         try
         {
-            p = Paths.get(path);
+            p = Paths.get(from);
         }
         catch(Exception e)
         {
-            return "path inválido: " + path + " (" + e.getMessage() + ")";
+            return "from inválido: " + from + " (" + e.getMessage() + ")";
         }
 
         if(ctx.exists(p))
@@ -107,7 +107,7 @@ public class Remove extends MyAction
 
         if(isStopScriptOnError())
         {
-            return "no existe: " + path;
+            return "no existe: " + from;
         }
 
         return null;

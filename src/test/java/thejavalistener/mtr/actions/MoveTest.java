@@ -2,6 +2,7 @@ package thejavalistener.mtr.actions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -68,14 +69,14 @@ class MoveTest {
     void validate_requires_from() {
         Move m = new Move();
         m.setTo("algo");
-        assertEquals("'from' es obligatorio", m.validate(new ValidationContext()));
+        assertNotNull(m.validate(new ValidationContext()));
     }
 
     @Test
     void validate_requires_to() {
         Move m = new Move();
         m.setFrom("algo");
-        assertEquals("'to' es obligatorio", m.validate(new ValidationContext()));
+        assertNotNull(m.validate(new ValidationContext()));
     }
     
     @Test

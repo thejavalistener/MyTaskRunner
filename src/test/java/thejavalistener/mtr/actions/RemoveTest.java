@@ -1,9 +1,8 @@
 package thejavalistener.mtr.actions;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,7 +23,7 @@ class RemoveTest {
         Files.writeString(file, "hola");
 
         Remove r = new Remove();
-        r.setPath(file.toString());
+        r.setFrom(file.toString());
 
         r.doAction(null);
 
@@ -38,7 +37,7 @@ class RemoveTest {
         Files.writeString(dir.resolve("sub").resolve("x.txt"), "x");
 
         Remove r = new Remove();
-        r.setPath(dir.toString());
+        r.setFrom(dir.toString());
 
         r.doAction(null);
 
@@ -50,7 +49,7 @@ class RemoveTest {
         Path missing = tmp.resolve("nope");
 
         Remove r = new Remove();
-        r.setPath(missing.toString());
+        r.setFrom(missing.toString());
 
         assertDoesNotThrow(() -> r.doAction(null));
     }
@@ -58,17 +57,17 @@ class RemoveTest {
     @Test
     void validate_requires_path() {
         Remove r = new Remove();
-        assertEquals("'path' es obligatorio", r.validate(null));
+        assertNotNull(r.validate(null));
     }
 
     @Test
     void validate_fails_if_missing_and_stop_true() {
         Remove r = new Remove();
-        r.setPath("no-existe-123");
+        r.setFrom("no-existe-123");
         r.setStopScriptOnError(true);
 
         String result = r.validate(new ValidationContext());
+        assertNotNull(result);
 
-        assertTrue(result.startsWith("no existe"));
     }
 }

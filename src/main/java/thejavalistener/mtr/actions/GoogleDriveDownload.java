@@ -24,7 +24,7 @@ import thejavalistener.mtr.core.ValidationContext;
 
 public class GoogleDriveDownload extends MyAction
 {
-    private String url;
+    private String from;
     private String to;
 
     // si tu loader instancia por reflexión y luego setea campos, dejá también constructor vacío
@@ -42,22 +42,22 @@ public class GoogleDriveDownload extends MyAction
     @Override
     public String[] getDescription()
     {
-        return new String[]{ url, "to " + to };
+        return new String[]{ from, "to " + to };
     }
 
     @Override
     public String validate(ValidationContext ctx)
     {
-        if (url == null || url.isBlank())
+        if (from == null || from.isBlank())
             return "'url' es obligatorio";
 
         if (to == null || to.isBlank())
             return "'to' es obligatorio";
 
-        if (!url.contains("drive.google.com"))
+        if (!from.contains("drive.google.com"))
             return "no es un link válido de Google Drive";
 
-        String fileId = extractFileId(url);
+        String fileId = extractFileId(from);
         if (fileId == null || fileId.isBlank())
             return "no se pudo extraer el fileId del link";
 
@@ -77,7 +77,7 @@ public class GoogleDriveDownload extends MyAction
     @Override
     protected void doAction(Progress p) throws Exception
     {
-        String fileId = extractFileId(url);
+        String fileId = extractFileId(from);
         if (fileId == null)
             throw new RuntimeException("No se pudo extraer el fileId del link");
 
@@ -234,45 +234,6 @@ public class GoogleDriveDownload extends MyAction
         }
     }
     
-//    private static Optional<String> extractDownloadUrl(String html)
-//    {
-//        if (html == null) return Optional.empty();
-//
-//        // 1) JSON: "downloadUrl":"https:\/\/..."
-//        Matcher j = Pattern.compile("\"downloadUrl\"\\s*:\\s*\"(.*?)\"").matcher(html);
-//        if (j.find())
-//        {
-//            String u = j.group(1)
-//                    .replace("\\u0026", "&")
-//                    .replace("\\/", "/")
-//                    .replace("&amp;", "&");
-//            return Optional.of(u);
-//        }
-//
-//        // 2) direct: https://drive.usercontent.google.com/download...
-//        Matcher u2 = Pattern.compile("(https://drive\\.usercontent\\.google\\.com/download[^\\\"'\\s<]+)").matcher(html);
-//        if (u2.find())
-//        {
-//            return Optional.of(u2.group(1).replace("&amp;", "&"));
-//        }
-//
-//        // 3) cualquier /uc?export=download...
-//        Matcher u3 = Pattern.compile("(/uc\\?export=download[^\\\"'\\s<]+)").matcher(html);
-//        if (u3.find())
-//        {
-//            return Optional.of(("https://drive.google.com" + u3.group(1)).replace("&amp;", "&"));
-//        }
-//
-//        // 4) href con /open?id=... o /file/d/... (fallback: no descarga directa)
-//        return Optional.empty();
-//    }
-//    // setters por si tu loader crea instancia sin constructor con args
-//    public void setUrl(String url) { this.url = url; }
-//    public void setTo(String to)   { this.to = to;  }
-//}
-    
-    
-    
     private static Optional<String> extractDownloadUrl(String html)
     {
         if (html == null) return Optional.empty();
@@ -309,19 +270,9 @@ public class GoogleDriveDownload extends MyAction
         return Optional.of(base + "?" + qs.toString());
     }
 
-	public String getUrl()
+	public void setFrom(String from)
 	{
-		return url;
-	}
-
-	public void setUrl(String url)
-	{
-		this.url=url;
-	}
-
-	public String getTo()
-	{
-		return to;
+		this.from=from;
 	}
 
 	public void setTo(String to)

@@ -61,14 +61,28 @@ public class ExpressionEngine
     private String evaluate(String expr) throws Exception
     {
         int k = expr.indexOf(':');
+
+        // default: ${miVar} => ${var:get:miVar}
         if (k < 0)
-            throw new RuntimeException("Invalid expression (missing namespace): ${" + expr + "}");
+        {
+            String varName = expr.trim();
+
+            if (varName.isEmpty())
+                throw new RuntimeException("Invalid expression (empty): ${" + expr + "}");
+
+            NamespaceHandler h = registry.get("var");
+            if (h == null)
+                throw new RuntimeException("Unknown namespace: var");
+
+            String r = h.resolve("get:" + varName);
+            return r != null ? r : "";
+        }
 
         String namespace = expr.substring(0, k);
         String payload   = expr.substring(k + 1); // puede tener ':'
 
         NamespaceHandler h = registry.get(namespace);
-          
+
         if (h == null)
             throw new RuntimeException("Unknown namespace: " + namespace);
 

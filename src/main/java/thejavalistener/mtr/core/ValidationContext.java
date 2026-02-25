@@ -16,7 +16,7 @@ public class ValidationContext
 
         public Entry(Path path, Type type)
         {
-            this.path = path;
+            this.path = path.normalize();
             this.type = type;
         }
     }
@@ -25,54 +25,59 @@ public class ValidationContext
 
     public boolean exists(Path p)
     {
-    	return exists(p,true);
+    	return exists(p.normalize(),true);
     }
 
     public boolean exists(Path p, boolean alsoVerifyInFS)
     {
-        if (entries.containsKey(p)) return true;
-        if (alsoVerifyInFS) return Files.exists(p);
+    	Path pn = p.normalize();
+        if (entries.containsKey(pn)) return true;
+        if (alsoVerifyInFS) return Files.exists(pn);
         return false;
     }
 
     public boolean isDirectory(Path p)
     {
-    	return isDirectory(p,true);
+    	return isDirectory(p.normalize(),true);
     }
 
     public boolean isDirectory(Path p, boolean alsoVerifyInFS)
     {
-        Entry e = entries.get(p);
+    	Path pn = p.normalize();
+        Entry e = entries.get(pn);
         if (e != null) return e.type == Type.DIRECTORY;
-        if (alsoVerifyInFS) return Files.isDirectory(p);
+        if (alsoVerifyInFS) return Files.isDirectory(pn);
         return false;
     }
 
     public boolean isFile(Path p)
     {
-    	return isFile(p,true);
+    	return isFile(p.normalize(),true);
     }
     
     public boolean isFile(Path p, boolean alsoVerifyInFS)
     {
-        Entry e = entries.get(p);
+    	Path pn = p.normalize();
+        Entry e = entries.get(pn);
         if (e != null) return e.type == Type.FILE;
-        if (alsoVerifyInFS) return Files.isRegularFile(p);
+        if (alsoVerifyInFS) return Files.isRegularFile(pn);
         return false;
     }
 
     public void addDirectory(Path p)
     {
-        entries.put(p, new Entry(p, Type.DIRECTORY));
+    	Path pn = p.normalize();
+        entries.put(pn, new Entry(pn, Type.DIRECTORY));
     }
 
     public void addFile(Path p)
     {
-        entries.put(p, new Entry(p, Type.FILE));
+    	Path pn = p.normalize();
+        entries.put(pn, new Entry(pn, Type.FILE));
     }
 
     public void remove(Path p)
     {
-        entries.remove(p);
+        entries.remove(p.normalize());
     }
 }
