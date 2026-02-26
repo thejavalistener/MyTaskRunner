@@ -28,7 +28,7 @@
     { "action":"FileCopy","from":"${sourceDir}/${vscodeZip}","to":"${tempDir}/","showProgress": true},
 
     -- backupeo el workspace actual
-    { "action": "Zip", "from":"${vscodeWorkspace}","to":"${workspaceBkp}","showProgress":true},
+    { "action": "Zip", "from":"${vscodeWorkspace}","to":"${workspaceBkp}","showProgress":true,"stopScriptOnError":false},
     
     -- borro instalación anterior
     { "action":"Remove","from":"${vscodeHome}"},

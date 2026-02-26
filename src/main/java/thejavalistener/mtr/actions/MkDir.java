@@ -12,7 +12,7 @@ public class MkDir extends MyAction
 {
     private String to;
 
-    public void setPath(String to)
+    public void setTo(String to)
     {
         this.to = to;
     }

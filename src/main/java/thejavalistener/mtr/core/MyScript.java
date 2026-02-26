@@ -20,7 +20,8 @@ public abstract class MyScript
 		return getClass().getSimpleName();
 	}
 	
-	
+	// MyScript.java
+
 	public int run()
 	{
         MyConsole console = MyConsoles.get();
@@ -30,15 +31,17 @@ public abstract class MyScript
 			// comienza script
 	        console.println("[fg(YELLOW)]Running: [x][b]"+getScriptName()+"[x]");
 
-			// obtengo la lista de acciones del script
-			List<MyAction> actions = getScriptActions();
-
+	        
 			// valido la sintaxis del script
 			validateSyntax();
+
+			// obtengo la lista de acciones del script
+			List<MyAction> actions = getScriptActions();
 			
 			// valido las acciones del script
-			validateActions();
+			validateActions(actions);
 			
+
 	        int step = 1;
 	        
 			// ejecuto cada acción del script
@@ -127,19 +130,18 @@ public abstract class MyScript
 		console.print(mssg);
 	}
 	
-    public void validateActions() throws Exception
+    public void validateActions(List<MyAction> actions) throws Exception
     {
 		// creo un FS ficticio para validar los parámetros
 		ValidationContext ctx = new ValidationContext();
 
-    	List<MyAction> actions = getScriptActions();
 		for(int i=0; i<actions.size(); i++)
 		{
 			MyAction action = actions.get(i);
 			
 			// cada acción se valida a sí misma
 			String err = action.validate(ctx);
-			if( err!=null )
+			if( err!=null && action.isStopScriptOnError() )
 			{
 				int nroPaso = i+1;
 				
@@ -150,4 +152,7 @@ public abstract class MyScript
 		}
     	
     }
+
+
+
 }

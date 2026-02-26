@@ -27,7 +27,7 @@ class MkDirTest {
         Path dir = tmp.resolve("nuevo");
 
         MkDir m = new MkDir();
-        m.setPath(dir.toString());
+        m.setTo(dir.toString());
 
         m.doAction(null);
 
@@ -40,7 +40,7 @@ class MkDirTest {
         Path dir = tmp.resolve("a/b/c");
 
         MkDir m = new MkDir();
-        m.setPath(dir.toString());
+        m.setTo(dir.toString());
 
         m.doAction(null);
 
@@ -56,7 +56,7 @@ class MkDirTest {
         ctx.addFile(file); // ajustá si tu API es distinta
 
         MkDir m = new MkDir();
-        m.setPath(file.toString());
+        m.setTo(file.toString());
 
         String result = m.validate(ctx);
         assertNotNull(result);

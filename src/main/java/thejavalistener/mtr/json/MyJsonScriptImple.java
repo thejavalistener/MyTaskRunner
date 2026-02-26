@@ -30,29 +30,6 @@ public class MyJsonScriptImple extends MyScript
 		this(Path.of(jsonFile));
 	}
 
-//	public MyJsonScriptImple(Path jsonPath) throws Exception
-//	{
-//		this.jsonFile=jsonPath.getFileName().toString();
-//		
-//		Gson gson=new Gson();
-//
-//		try (Reader r=new FileReader(jsonPath.toFile()))
-//		{
-//			this.sj=gson.fromJson(r,ScriptJson.class);
-//		}
-//
-//		this.vars=new HashMap<>();
-//		if(sj!=null&&sj.vars!=null)
-//		{
-//			this.vars.putAll(sj.vars);
-//		}
-//		
-//		engine = new ExpressionEngine();
-//		engine.register(new SysNamespaceHandler());
-//		engine.register(new TimeNamespaceHandler());
-//		engine.register(new VarNamespaceHandler().setVars(vars));
-//	}
-
 	public MyJsonScriptImple(Path jsonPath) throws Exception
 	{
 	    this.jsonFile = jsonPath.getFileName().toString();
@@ -160,7 +137,10 @@ public class MyJsonScriptImple extends MyScript
 			for(var e:sj.vars.entrySet())
 			{
 				String value=e.getValue();
-				if(value!=null) engine.resolve(value);
+				if(value!=null) 
+				{
+					engine.resolve(value);
+				}
 			}
 		}
 

@@ -24,7 +24,7 @@ class JsonScriptLoaderTest {
           "steps": [
             {
               "action": "MkDir",
-              "path": "miDir"
+              "to": "miDir"
             }
           ]
         }
@@ -55,7 +55,7 @@ class JsonScriptLoaderTest {
           "steps": [
             {
               "action": "MkDir",
-              "path": "${base}/${nombre}"
+              "to": "${base}/${nombre}"
             }
           ]
         }
@@ -75,7 +75,7 @@ class JsonScriptLoaderTest {
         assertEquals("MkDir", action.getClass().getSimpleName());
 
         // inspeccionamos el campo path vía reflection
-        var field = action.getClass().getDeclaredField("path");
+        var field = action.getClass().getDeclaredField("to");
         field.setAccessible(true);
         String value = (String) field.get(action);
 
@@ -95,7 +95,7 @@ class JsonScriptLoaderTest {
           "steps": [
             {
               "action": "MkDir",
-              "path": "${c}"
+              "to": "${c}"
             }
           ]
         }
@@ -111,7 +111,7 @@ class JsonScriptLoaderTest {
 
         MyAction action = actions.get(0);
 
-        var field = action.getClass().getDeclaredField("path");
+        var field = action.getClass().getDeclaredField("to");
         field.setAccessible(true);
         String value = (String) field.get(action);
 
@@ -126,7 +126,7 @@ class JsonScriptLoaderTest {
           "steps": [
             {
               "action": "NoExiste",
-              "path": "algo"
+              "to": "algo"
             }
           ]
         }
@@ -152,7 +152,7 @@ class JsonScriptLoaderTest {
           "steps": [
             {
               "action": "MkDir",
-              "path": "algo",
+              "to": "algo",
               "propiedadInexistente": "valor"
             }
           ]
@@ -204,7 +204,7 @@ class JsonScriptLoaderTest {
           "steps": [
             {
               "action": "Remove",
-              "path": "no-existe",
+              "from": "no-existe",
               "stopScriptOnError": true
             }
           ]
@@ -227,4 +227,5 @@ class JsonScriptLoaderTest {
         assertEquals(MyScript.ERROR, result);
 
         assertEquals(MyScript.ERROR, result);
-    }}
+    }
+}
