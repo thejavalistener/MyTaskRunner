@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -219,9 +220,14 @@ class JsonScriptLoaderTest {
         int result;
 
         try {
+        	PrintStream pr = System.out;
+        	System.setOut(null);
             result = script.run();
+        	System.setOut(pr);
         } catch (Throwable t) {
+        	System.err.println("Se esperaba este fallo");
             result = MyScript.ERROR;
+            
         }
 
         assertEquals(MyScript.ERROR, result);
