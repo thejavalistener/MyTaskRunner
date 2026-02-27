@@ -45,13 +45,13 @@ public class InstallVSCode extends MyScript
 	    ret.add(u1);
 
 	    Unzip u2 = new Unzip();
-	    u2.setFrom("D:\\TEMPPP\\FULL.zip");
-	    u2.setTo("D:\\vscode\\Workspace");
+	    u2.setFrom("D:/TEMPPP/FULL.zip");
+	    u2.setTo("D:/vscode/Workspace");
 	    u2.setShowProgress(true);
 	    ret.add(u2);
 
 	    Exec ex = new Exec();
-	    ex.setCommand("D:\\vscode\\RunVSCode.bat");
+	    ex.setCommand("D:/vscode/RunVSCode.bat");
 	    ret.add(ex);
 
 	    return ret;

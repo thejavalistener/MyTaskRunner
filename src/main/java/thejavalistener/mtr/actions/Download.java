@@ -103,8 +103,6 @@ public class Download extends MyAction
                 }
             }
         }
-
-        System.out.println(".,.,");
     }
     
     @Override
