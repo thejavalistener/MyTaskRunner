@@ -81,12 +81,19 @@ public abstract class MyScript
 			// presentación: Copiando D:/temp/equis a C:/unDir/zeta    	
 	    	_log(a);
 	    	
-			// ejecuto la acción
-			a.execute();
+	    	if( a.checkConditional() )
+	    	{
+				// ejecuto la acción
+				a.execute();
 
-			// exito
-			console.println("[b][fg(GREEN)]OK[x][x] ");
-			
+				// exito
+				console.println("[b][fg(GREEN)]OK[x][x] ");
+	    	}
+	    	else
+	    	{
+				// exito
+				console.println("[b][fg(GREEN)]Skiped[x][x] ");	    		
+	    	}
 		}
 		catch(Exception e)
 		{				
