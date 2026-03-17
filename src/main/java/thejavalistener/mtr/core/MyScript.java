@@ -9,41 +9,40 @@ import thejavalistener.fwkutils.various.MyException;
 
 public abstract class MyScript
 {
-	public static final int SUCCESS = 0;
-	public static final int ERROR = 1;
+	public static final int SUCCESS=0;
+	public static final int ERROR=1;
 
 	public abstract List<MyAction> getScriptActions();
-    public void validateSyntax() throws Exception {};
+
+	public void validateSyntax() throws Exception {};
 
 	public String getScriptName()
 	{
 		return getClass().getSimpleName();
 	}
-	
+
 	// MyScript.java
 
 	public int run()
 	{
-        MyConsole console = MyConsoles.get();
-		
+		MyConsole console=MyConsoles.get();
+
 		try
 		{
 			// comienza script
-	        console.println("[fg(YELLOW)]Running: [x][b]"+getScriptName()+"[x]");
+			console.println("[fg(YELLOW)]Running: [x][b]"+getScriptName()+"[x]");
 
-	        
 			// valido la sintaxis del script
 			validateSyntax();
 
 			// obtengo la lista de acciones del script
-			List<MyAction> actions = getScriptActions();
-			
+			List<MyAction> actions=getScriptActions();
+
 			// valido las acciones del script
 			validateActions(actions);
-			
 
-	        int step = 1;
-	        
+			int step=1;
+
 			// ejecuto cada acción del script
 			for(MyAction action:actions)
 			{
@@ -51,115 +50,137 @@ public abstract class MyScript
 				_executeAction(action);
 				step++;
 			}
-			
-			// finaliza script OK
-            console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. ");
-            System.out.println(console.getTextPane().getText());
 
-            console.print("Closing in ").countdown(10);
+			// finaliza script OK
+			console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. ");
+			System.out.println(console.getTextPane().getText());
+
+			console.print("Closing in ").countdown(10);
 			return SUCCESS;
 		}
 		catch(Exception e)
 		{
-	        // finaliza script ERROR
-			String err = MyException.stackTraceToString(e);
-            console.println("[fg(RED)]"+err+"[x]");
-            console.print("[fg(YELLOW)]Returned value: [x][fg(RED)][b]ERROR[x][x]. ");
-            System.out.println(console.getTextPane().getText());
+			// finaliza script ERROR
+			String err=MyException.stackTraceToString(e);
+			console.println("[fg(RED)]"+err+"[x]");
+			console.print("[fg(YELLOW)]Returned value: [x][fg(RED)][b]ERROR[x][x]. ");
+			System.out.println(console.getTextPane().getText());
 
-            console.print("Closing in ").countdown(10);
+			console.print("Closing in ").countdown(10);
 			return ERROR;
 		}
 	}
-	
+
 	private void _executeAction(MyAction a) throws Exception
 	{
-		MyConsole console = MyConsoles.get();
+		MyConsole console=MyConsoles.get();
 
 		try
 		{
-			// presentación: Copiando D:/temp/equis a C:/unDir/zeta    	
-	    	_log(a);
-	    	
-	    	if( a.checkConditional() )
-	    	{
-				// ejecuto la acción
-				a.execute();
+			// presentación: Copiando D:/temp/equis a C:/unDir/zeta
+			_log(a);
+			
+			if( a.isMustSkipped() )
+			{
+	            console.println("[b][fg(GREEN)]Skiped[x][x] ");
+	            return;				
+			}
+			
+//			if(!_checkDefines(a))
+//	        {
+//	            console.println("[b][fg(GREEN)]Skiped[x][x] ");
+//	            return;
+//	        }
+//			
+//			if(!a.checkDoIf())
+//			{
+//				console.println("[b][fg(GREEN)]Skiped[x][x] ");
+//				return;
+//			}
 
-				// exito
-				console.println("[b][fg(GREEN)]OK[x][x] ");
-	    	}
-	    	else
-	    	{
-				// exito
-				console.println("[b][fg(GREEN)]Skiped[x][x] ");	    		
-	    	}
+			// ejecuto la acción
+			a.execute();
+
+			// exito
+			console.println("[b][fg(GREEN)]OK[x][x] ");
 		}
 		catch(Exception e)
-		{				
+		{
 			// error (fatal o recuperable)
 			console.println("[fg(RED)][b]FAILED:[x] "+e.getMessage()+"[x] ");
-			
+
 			// stacktrace
-			String stackTrace = MyException.stackTraceToString(e);
+			String stackTrace=MyException.stackTraceToString(e);
 			console.println("[fg(RED)]"+stackTrace+"[x]");
 
-			if( a.isStopScriptOnError() )
+			if(a.isStopScriptOnError())
 			{
-				 throw new IllegalStateException(e);
+				throw new IllegalStateException(e);
 			}
-		}	
+		}
 	}
-	
+
 	private void _log(MyAction a)
 	{
-		MyConsole console = MyConsoles.get();
-		
-		String mssg = "";
+		MyConsole console=MyConsoles.get();
 
-		int maxLength = (int)(console.getTextPane().cols()*0.9);
-		String vervo = "[fg(GREEN)]"+a.getVerb()+"[x]";
-		String mssgs[] = a.getDescription();
-		if( mssgs.length>1 )
+		String mssg="";
+
+		int maxLength=(int)(console.getTextPane().cols()*0.9);
+		String vervo="[fg(GREEN)]"+a.getVerb()+"[x]";
+		String mssgs[]=a.getDescription();
+		if(mssgs.length>1)
 		{
-			mssg = vervo+"\n";
+			mssg=vervo+"\n";
 			for(int i=0; i<mssgs.length; i++)
 			{
 				mssg+="\t"+MyString.trimMiddle(mssgs[i],maxLength);
 				mssg+=i<mssgs.length-1?"\n":" ";
-			}			
+			}
 		}
 		else
 		{
-			mssg = MyString.trimMiddle(vervo+" "+mssgs[0],maxLength)+" ";			
+			mssg=MyString.trimMiddle(vervo+" "+mssgs[0],maxLength)+" ";
 		}
 
 		console.print(mssg);
 	}
 	
-    public void validateActions(List<MyAction> actions) throws Exception
-    {
+	private boolean _checkDefines(MyAction a)
+	{
+		
+	    String ifdef=a.getIfdef();
+	    String ifndef=a.getIfndef();
+
+	    if(ifdef!=null && System.getProperty(ifdef)==null)
+	        return false;
+
+	    if(ifndef!=null && System.getProperty(ifndef)!=null)
+	        return false;
+
+	    return true;
+	}
+
+	public void validateActions(List<MyAction> actions) throws Exception
+	{
 		// creo un FS ficticio para validar los parámetros
-		ValidationContext ctx = new ValidationContext();
+		ValidationContext ctx=new ValidationContext();
 
 		for(int i=0; i<actions.size(); i++)
 		{
-			MyAction action = actions.get(i);
-			
+			MyAction action=actions.get(i);
+
 			// cada acción se valida a sí misma
-			String err = action.validate(ctx);
-			if( err!=null && action.isStopScriptOnError() )
+			String err=action.validate(ctx);
+			if(err!=null&&action.isStopScriptOnError())
 			{
-				int nroPaso = i+1;
-				
-				// Paso 4. Remove: No existe el archivo o carpeta a remover 
-				String mssg = "Step "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
+				int nroPaso=i+1;
+
+				// Paso 4. Remove: No existe el archivo o carpeta a remover
+				String mssg="Step "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
 				throw new RuntimeException(mssg);
 			}
 		}
-    	
-    }
 
-
-
+	}
 }

@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
 import thejavalistener.fwkutils.console.Progress;
@@ -112,24 +113,24 @@ public class FileCopy extends MyAction
 	}
 
 	@Override
-	protected boolean checkConditional()
+	protected boolean checkExecuteIf()
 	{
-		String c = getDoIf();
+		String c=getExecuteIf();
+		if(c==null||c.isBlank()) return true;
 
-		if( c==null || c.isBlank()) return true;
+		Path src=Paths.get(from);
+		Path dest=Paths.get(to);
 
-		Path src = Paths.get(from);
-		Path dest = Paths.get(to);
-
-		switch(c)
+		ExecuteIf opt = ExecuteIf.valueOf(c);
+		switch(opt)
 		{
-			case "exists":
+			case exists:
 				return Files.exists(dest);
 
-			case "notExists":
+			case notExists:
 				return !Files.exists(dest);
 
-			case "notExistsOrIsNewer":
+			case notExistsOrIsNewer:
 				if(!Files.exists(dest)) return true;
 
 				if(!Files.exists(src)) throw new RuntimeException("Source no existe: "+from);
@@ -144,32 +145,31 @@ public class FileCopy extends MyAction
 				}
 
 			default:
-            	String mssg = "doIf: ["+c+"] not allowed. Must be: exists, notExists or notExistsOrIsNewer: ";
-				throw new RuntimeException(mssg);
+                throw new RuntimeException("Invalid executeIf option: "+opt+". Allowed values are: "+Arrays.toString(ExecuteIf.values()));
 		}
 	}
 
 	@Override
 	public String validate(ValidationContext ctx)
 	{
-		String c = getDoIf();
-	    if(c != null && !c.isBlank())
-	    {
-	        switch(c)
-	        {
-	            case "exists":
-	            case "notExists":
-	            case "notExistsOrIsNewer":
-	                break;
+		String c=getExecuteIf();
+		if(c!=null&&!c.isBlank())
+		{
+			switch(c)
+			{
+				case "exists":
+				case "notExists":
+				case "notExistsOrIsNewer":
+					break;
 
-	            default:
-	            {
-	            	String mssg = "doIf: ["+c+"] not allowed. Must be: exists, notExists or notExistsOrIsNewer: ";
-	                throw new IllegalArgumentException(mssg);
-	            }
-	        }
-	    }
-		
+				default:
+				{
+					String mssg="doIf: ["+c+"] not allowed. Must be: exists, notExists or notExistsOrIsNewer: ";
+					throw new IllegalArgumentException(mssg);
+				}
+			}
+		}
+
 		if(from==null||from.isBlank()) return "'from' es obligatorio";
 
 		if(to==null||to.isBlank()) return "'to' es obligatorio";
@@ -230,4 +230,10 @@ public class FileCopy extends MyAction
 
 		return null;
 	}
+	
+	private enum ExecuteIf
+	{
+		exists, notExists, notExistsOrIsNewer
+	}
+	
 }

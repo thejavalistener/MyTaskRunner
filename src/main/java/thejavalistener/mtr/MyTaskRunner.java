@@ -6,8 +6,8 @@ import thejavalistener.fwkutils.awt.variuos.MyAwt;
 import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.fwkutils.console.MyConsoles;
 import thejavalistener.mtr.core.MyAction;
+import thejavalistener.mtr.core.MyJsonScriptImple;
 import thejavalistener.mtr.core.MyScript;
-import thejavalistener.mtr.json.MyJsonScriptImple;
 
 public class MyTaskRunner
 {
@@ -23,7 +23,7 @@ public class MyTaskRunner
 	            System.out.println("Usage:");
 	            System.out.println(" java thejavalistener.mtr.MyTaskRunner <script.json>");
 	            System.out.println(" java thejavalistener.mtr.MyTaskRunner <ScriptClass>");
-	            System.exit(MyAction.ERROR);
+	            System.exit(MyScript.ERROR);
 	        }
 	        
 	        // qué script voy a ejecutar
@@ -46,7 +46,7 @@ public class MyTaskRunner
         catch (Throwable t)
         {
             t.printStackTrace();
-            System.exit(MyAction.ERROR);
+            System.exit(MyScript.ERROR);
         }
     }
 

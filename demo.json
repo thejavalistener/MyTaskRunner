@@ -4,15 +4,16 @@
     "baseDir": "${var:get:drive}/temp/DemoScript",
     "downloadDir": "${var:get:baseDir}/download",
     "zipFile": "${var:get:baseDir}/sample_${time:now:yyyyMMdd-HHmm}.zip",
-    "unzipDir": "${var:get:baseDir}/unzipped"
+    "unzipDir": "${var:get:baseDir}/unzipped",    
   },
   "steps": [
-    { "action": "MkDir", "path": "${var:get:baseDir}" },
-    { "action": "MkDir", "path": "${var:get:downloadDir}" },
+    { "action": "MkDir", "to": "${var:get:baseDir}" },
+    { "action": "MkDir", "to": "${var:get:downloadDir}" },
 
     {
-      "action": "Download",
-      "url": "https://github.com/githubtraining/hellogitworld/archive/refs/heads/master.zip",
+      "ifdef":"eskipear",
+      "action": "Download", 
+      "from": "https://github.com/githubtraining/hellogitworld/archive/refs/heads/master.zip",
       "to": "${var:get:downloadDir}/original.zip",
       "showProgress": true,
       "stopScriptOnError": true
@@ -28,7 +29,7 @@
 
     {
       "action": "Remove",
-      "path": "${var:get:baseDir}/noExiste",
+      "from": "${var:get:baseDir}/noExiste",
       "stopScriptOnError": false
     },
 
@@ -42,7 +43,7 @@
 
     {
       "action": "Remove",
-      "path": "${var:get:downloadDir}",
+      "from": "${var:get:downloadDir}",
       "stopScriptOnError": true
     }
   ]

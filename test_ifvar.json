@@ -1,0 +1,33 @@
+{
+  "vars": {
+    "installType": "primerParcial",
+    "build": "10"
+  },
+
+  "steps": [
+    {
+      "action": "FileCopy",
+      "from": "a.txt",
+      "to": "b.txt",
+      "ifvar": "${installType} == primerParcial"
+    },
+    {
+      "action": "FileCopy",
+      "from": "a.txt",
+      "to": "c.txt",
+      "ifvar": "${installType} == final"
+    },
+    {
+      "action": "FileCopy",
+      "from": "a.txt",
+      "to": "d.txt",
+      "ifvar": "${build} >>> 5"
+    },
+    {
+      "action": "FileCopy",
+      "from": "a.txt",
+      "to": "e.txt",
+      "ifvar": "${build} << 5"
+    }
+  ]
+}

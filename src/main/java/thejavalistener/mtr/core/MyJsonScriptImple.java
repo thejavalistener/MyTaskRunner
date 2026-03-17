@@ -1,4 +1,4 @@
-package thejavalistener.mtr.json;
+package thejavalistener.mtr.core;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,8 +10,6 @@ import java.util.Map;
 import com.google.gson.Gson;
 
 import thejavalistener.fwkutils.string.MyString;
-import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.MyScript;
 import thejavalistener.mtr.json.expr.ExpressionEngine;
 import thejavalistener.mtr.json.expr.ns.SysNamespaceHandler;
 import thejavalistener.mtr.json.expr.ns.TimeNamespaceHandler;
@@ -73,10 +71,54 @@ public class MyJsonScriptImple extends MyScript
 
 				MyAction action=(MyAction)clazz.getDeclaredConstructor().newInstance();
 
+				boolean mustSkipped=false;
+
+				// evalúo ifdef
+				Object ifdefRaw=st.get("ifdef");
+				if(!mustSkipped && ifdefRaw instanceof String s)
+				{
+					String ifdef=engine.resolve(s);
+					if(!vars.containsKey(ifdef)) mustSkipped=true;
+				}
+
+				// evalúo ifndef
+				Object ifndefRaw=st.get("ifndef");
+				if(!mustSkipped && ifndefRaw instanceof String s)
+				{
+					String ifndef=engine.resolve(s);
+					if(vars.containsKey(ifndef)) mustSkipped=true;
+				}
+				
+				// evalúo ifvar
+				Object ifVarRaw = st.get("ifvar");
+				if(!mustSkipped && ifVarRaw instanceof String s)
+				{
+					String expr = engine.resolve(s).trim();
+
+					if(!_evalIfVar(expr))
+					{
+						mustSkipped = true;						
+					}
+				}
+				
+//				// evalúo executeIf
+//				Object doExecuteIfRaw=st.get("executeIf");
+//				if(!mustSkipped && doExecuteIfRaw instanceof String s)
+//				{
+//					String executeIf=engine.resolve(s);
+//					if(!Boolean.parseBoolean(executeIf)) mustSkipped=true;
+//				}
+
+				action.setMustSkipped(mustSkipped);
+
 				for(var entry:st.entrySet())
 				{
 					String name=entry.getKey();
 					if("action".equals(name)) continue;
+					if("ifdef".equals(name)) continue;
+					if("ifndef".equals(name)) continue;
+					//if("executeIf".equals(name)) continue;
+				    if("ifvar".equals(name)) continue;   // ← AGREGAR ESTO
 
 					Object raw=entry.getValue();
 					if(raw==null) continue;
@@ -101,8 +143,9 @@ public class MyJsonScriptImple extends MyScript
 		}
 
 		return ret;
-	}
-
+	}	
+	
+	
 	/*
 	 * ===================== Reflection helper =====================
 	 */
@@ -162,6 +205,47 @@ public class MyJsonScriptImple extends MyScript
 		}
 	}
 
+	private boolean _evalIfVar(String expr)
+	{
+		if(expr.contains("=="))
+		{
+			String[] p = expr.split("==",2);
+			return p[0].trim().equals(p[1].trim());
+		}
+
+		if(expr.contains("!="))
+		{
+			String[] p = expr.split("!=",2);
+			return !p[0].trim().equals(p[1].trim());
+		}
+
+		if(expr.contains(">="))
+		{
+			String[] p = expr.split(">=",2);
+			return Long.parseLong(p[0].trim()) >= Long.parseLong(p[1].trim());
+		}
+
+		if(expr.contains("<="))
+		{
+			String[] p = expr.split("<=",2);
+			return Long.parseLong(p[0].trim()) <= Long.parseLong(p[1].trim());
+		}
+
+		if(expr.contains(">"))
+		{
+			String[] p = expr.split(">",2);
+			return Long.parseLong(p[0].trim()) > Long.parseLong(p[1].trim());
+		}
+
+		if(expr.contains("<"))
+		{
+			String[] p = expr.split("<",2);
+			return Long.parseLong(p[0].trim()) < Long.parseLong(p[1].trim());
+		}
+
+		throw new RuntimeException("Invalid ifvar expression: "+expr);
+	}
+	
 	static class ScriptJson
 	{
 		Map<String,String> vars;

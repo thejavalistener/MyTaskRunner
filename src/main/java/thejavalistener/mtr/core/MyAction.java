@@ -3,26 +3,23 @@ package thejavalistener.mtr.core;
 import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.fwkutils.console.MyConsoles;
 import thejavalistener.fwkutils.console.Progress;
-import thejavalistener.fwkutils.string.MyString;
+//import thejavalistener.mtr.json.expr.ExpressionEngine;
 
 public abstract class MyAction
 {
-	public static final int SUCCESS=0;
-	public static final int ERROR=1;
-	public static final int IO_ERROR=2;
-	public static final int NETWORK_ERROR=3;
-
-	private String doIf;
+	private String executeIf;
 	private boolean showProgress=false;
 	private boolean stopScriptOnError=true;
 	protected final String[] args;
 
+	private String ifdef;
+	private String ifndef;
+
+	private boolean mustSkipped = false;
+	
 	public abstract String getVerb();
-
 	public abstract String[] getDescription();
-
 	public abstract String validate(ValidationContext ctx); // null = OK
-
 	protected abstract void doAction(Progress p) throws Exception;
 
 	public void execute() throws Exception
@@ -45,13 +42,13 @@ public abstract class MyAction
 		console.print(space);
 	}
 
-	protected boolean checkConditional()
+	protected boolean checkExecuteIf()
 	{
-		if(doIf==null) return true;
+		if(executeIf==null) return true;
 
 		throw new RuntimeException(getClass().getSimpleName()+" no soporta 'conditional'");
 	}
-
+	
 	public boolean isShowProgress()
 	{
 		return showProgress;
@@ -71,17 +68,15 @@ public abstract class MyAction
 	{
 		this.stopScriptOnError=stopScriptOnError;
 	}
-
-	public String getDoIf()
+	
+	public String getExecuteIf()
 	{
-		return doIf;
+		return executeIf;
 	}
-
-	public void setDoIf(String doIf)
+	public void setExecuteIf(String executeIf)
 	{
-		this.doIf=doIf;
+		this.executeIf=executeIf;
 	}
-
 	protected MyAction(String... args)
 	{
 		this.args=(args==null?new String[0]:args);
@@ -95,5 +90,33 @@ public abstract class MyAction
 	protected final boolean hasArg(int i)
 	{
 		return i>=0&&i<args.length;
+	}
+
+	public String getIfdef()
+	{
+		return ifdef;
+	}
+
+	public void setIfdef(String ifdef)
+	{
+		this.ifdef=ifdef;
+	}
+
+	public String getIfndef()
+	{
+		return ifndef;
+	}
+
+	public void setIfndef(String ifndef)
+	{
+		this.ifndef=ifndef;
+	}
+	public boolean isMustSkipped()
+	{
+		return mustSkipped;
+	}
+	public void setMustSkipped(boolean mustSkipped)
+	{
+		this.mustSkipped=mustSkipped;
 	}
 }
