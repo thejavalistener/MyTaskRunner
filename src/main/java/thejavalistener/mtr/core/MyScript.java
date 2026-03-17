@@ -80,24 +80,15 @@ public abstract class MyScript
 			// presentación: Copiando D:/temp/equis a C:/unDir/zeta
 			_log(a);
 			
-			if( a.isMustSkipped() )
+			a.checkExecuteIf();
+
+			
+			if( a.isMustSkipped() || !a.checkExecuteIf() )
 			{
 	            console.println("[b][fg(GREEN)]Skiped[x][x] ");
 	            return;				
 			}
 			
-//			if(!_checkDefines(a))
-//	        {
-//	            console.println("[b][fg(GREEN)]Skiped[x][x] ");
-//	            return;
-//	        }
-//			
-//			if(!a.checkDoIf())
-//			{
-//				console.println("[b][fg(GREEN)]Skiped[x][x] ");
-//				return;
-//			}
-
 			// ejecuto la acción
 			a.execute();
 

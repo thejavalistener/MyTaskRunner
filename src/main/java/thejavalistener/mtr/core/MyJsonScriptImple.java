@@ -101,14 +101,6 @@ public class MyJsonScriptImple extends MyScript
 					}
 				}
 				
-//				// evalúo executeIf
-//				Object doExecuteIfRaw=st.get("executeIf");
-//				if(!mustSkipped && doExecuteIfRaw instanceof String s)
-//				{
-//					String executeIf=engine.resolve(s);
-//					if(!Boolean.parseBoolean(executeIf)) mustSkipped=true;
-//				}
-
 				action.setMustSkipped(mustSkipped);
 
 				for(var entry:st.entrySet())

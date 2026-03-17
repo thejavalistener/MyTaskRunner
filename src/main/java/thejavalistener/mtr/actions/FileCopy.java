@@ -126,7 +126,6 @@ public class FileCopy extends MyAction
 		{
 			case exists:
 				return Files.exists(dest);
-
 			case notExists:
 				return !Files.exists(dest);
 
