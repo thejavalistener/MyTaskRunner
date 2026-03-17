@@ -46,7 +46,7 @@ public class FileCopy extends MyAction
 	{
 		Path pFrom=Paths.get(from).normalize();
 		Path pTo=Paths.get(to).normalize();
-
+		
 		if(!Files.exists(pFrom)||!Files.isRegularFile(pFrom)) throw new java.io.IOException("Source file does not exist: "+from);
 
 		Path finalDest=resolveDestination(pFrom,pTo,to);
@@ -118,9 +118,23 @@ public class FileCopy extends MyAction
 		String c=getExecuteIf();
 		if(c==null||c.isBlank()) return true;
 
-		Path src=Paths.get(from);
-		Path dest=Paths.get(to);
+//		Path src=Paths.get(from);
+//		Path dest=Paths.get(to);
 
+		Path src = Paths.get(from).normalize();
+		Path pTo = Paths.get(to).normalize();
+
+		Path dest;
+		try
+		{
+		    dest = resolveDestination(src, pTo, to);
+		}
+		catch(Exception e)
+		{
+		    throw new RuntimeException(e);
+		}		
+		
+		
 		ExecuteIf opt = ExecuteIf.valueOf(c);
 		switch(opt)
 		{

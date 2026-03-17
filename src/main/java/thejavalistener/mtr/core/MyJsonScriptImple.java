@@ -199,6 +199,48 @@ public class MyJsonScriptImple extends MyScript
 
 	private boolean _evalIfVar(String expr)
 	{
+		// --- NOT IN ---
+		if(expr.matches(".*\\s+not\\s+in\\s*\\(.*\\).*"))
+		{
+		    String[] p = expr.split("\\s+not\\s+in\\s*",2);
+
+		    String left = p[0].trim();
+		    String right = p[1].trim();
+
+		    if(!right.startsWith("(") || !right.endsWith(")"))
+		        throw new RuntimeException("Invalid 'not in' syntax: "+expr);
+
+		    String values = right.substring(1, right.length()-1);
+
+		    for(String item : values.split(","))
+		    {
+		        if(left.equals(item.trim()))
+		            return false;
+		    }
+		    return true;
+		}
+
+		// --- IN ---
+		if(expr.matches(".*\\s+in\\s*\\(.*\\).*"))
+		{
+		    String[] p = expr.split("\\s+in\\s*\\(",2);
+
+		    String left = p[0].trim();
+		    String right = "(" + p[1].trim(); // recupero '('
+
+		    if(!right.startsWith("(") || !right.endsWith(")"))
+		        throw new RuntimeException("Invalid 'in' syntax: "+expr);
+
+		    String values = right.substring(1, right.length()-1);
+
+		    for(String item : values.split(","))
+		    {
+		        if(left.equals(item.trim()))
+		            return true;
+		    }
+		    return false;
+		}
+		
 		if(expr.contains("=="))
 		{
 			String[] p = expr.split("==",2);

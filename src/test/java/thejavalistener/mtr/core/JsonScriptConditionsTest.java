@@ -14,8 +14,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 import thejavalistener.mtr.actions.FileCopy;
 
-public class JsonScriptConditionsTest {
-
+public class JsonScriptConditionsTest 
+{
     @TempDir
     Path tmp;
 
@@ -184,5 +184,150 @@ public class JsonScriptConditionsTest {
 
         FileCopy fc = (FileCopy) actions.get(0);
         assertEquals("notExists", fc.getExecuteIf());
+    }
+    
+    @Test
+    void load_ifvar_in_true() throws Exception
+    {
+        String json = """
+        {
+          "vars": {
+            "installType":"1"
+          },
+          "steps": [
+            {
+              "action":"FileCopy",
+              "from":"D:/tmp/a.txt",
+              "to":"D:/tmp/b.txt",
+              "ifvar":"${installType} in (1,2,3)"
+            }
+          ]
+        }
+        """;
+
+        Path file = tmp.resolve("ifvar_in_true.json");
+        Files.writeString(file, json);
+
+        MyScript script = JsonScriptLoader.load(file);
+        List<MyAction> actions = script.getScriptActions();
+
+        assertEquals(1, actions.size());
+        assertFalse(actions.get(0).isMustSkipped());
+    }
+    
+    @Test
+    void load_ifvar_in_false() throws Exception
+    {
+        String json = """
+        {
+          "vars": {
+            "installType":"4"
+          },
+          "steps": [
+            {
+              "action":"FileCopy",
+              "from":"D:/tmp/a.txt",
+              "to":"D:/tmp/b.txt",
+              "ifvar":"${installType} in (1,2,3)"
+            }
+          ]
+        }
+        """;
+
+        Path file = tmp.resolve("ifvar_in_false.json");
+        Files.writeString(file, json);
+
+        MyScript script = JsonScriptLoader.load(file);
+        List<MyAction> actions = script.getScriptActions();
+
+        assertEquals(1, actions.size());
+        assertTrue(actions.get(0).isMustSkipped());
+    }
+    
+    @Test
+    void load_ifvar_not_in_true() throws Exception
+    {
+        String json = """
+        {
+          "vars": {
+            "installType":"4"
+          },
+          "steps": [
+            {
+              "action":"FileCopy",
+              "from":"D:/tmp/a.txt",
+              "to":"D:/tmp/b.txt",
+              "ifvar":"${installType} not in (1,2,3)"
+            }
+          ]
+        }
+        """;
+
+        Path file = tmp.resolve("ifvar_not_in_true.json");
+        Files.writeString(file, json);
+
+        MyScript script = JsonScriptLoader.load(file);
+        List<MyAction> actions = script.getScriptActions();
+
+        assertEquals(1, actions.size());
+        assertFalse(actions.get(0).isMustSkipped());
+    }
+    
+    @Test
+    void load_ifvar_not_in_false() throws Exception
+    {
+        String json = """
+        {
+          "vars": {
+            "installType":"2"
+          },
+          "steps": [
+            {
+              "action":"FileCopy",
+              "from":"D:/tmp/a.txt",
+              "to":"D:/tmp/b.txt",
+              "ifvar":"${installType} not in (1,2,3)"
+            }
+          ]
+        }
+        """;
+
+        Path file = tmp.resolve("ifvar_not_in_false.json");
+        Files.writeString(file, json);
+
+        MyScript script = JsonScriptLoader.load(file);
+        List<MyAction> actions = script.getScriptActions();
+
+        assertEquals(1, actions.size());
+        assertTrue(actions.get(0).isMustSkipped());
+    }
+    
+    @Test
+    void load_ifvar_in_with_spaces_and_strings() throws Exception
+    {
+        String json = """
+        {
+          "vars": {
+            "curso":"Proyecto_01"
+          },
+          "steps": [
+            {
+              "action":"FileCopy",
+              "from":"D:/tmp/a.txt",
+              "to":"D:/tmp/b.txt",
+              "ifvar":"${curso} in ( Proyecto_01 , Proyecto_02 )"
+            }
+          ]
+        }
+        """;
+
+        Path file = tmp.resolve("ifvar_in_spaces_strings.json");
+        Files.writeString(file, json);
+
+        MyScript script = JsonScriptLoader.load(file);
+        List<MyAction> actions = script.getScriptActions();
+
+        assertEquals(1, actions.size());
+        assertFalse(actions.get(0).isMustSkipped());
     }
 }
