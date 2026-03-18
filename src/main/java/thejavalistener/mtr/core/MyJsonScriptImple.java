@@ -110,7 +110,7 @@ public class MyJsonScriptImple extends MyScript
 					if("ifdef".equals(name)) continue;
 					if("ifndef".equals(name)) continue;
 					//if("executeIf".equals(name)) continue;
-				    if("ifvar".equals(name)) continue;   // ← AGREGAR ESTO
+				    if("ifvar".equals(name)) continue;   
 
 					Object raw=entry.getValue();
 					if(raw==null) continue;

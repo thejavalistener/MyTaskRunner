@@ -75,6 +75,44 @@ public class Remove extends MyAction
         });
     }
     
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if(from == null || from.isBlank())
+//        {
+//            return "'from' es obligatorio";
+//        }
+//
+//        Path p;
+//
+//        try
+//        {
+//            p = Paths.get(from);
+//        }
+//        catch(Exception e)
+//        {
+//            return "from inválido: " + from + " (" + e.getMessage() + ")";
+//        }
+//
+//        if(ctx.exists(p))
+//        {
+//            ctx.remove(p);
+//            return null;
+//        }
+//
+//        if(Files.exists(p))
+//        {
+//            return null;
+//        }
+//
+//        if(isStopScriptOnError())
+//        {
+//            return "no existe: " + from;
+//        }
+//
+//        return null;
+//    }
+    
     @Override
     public String validate(ValidationContext ctx)
     {
@@ -83,33 +121,22 @@ public class Remove extends MyAction
             return "'from' es obligatorio";
         }
 
-        Path p;
-
         try
         {
-            p = Paths.get(from);
+            Paths.get(from);
         }
         catch(Exception e)
         {
             return "from inválido: " + from + " (" + e.getMessage() + ")";
         }
 
-        if(ctx.exists(p))
+        // tracking liviano: eliminamos del ctx si estaba
+        if(ctx != null)
         {
+            Path p = Paths.get(from).normalize();
             ctx.remove(p);
-            return null;
-        }
-
-        if(Files.exists(p))
-        {
-            return null;
-        }
-
-        if(isStopScriptOnError())
-        {
-            return "no existe: " + from;
         }
 
         return null;
-    }
+    }    
 }

@@ -163,6 +163,65 @@ public class Zip extends MyAction
         if (pl != null) pl.setPercent(100,"");
     }    
     
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if(from == null || from.isBlank())
+//        {
+//            return "'from' es obligatorio";
+//        }
+//
+//        if(to == null || to.isBlank())
+//        {
+//            return "'to' es obligatorio";
+//        }
+//
+//        Path sourcePath;
+//        Path zipPath;
+//
+//        try
+//        {
+//            sourcePath = Paths.get(from);
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+//        }
+//
+//        try
+//        {
+//            zipPath = Paths.get(to);
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+//        }
+//
+//        if(!ctx.exists(sourcePath) && !java.nio.file.Files.exists(sourcePath))
+//        {
+//            return "no existe el origen: " + from;
+//        }
+//
+//        if(!ctx.isDirectory(sourcePath) && !java.nio.file.Files.isDirectory(sourcePath))
+//        {
+//            return "el origen no es un directorio: " + from;
+//        }
+//        
+//        if(!ctx.isDirectory(sourcePath))
+//        {
+//            return "el origen no es un directorio: " + from;
+//        }
+//
+////        if(ctx.exists(zipPath))
+////        {
+////            return "el destino ya fue creado previamente en el script: " + to;
+////        }
+//
+//        ctx.addFile(zipPath);
+//
+//        return null;
+//    }
+
     @Override
     public String validate(ValidationContext ctx)
     {
@@ -176,12 +235,9 @@ public class Zip extends MyAction
             return "'to' es obligatorio";
         }
 
-        Path sourcePath;
-        Path zipPath;
-
         try
         {
-            sourcePath = Paths.get(from);
+            Paths.get(from);
         }
         catch(Exception e)
         {
@@ -190,36 +246,24 @@ public class Zip extends MyAction
 
         try
         {
-            zipPath = Paths.get(to);
+            Paths.get(to);
         }
         catch(Exception e)
         {
             return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
         }
 
-        if(!ctx.exists(sourcePath) && !java.nio.file.Files.exists(sourcePath))
+        // tracking liviano
+        if(ctx != null)
         {
-            return "no existe el origen: " + from;
-        }
+            Path zipPath = Paths.get(to).normalize();
+            Path parent = zipPath.getParent();
 
-        if(!ctx.isDirectory(sourcePath) && !java.nio.file.Files.isDirectory(sourcePath))
-        {
-            return "el origen no es un directorio: " + from;
+            if(parent != null) ctx.addDirectory(parent);
+            ctx.addFile(zipPath);
         }
-        
-        if(!ctx.isDirectory(sourcePath))
-        {
-            return "el origen no es un directorio: " + from;
-        }
-
-//        if(ctx.exists(zipPath))
-//        {
-//            return "el destino ya fue creado previamente en el script: " + to;
-//        }
-
-        ctx.addFile(zipPath);
 
         return null;
-    }
+    }    
     
 }

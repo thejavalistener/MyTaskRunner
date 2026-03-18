@@ -162,86 +162,152 @@ public class FileCopy extends MyAction
 		}
 	}
 
+//	@Override
+//	public String validate(ValidationContext ctx)
+//	{
+//		String c=getExecuteIf();
+//		if(c!=null&&!c.isBlank())
+//		{
+//			switch(c)
+//			{
+//				case "exists":
+//				case "notExists":
+//				case "notExistsOrIsNewer":
+//					break;
+//
+//				default:
+//				{
+//					String mssg="doIf: ["+c+"] not allowed. Must be: exists, notExists or notExistsOrIsNewer: ";
+//					throw new IllegalArgumentException(mssg);
+//				}
+//			}
+//		}
+//
+//		if(from==null||from.isBlank()) return "'from' es obligatorio";
+//
+//		if(to==null||to.isBlank()) return "'to' es obligatorio";
+//
+//		Path pFrom;
+//		Path pTo;
+//
+//		try
+//		{
+//			pFrom=Paths.get(from).normalize();
+//		}
+//		catch(Exception e)
+//		{
+//			return "path 'from' inválido: "+from+" ("+e.getMessage()+")";
+//		}
+//
+//		try
+//		{
+//			pTo=Paths.get(to).normalize();
+//		}
+//		catch(Exception e)
+//		{
+//			return "path 'to' inválido: "+to+" ("+e.getMessage()+")";
+//		}
+//
+//		// Verificar origen
+//		if(!ctx.exists(pFrom)&&!Files.exists(pFrom)) return "no existe el archivo origen (según script): "+from;
+//
+//		if(!ctx.isFile(pFrom,true)&&!Files.isRegularFile(pFrom)) return "el origen no es un archivo: "+from;
+//
+//		boolean forceDir=endsWithSep(to);
+//
+//		boolean toExistsAsDir=ctx.isDirectory(pTo,true)||Files.isDirectory(pTo);
+//
+//		Path finalDest;
+//
+//		if(forceDir)
+//		{
+//			if(Files.exists(pTo)&&!Files.isDirectory(pTo)) return "'to' es directorio pero existe como archivo: "+to;
+//
+//			ctx.addDirectory(pTo);
+//			finalDest=pTo.resolve(pFrom.getFileName()).normalize();
+//		}
+//		else if(toExistsAsDir)
+//		{
+//			finalDest=pTo.resolve(pFrom.getFileName()).normalize();
+//		}
+//		else
+//		{
+//			finalDest=pTo.normalize();
+//		}
+//
+//		// 🔥 aseguramos consistencia del árbol en el ctx
+//		Path parent=finalDest.getParent();
+//		if(parent!=null) ctx.addDirectory(parent);
+//
+//		ctx.addFile(finalDest);
+//
+//		return null;
+//	}
+
 	@Override
 	public String validate(ValidationContext ctx)
 	{
-		String c=getExecuteIf();
-		if(c!=null&&!c.isBlank())
-		{
-			switch(c)
-			{
-				case "exists":
-				case "notExists":
-				case "notExistsOrIsNewer":
-					break;
+	    String c = getExecuteIf();
+	    if(c != null && !c.isBlank())
+	    {
+	        switch(c)
+	        {
+	            case "exists":
+	            case "notExists":
+	            case "notExistsOrIsNewer":
+	                break;
+	            default:
+	                return "executeIf inválido: " + c;
+	        }
+	    }
 
-				default:
-				{
-					String mssg="doIf: ["+c+"] not allowed. Must be: exists, notExists or notExistsOrIsNewer: ";
-					throw new IllegalArgumentException(mssg);
-				}
-			}
-		}
+	    if(from == null || from.isBlank())
+	        return "'from' es obligatorio";
 
-		if(from==null||from.isBlank()) return "'from' es obligatorio";
+	    if(to == null || to.isBlank())
+	        return "'to' es obligatorio";
 
-		if(to==null||to.isBlank()) return "'to' es obligatorio";
+	    Path pFrom;
+	    Path pTo;
 
-		Path pFrom;
-		Path pTo;
+	    try
+	    {
+	        pFrom = Paths.get(from).normalize();
+	    }
+	    catch(Exception e)
+	    {
+	        return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+	    }
 
-		try
-		{
-			pFrom=Paths.get(from).normalize();
-		}
-		catch(Exception e)
-		{
-			return "path 'from' inválido: "+from+" ("+e.getMessage()+")";
-		}
+	    try
+	    {
+	        pTo = Paths.get(to).normalize();
+	    }
+	    catch(Exception e)
+	    {
+	        return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+	    }
 
-		try
-		{
-			pTo=Paths.get(to).normalize();
-		}
-		catch(Exception e)
-		{
-			return "path 'to' inválido: "+to+" ("+e.getMessage()+")";
-		}
+	    // tracking liviano
+	    boolean forceDir = endsWithSep(to);
+	    Path finalDest;
 
-		// Verificar origen
-		if(!ctx.exists(pFrom)&&!Files.exists(pFrom)) return "no existe el archivo origen (según script): "+from;
+	    if(forceDir)
+	    {
+	        finalDest = pTo.resolve(pFrom.getFileName()).normalize();
+	        ctx.addDirectory(pTo);
+	    }
+	    else
+	    {
+	        finalDest = pTo.normalize();
+	    }
 
-		if(!ctx.isFile(pFrom,true)&&!Files.isRegularFile(pFrom)) return "el origen no es un archivo: "+from;
+	    Path parent = finalDest.getParent();
+	    if(parent != null) ctx.addDirectory(parent);
 
-		boolean forceDir=endsWithSep(to);
+	    ctx.addFile(finalDest);
 
-		boolean toExistsAsDir=ctx.isDirectory(pTo,true)||Files.isDirectory(pTo);
-
-		Path finalDest;
-
-		if(forceDir)
-		{
-			if(Files.exists(pTo)&&!Files.isDirectory(pTo)) return "'to' es directorio pero existe como archivo: "+to;
-
-			ctx.addDirectory(pTo);
-			finalDest=pTo.resolve(pFrom.getFileName()).normalize();
-		}
-		else if(toExistsAsDir)
-		{
-			finalDest=pTo.resolve(pFrom.getFileName()).normalize();
-		}
-		else
-		{
-			finalDest=pTo.normalize();
-		}
-
-		// 🔥 aseguramos consistencia del árbol en el ctx
-		Path parent=finalDest.getParent();
-		if(parent!=null) ctx.addDirectory(parent);
-
-		ctx.addFile(finalDest);
-
-		return null;
+	    return null;
 	}
 	
 	private enum ExecuteIf

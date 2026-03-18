@@ -5,7 +5,6 @@ import java.awt.Color;
 import thejavalistener.fwkutils.awt.variuos.MyAwt;
 import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.fwkutils.console.MyConsoles;
-import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.MyJsonScriptImple;
 import thejavalistener.mtr.core.MyScript;
 

@@ -76,14 +76,25 @@ public class FileCopyTest
         assertTrue(Files.exists(dest));
     }
 
+//    @Test
+//    void error_if_source_not_exists()
+//    {
+//        FileCopy fc = new FileCopy();
+//        fc.setFrom(tmp.resolve("nope.txt").toString());
+//        fc.setTo(tmp.resolve("x.txt").toString());
+//
+//        ValidationContext ctx = new ValidationContext();
+//        assertNotNull(fc.validate(ctx));
+//    }
+    
     @Test
-    void error_if_source_not_exists()
+    void no_error_if_source_not_exists_in_validate()
     {
         FileCopy fc = new FileCopy();
         fc.setFrom(tmp.resolve("nope.txt").toString());
         fc.setTo(tmp.resolve("x.txt").toString());
 
         ValidationContext ctx = new ValidationContext();
-        assertNotNull(fc.validate(ctx));
-    }
+        assertNull(fc.validate(ctx));
+    }    
 }

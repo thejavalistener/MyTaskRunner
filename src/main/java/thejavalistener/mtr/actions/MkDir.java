@@ -42,6 +42,35 @@ public class MkDir extends MyAction
         if (p != null) p.setPercent(100,"");
     }
     
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if (to == null || to.isBlank())
+//            return "'to' es obligatorio";
+//
+//        Path dir;
+//
+//        try
+//        {
+//            dir = Paths.get(to).normalize();
+//        }
+//        catch (Exception e)
+//        {
+//            return "path inválido: " + to + " (" + e.getMessage() + ")";
+//        }
+//
+//        if (ctx != null && ctx.exists(dir))
+//        {
+//            if (!ctx.isDirectory(dir))
+//                return "ya existe pero no es un directorio: " + to;
+//        }
+//
+//        if (ctx != null)
+//            ctx.addDirectory(dir);
+//
+//        return null;
+//    }
+    
     @Override
     public String validate(ValidationContext ctx)
     {
@@ -59,14 +88,9 @@ public class MkDir extends MyAction
             return "path inválido: " + to + " (" + e.getMessage() + ")";
         }
 
-        if (ctx != null && ctx.exists(dir))
-        {
-            if (!ctx.isDirectory(dir))
-                return "ya existe pero no es un directorio: " + to;
-        }
-
         if (ctx != null)
             ctx.addDirectory(dir);
 
         return null;
-    }}
+    }    
+}

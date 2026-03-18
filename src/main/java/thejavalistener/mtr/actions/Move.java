@@ -57,6 +57,61 @@ public class Move extends MyAction
         if (p != null) p.setPercent(100,"");
     }
     
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if(from == null || from.isBlank())
+//        {
+//            return "'from' es obligatorio";
+//        }
+//
+//        if(to == null || to.isBlank())
+//        {
+//            return "'to' es obligatorio";
+//        }
+//
+//        Path pFrom;
+//        Path pTo;
+//
+//        try
+//        {
+//            pFrom = Paths.get(from);
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+//        }
+//
+//        try
+//        {
+//            pTo = Paths.get(to);
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+//        }
+//
+//        if(!ctx.exists(pFrom))
+//        {
+//            return "no existe el origen (según script): " + from;
+//        }
+//
+//        if(ctx.exists(pTo))
+//        {
+//            return "el destino ya existe (según script): " + to;
+//        }
+//
+//        if(ctx.isDirectory(pFrom))
+//        {
+//            ctx.addDirectory(pTo);
+//        }
+//        else
+//        {
+//            ctx.addFile(pTo);
+//        }
+//
+//        return null;
+//    }
     @Override
     public String validate(ValidationContext ctx)
     {
@@ -75,7 +130,7 @@ public class Move extends MyAction
 
         try
         {
-            pFrom = Paths.get(from);
+            pFrom = Paths.get(from).normalize();
         }
         catch(Exception e)
         {
@@ -84,33 +139,23 @@ public class Move extends MyAction
 
         try
         {
-            pTo = Paths.get(to);
+            pTo = Paths.get(to).normalize();
         }
         catch(Exception e)
         {
             return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
         }
 
-        if(!ctx.exists(pFrom))
+        // tracking liviano
+        if(ctx != null)
         {
-            return "no existe el origen (según script): " + from;
-        }
+            Path parent = pTo.getParent();
+            if(parent != null) ctx.addDirectory(parent);
 
-        if(ctx.exists(pTo))
-        {
-            return "el destino ya existe (según script): " + to;
-        }
-
-        if(ctx.isDirectory(pFrom))
-        {
-            ctx.addDirectory(pTo);
-        }
-        else
-        {
+            // no sabemos si es file o dir → asumimos file por defecto
             ctx.addFile(pTo);
         }
 
         return null;
     }
-
 }

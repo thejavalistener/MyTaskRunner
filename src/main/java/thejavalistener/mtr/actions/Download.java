@@ -105,6 +105,50 @@ public class Download extends MyAction
         }
     }
     
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if(from == null || from.isBlank())
+//        {
+//            return "'from' es obligatorio";
+//        }
+//
+//        if(to == null || to.isBlank())
+//        {
+//            return "'to' es obligatorio";
+//        }
+//
+//        try
+//        {
+//            URI.create(from);
+//        }
+//        catch(Exception e)
+//        {
+//            return "url inválida: " + from + " (" + e.getMessage() + ")";
+//        }
+//
+//        Path dest;
+//
+//        try
+//        {
+//            dest = Paths.get(to);
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+//        }
+//
+//        if(ctx.exists(dest) && ctx.isDirectory(dest))
+//        {
+//            return "el destino existe y es un directorio: " + to;
+//        }
+//
+//        ctx.addFile(dest);
+//
+//        return null;
+//    }
+
+    
     @Override
     public String validate(ValidationContext ctx)
     {
@@ -127,25 +171,19 @@ public class Download extends MyAction
             return "url inválida: " + from + " (" + e.getMessage() + ")";
         }
 
-        Path dest;
-
         try
         {
-            dest = Paths.get(to);
+            Paths.get(to);
         }
         catch(Exception e)
         {
             return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
         }
 
-        if(ctx.exists(dest) && ctx.isDirectory(dest))
-        {
-            return "el destino existe y es un directorio: " + to;
-        }
-
+        // tracking liviano
+        Path dest = Paths.get(to).normalize();
         ctx.addFile(dest);
 
         return null;
     }
-
 }

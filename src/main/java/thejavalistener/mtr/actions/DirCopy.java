@@ -121,6 +121,54 @@ public class DirCopy extends MyAction
         return sum[0];
     }
 
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if (from == null || from.isBlank())
+//            return "'from' es obligatorio";
+//
+//        if (to == null || to.isBlank())
+//            return "'to' es obligatorio";
+//
+//        Path srcRoot;
+//        Path dstBase;
+//
+//        try
+//        {
+//            srcRoot = Paths.get(from).normalize();
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+//        }
+//
+//        try
+//        {
+//            dstBase = Paths.get(to).normalize();
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+//        }
+//
+//        if (!ctx.exists(srcRoot) && !Files.exists(srcRoot))
+//            return "no existe el directorio origen (según script): " + from;
+//
+//        if (!ctx.isDirectory(srcRoot, true) && !Files.isDirectory(srcRoot))
+//            return "el origen no es un directorio: " + from;
+//
+//        if (ctx.exists(dstBase) && !ctx.isDirectory(dstBase, true))
+//            return "el destino existe y no es un directorio: " + to;
+//
+//        // Simulación: se crea dstBase y luego dstBase/srcName
+//        ctx.addDirectory(dstBase);
+//
+//        Path dstRoot = dstBase.resolve(srcRoot.getFileName()).normalize();
+//        ctx.addDirectory(dstRoot);
+//
+//        return null;
+//    }
+    
     @Override
     public String validate(ValidationContext ctx)
     {
@@ -130,12 +178,9 @@ public class DirCopy extends MyAction
         if (to == null || to.isBlank())
             return "'to' es obligatorio";
 
-        Path srcRoot;
-        Path dstBase;
-
         try
         {
-            srcRoot = Paths.get(from).normalize();
+            Paths.get(from).normalize();
         }
         catch(Exception e)
         {
@@ -144,28 +189,21 @@ public class DirCopy extends MyAction
 
         try
         {
-            dstBase = Paths.get(to).normalize();
+            Paths.get(to).normalize();
         }
         catch(Exception e)
         {
             return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
         }
 
-        if (!ctx.exists(srcRoot) && !Files.exists(srcRoot))
-            return "no existe el directorio origen (según script): " + from;
-
-        if (!ctx.isDirectory(srcRoot, true) && !Files.isDirectory(srcRoot))
-            return "el origen no es un directorio: " + from;
-
-        if (ctx.exists(dstBase) && !ctx.isDirectory(dstBase, true))
-            return "el destino existe y no es un directorio: " + to;
-
-        // Simulación: se crea dstBase y luego dstBase/srcName
-        ctx.addDirectory(dstBase);
-
+        // tracking liviano (opcional)
+        Path dstBase = Paths.get(to).normalize();
+        Path srcRoot = Paths.get(from).normalize();
         Path dstRoot = dstBase.resolve(srcRoot.getFileName()).normalize();
+
+        ctx.addDirectory(dstBase);
         ctx.addDirectory(dstRoot);
 
         return null;
-    }
+    }    
 }

@@ -3,6 +3,7 @@ package thejavalistener.mtr.actions;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,14 +61,24 @@ class RemoveTest {
         assertNotNull(r.validate(null));
     }
 
+//    @Test
+//    void validate_fails_if_missing_and_stop_true() {
+//        Remove r = new Remove();
+//        r.setFrom("no-existe-123");
+//        r.setStopScriptOnError(true);
+//
+//        String result = r.validate(new ValidationContext());
+//        assertNotNull(result);
+//
+//    }
+    
     @Test
-    void validate_fails_if_missing_and_stop_true() {
+    void validate_does_not_fail_if_missing_and_stop_true() {
         Remove r = new Remove();
         r.setFrom("no-existe-123");
         r.setStopScriptOnError(true);
 
         String result = r.validate(new ValidationContext());
-        assertNotNull(result);
-
-    }
+        assertNull(result);
+    }    
 }

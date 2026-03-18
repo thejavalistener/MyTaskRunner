@@ -45,6 +45,35 @@ public class GoogleDriveDownload extends MyAction
         return new String[]{ from, "to " + to };
     }
 
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if (from == null || from.isBlank())
+//            return "'url' es obligatorio";
+//
+//        if (to == null || to.isBlank())
+//            return "'to' es obligatorio";
+//
+//        if (!from.contains("drive.google.com"))
+//            return "no es un link válido de Google Drive";
+//
+//        String fileId = extractFileId(from);
+//        if (fileId == null || fileId.isBlank())
+//            return "no se pudo extraer el fileId del link";
+//
+//        try
+//        {
+//            Paths.get(to);
+//        }
+//        catch (Exception e)
+//        {
+//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+//        }
+//
+//        // si querés: validar que el parent exista o sea creable (yo prefiero hacerlo en ejecución)
+//        return null;
+//    }
+
     @Override
     public String validate(ValidationContext ctx)
     {
@@ -70,10 +99,16 @@ public class GoogleDriveDownload extends MyAction
             return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
         }
 
-        // si querés: validar que el parent exista o sea creable (yo prefiero hacerlo en ejecución)
-        return null;
-    }
+        // tracking liviano
+        Path dest = Paths.get(to).normalize();
+        if (dest.getParent() != null)
+            ctx.addDirectory(dest.getParent());
 
+        ctx.addFile(dest);
+
+        return null;
+    }    
+    
     @Override
     protected void doAction(Progress p) throws Exception
     {
@@ -164,19 +199,6 @@ public class GoogleDriveDownload extends MyAction
         if (m2.find()) return m2.group(1);
 
         return null;
-    }
-
-    private static Optional<String> extractConfirmToken(String html)
-    {
-        // patrón común
-        Matcher m = Pattern.compile("confirm=([0-9A-Za-z_\\-]+)").matcher(html);
-        if (m.find()) return Optional.of(m.group(1));
-
-        // a veces viene url-encoded
-        Matcher m2 = Pattern.compile("confirm%3D([0-9A-Za-z_\\-]+)").matcher(html);
-        if (m2.find()) return Optional.of(m2.group(1));
-
-        return Optional.empty();
     }
 
     private static void writeBytesWithProgress(byte[] data, Path dest, Progress p) throws Exception

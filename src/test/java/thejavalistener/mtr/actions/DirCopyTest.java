@@ -1,14 +1,19 @@
 package thejavalistener.mtr.actions;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import thejavalistener.mtr.core.ValidationContext;
-import thejavalistener.fwkutils.console.Progress;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import thejavalistener.fwkutils.console.Progress;
+import thejavalistener.mtr.core.ValidationContext;
 
 class DirCopyTest
 {
@@ -57,8 +62,23 @@ class DirCopyTest
         assertEquals("nuevo", Files.readString(existingDir.resolve("a.txt")));
     }
 
+//    @Test
+//    void error_if_source_is_not_directory() throws Exception
+//    {
+//        Path file = Files.writeString(tmp.resolve("file.txt"), "hola");
+//
+//        DirCopy dc = new DirCopy();
+//        dc.setFrom(file.toString());
+//        dc.setTo(tmp.resolve("dest").toString());
+//
+//        ValidationContext ctx = new ValidationContext();
+//
+//        String err = dc.validate(ctx);
+//        assertNotNull(err);
+//    }
+    
     @Test
-    void error_if_source_is_not_directory() throws Exception
+    void error_if_source_is_not_directory_in_execution() throws Exception
     {
         Path file = Files.writeString(tmp.resolve("file.txt"), "hola");
 
@@ -66,9 +86,6 @@ class DirCopyTest
         dc.setFrom(file.toString());
         dc.setTo(tmp.resolve("dest").toString());
 
-        ValidationContext ctx = new ValidationContext();
-
-        String err = dc.validate(ctx);
-        assertNotNull(err);
+        assertThrows(IOException.class, () -> dc.doAction(null));
     }
 }

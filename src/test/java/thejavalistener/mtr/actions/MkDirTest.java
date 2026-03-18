@@ -1,6 +1,7 @@
 package thejavalistener.mtr.actions;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
@@ -47,18 +48,33 @@ class MkDirTest {
         assertTrue(Files.exists(dir));
     }
 
+//    @Test
+//    void validate_fails_if_path_exists_and_is_file() throws Exception {
+//        Path file = tmp.resolve("x.txt");
+//        Files.writeString(file, "hola");
+//
+//        ValidationContext ctx = new ValidationContext();
+//        ctx.addFile(file); // ajustá si tu API es distinta
+//
+//        MkDir m = new MkDir();
+//        m.setTo(file.toString());
+//
+//        String result = m.validate(ctx);
+//        assertNotNull(result);
+//    }
+    
     @Test
-    void validate_fails_if_path_exists_and_is_file() throws Exception {
+    void validate_allows_path_even_if_ctx_has_file() throws Exception {
         Path file = tmp.resolve("x.txt");
         Files.writeString(file, "hola");
 
         ValidationContext ctx = new ValidationContext();
-        ctx.addFile(file); // ajustá si tu API es distinta
+        ctx.addFile(file);
 
         MkDir m = new MkDir();
         m.setTo(file.toString());
 
         String result = m.validate(ctx);
-        assertNotNull(result);
-    }
+        assertNull(result);
+    }    
 }
