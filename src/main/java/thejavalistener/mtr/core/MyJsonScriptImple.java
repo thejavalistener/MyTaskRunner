@@ -70,6 +70,10 @@ public class MyJsonScriptImple extends MyScript
 //				Class<?> clazz=Class.forName("thejavalistener.mtr.actions."+actionName);
 //				MyAction action=(MyAction)clazz.getDeclaredConstructor().newInstance();
 
+				
+				if(!ActionRegistry.exists(actionName))
+				    throw new RuntimeException("Unknown action: "+actionName);
+				
 				MyAction action=ActionRegistry.create(actionName);
 				
 				boolean mustSkipped=false;

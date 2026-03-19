@@ -49,6 +49,11 @@ public final class ActionRegistry
 
         return clazz.getDeclaredConstructor().newInstance();
     }
+    
+    public static boolean exists(String name)
+    {
+        return actions.containsKey(name);
+    }
 
     public static Set<String> getNames()
     {
