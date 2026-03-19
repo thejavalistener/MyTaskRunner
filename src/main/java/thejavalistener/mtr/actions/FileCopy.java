@@ -118,9 +118,6 @@ public class FileCopy extends MyAction
 		String c=getExecuteIf();
 		if(c==null||c.isBlank()) return true;
 
-//		Path src=Paths.get(from);
-//		Path dest=Paths.get(to);
-
 		Path src = Paths.get(from).normalize();
 		Path pTo = Paths.get(to).normalize();
 
@@ -161,88 +158,6 @@ public class FileCopy extends MyAction
                 throw new RuntimeException("Invalid executeIf option: "+opt+". Allowed values are: "+Arrays.toString(ExecuteIf.values()));
 		}
 	}
-
-//	@Override
-//	public String validate(ValidationContext ctx)
-//	{
-//		String c=getExecuteIf();
-//		if(c!=null&&!c.isBlank())
-//		{
-//			switch(c)
-//			{
-//				case "exists":
-//				case "notExists":
-//				case "notExistsOrIsNewer":
-//					break;
-//
-//				default:
-//				{
-//					String mssg="doIf: ["+c+"] not allowed. Must be: exists, notExists or notExistsOrIsNewer: ";
-//					throw new IllegalArgumentException(mssg);
-//				}
-//			}
-//		}
-//
-//		if(from==null||from.isBlank()) return "'from' es obligatorio";
-//
-//		if(to==null||to.isBlank()) return "'to' es obligatorio";
-//
-//		Path pFrom;
-//		Path pTo;
-//
-//		try
-//		{
-//			pFrom=Paths.get(from).normalize();
-//		}
-//		catch(Exception e)
-//		{
-//			return "path 'from' inválido: "+from+" ("+e.getMessage()+")";
-//		}
-//
-//		try
-//		{
-//			pTo=Paths.get(to).normalize();
-//		}
-//		catch(Exception e)
-//		{
-//			return "path 'to' inválido: "+to+" ("+e.getMessage()+")";
-//		}
-//
-//		// Verificar origen
-//		if(!ctx.exists(pFrom)&&!Files.exists(pFrom)) return "no existe el archivo origen (según script): "+from;
-//
-//		if(!ctx.isFile(pFrom,true)&&!Files.isRegularFile(pFrom)) return "el origen no es un archivo: "+from;
-//
-//		boolean forceDir=endsWithSep(to);
-//
-//		boolean toExistsAsDir=ctx.isDirectory(pTo,true)||Files.isDirectory(pTo);
-//
-//		Path finalDest;
-//
-//		if(forceDir)
-//		{
-//			if(Files.exists(pTo)&&!Files.isDirectory(pTo)) return "'to' es directorio pero existe como archivo: "+to;
-//
-//			ctx.addDirectory(pTo);
-//			finalDest=pTo.resolve(pFrom.getFileName()).normalize();
-//		}
-//		else if(toExistsAsDir)
-//		{
-//			finalDest=pTo.resolve(pFrom.getFileName()).normalize();
-//		}
-//		else
-//		{
-//			finalDest=pTo.normalize();
-//		}
-//
-//		// 🔥 aseguramos consistencia del árbol en el ctx
-//		Path parent=finalDest.getParent();
-//		if(parent!=null) ctx.addDirectory(parent);
-//
-//		ctx.addFile(finalDest);
-//
-//		return null;
-//	}
 
 	@Override
 	public String validate(ValidationContext ctx)

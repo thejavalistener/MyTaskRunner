@@ -26,10 +26,5 @@ public abstract class NamespaceHandler
 	public NamespaceOperation getOperation(String opName)
 	{
 		return operations.get(opName);
-	}
-	
-	public String getDocumentation(String ns)
-	{
-		return null;
-	}
+	}	
 }

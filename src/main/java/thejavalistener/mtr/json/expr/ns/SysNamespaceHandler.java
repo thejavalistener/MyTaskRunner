@@ -13,14 +13,6 @@ public class SysNamespaceHandler extends NamespaceHandler
     }
     
     @Override
-    public String getDocumentation(String opName)
-    {
-    	NamespaceOperation op = getOperation(opName);
-    	
-    	return null;
-    }
-
-    @Override
     public String resolve(String payload) throws Exception
     {
         if (payload == null || payload.isBlank())

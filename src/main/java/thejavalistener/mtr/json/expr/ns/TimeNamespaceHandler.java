@@ -45,13 +45,6 @@ public class TimeNamespaceHandler extends NamespaceHandler
         return dt.format(fmt);
     }
     
-	@Override
-	public String getDocumentation(String opName)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
     class EpochMillis implements NamespaceOperation
     {
         @Override public String getName() { return "epochMillis"; }

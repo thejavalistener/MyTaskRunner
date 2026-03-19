@@ -67,10 +67,11 @@ public class MyJsonScriptImple extends MyScript
 			{
 				String actionName=engine.resolve((String)st.get("action"));
 
-				Class<?> clazz=Class.forName("thejavalistener.mtr.actions."+actionName);
+//				Class<?> clazz=Class.forName("thejavalistener.mtr.actions."+actionName);
+//				MyAction action=(MyAction)clazz.getDeclaredConstructor().newInstance();
 
-				MyAction action=(MyAction)clazz.getDeclaredConstructor().newInstance();
-
+				MyAction action=ActionRegistry.create(actionName);
+				
 				boolean mustSkipped=false;
 
 				// evalúo ifdef

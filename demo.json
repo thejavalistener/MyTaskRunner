@@ -1,0 +1,59 @@
+{
+  "vars": {
+    "base": "testDir",
+    "mode": "A"
+  },
+  "steps": [
+
+    { "action": "Remove", "from": "${base}" },
+
+    { "action": "MkDir", "to": "${base}/in" },
+    { "action": "MkDir", "to": "${base}/out" },
+
+    {
+      "action": "Exec",
+      "command": "cmd /c echo timestamp > ${base}/stamp_${time:now:yyyyMMdd_HHmm}.txt",
+      "opts": "WAIT"
+    },
+
+    { "action": "Exec", "command": "cmd /c echo hola > ${base}/in/a.txt", "opts": "WAIT" },
+    { "action": "Exec", "command": "cmd /c echo mundo > ${base}/in/b.txt", "opts": "WAIT" },
+
+    { "action": "FileCopy", "from": "${base}/in/a.txt", "to": "${base}/out/a.txt" },
+
+    {
+      "action": "FileCopy",
+      "from": "${base}/in/a.txt",
+      "to": "${base}/out/a.txt",
+      "executeIf": "notExists"
+    },
+
+    { "action": "DirCopy", "from": "${base}/in", "to": "${base}" },
+
+    { "action": "Move", "from": "${base}/in/b.txt", "to": "${base}/out/b_moved.txt" },
+
+    { "action": "Zip", "from": "${base}/out", "to": "${base}/out.zip" },
+
+    { "action": "Unzip", "from": "${base}/out.zip", "to": "${base}/unzipped" },
+
+    {
+      "action": "MkDir",
+      "to": "${base}/conditional_ok",
+      "ifvar": "${mode} == A"
+    },
+    {
+      "action": "MkDir",
+      "to": "${base}/conditional_fail",
+      "ifvar": "${mode} == B"
+    },
+
+    {
+      "action": "MkDir",
+      "to": "${base}/${sys:prop:user.name}"
+    },
+
+    { "action": "Remove", "from": "${base}/out/a.txt" },
+
+    { "action": "Remove", "from": "${base}/unzipped" }
+  ]
+}

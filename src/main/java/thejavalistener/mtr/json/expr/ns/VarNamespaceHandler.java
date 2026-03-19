@@ -44,13 +44,6 @@ public class VarNamespaceHandler extends NamespaceHandler
 		return op.resolve(args);
 	}
 
-	@Override
-	public String getDocumentation(String opName)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	class Get implements NamespaceOperation
 	{
 		@Override

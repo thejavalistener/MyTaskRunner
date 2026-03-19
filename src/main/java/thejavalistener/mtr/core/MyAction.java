@@ -3,9 +3,8 @@ package thejavalistener.mtr.core;
 import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.fwkutils.console.MyConsoles;
 import thejavalistener.fwkutils.console.Progress;
-//import thejavalistener.mtr.json.expr.ExpressionEngine;
 
-public abstract class MyAction
+public abstract class MyAction 
 {
 	private String executeIf;
 	private boolean showProgress=false;
@@ -119,4 +118,9 @@ public abstract class MyAction
 	{
 		this.mustSkipped=mustSkipped;
 	}
+	
+	// ---- DOC ----
+	
+	
+	
 }

@@ -10,66 +10,76 @@ import thejavalistener.mtr.core.MyScript;
 
 public class MyTaskRunner
 {
-    public static void main(String[] args)
-    {   
-    	MyAwt.setWindowsLookAndFeel();
-    	
-        try
-        {
-	    	// usage
-	        if (args == null || args.length == 0)
-	        {
-	            System.out.println("Usage:");
-	            System.out.println(" java thejavalistener.mtr.MyTaskRunner <script.json>");
-	            System.out.println(" java thejavalistener.mtr.MyTaskRunner <ScriptClass>");
-	            System.exit(MyScript.ERROR);
-	        }
-	        
-	        // qué script voy a ejecutar
-	        String targetScript = args[0];
+	public static void main(String[] args)
+	{
+		MyAwt.setWindowsLookAndFeel();
 
-	        MyConsole console = MyConsoles.getOnWindow("MyTaskRunner: "+targetScript);
-	        console.fg(Color.GRAY);
-	        console.banner("MyTaskRunner");
-	        console.x();
-	        
-	        // si es json lo levanto dinámicamente, si es Java lo hago por reflection
-            MyScript script = loadScript(targetScript);
-            
-            
-            // ejecuto el script
-            int returnValue  = script.run();
-        
-            System.exit(returnValue);
-        }
-        catch (Throwable t)
-        {
-            t.printStackTrace();
-            System.exit(MyScript.ERROR);
-        }
-    }
+		try
+		{
+			// usage
+			if(args==null||args.length==0)
+			{
+				System.out.println("Usage:");
+				System.out.println(" java thejavalistener.mtr.MyTaskRunner <script.json>");
+				System.out.println(" java thejavalistener.mtr.MyTaskRunner <ScriptClass>");
+				System.exit(MyScript.ERROR);
+			}
 
-    /* =====================
-       CARGA UNIFICADA
-       ===================== */
+			if(args[0].equals("-?"))
+			{
+				_help();
+			}
 
-    private static MyScript loadScript(String target) throws Exception
-    {
-    	MyScript script;
-    	
-        // JSON
-        if (target.toLowerCase().endsWith(".json"))
-        {
+			// qué script voy a ejecutar
+			String targetScript=args[0];
 
-            script = new MyJsonScriptImple(target);
-        }
-        else
-        {
-	        // Script Java normal
-	        Class<?> clazz = Class.forName(target);
-	        script = (MyScript)clazz.getDeclaredConstructor().newInstance();
-        }	
-        
-        return script;
-    }
+			MyConsole console=MyConsoles.getOnWindow("MyTaskRunner: "+targetScript);
+			console.fg(Color.GRAY);
+			console.banner("MyTaskRunner");
+			console.x();
+
+			// si es json lo levanto dinámicamente, si es Java lo hago por
+			// reflection
+			MyScript script=loadScript(targetScript);
+
+			// ejecuto el script
+			int returnValue=script.run();
+
+			System.exit(returnValue);
+		}
+		catch(Throwable t)
+		{
+			t.printStackTrace();
+			System.exit(MyScript.ERROR);
+		}
+	}
+
+	/*
+	 * ===================== CARGA UNIFICADA =====================
+	 */
+
+	private static MyScript loadScript(String target) throws Exception
+	{
+		MyScript script;
+
+		// JSON
+		if(target.toLowerCase().endsWith(".json"))
+		{
+
+			script=new MyJsonScriptImple(target);
+		}
+		else
+		{
+			// Script Java normal
+			Class<?> clazz=Class.forName(target);
+			script=(MyScript)clazz.getDeclaredConstructor().newInstance();
+		}
+
+		return script;
+	}
+	
+	private static void _help()
+	{
+		
+	}
 }
