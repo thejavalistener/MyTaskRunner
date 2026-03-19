@@ -2,6 +2,7 @@ package thejavalistener.mtr.json.expr;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import thejavalistener.fwkutils.various.MyReflection;
 
@@ -26,5 +27,10 @@ public abstract class NamespaceHandler
 	public NamespaceOperation getOperation(String opName)
 	{
 		return operations.get(opName);
-	}	
+	}
+	
+	public Map<String,NamespaceOperation> getOperations()
+	{
+		return operations;
+	}
 }
