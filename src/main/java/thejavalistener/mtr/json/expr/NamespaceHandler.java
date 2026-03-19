@@ -5,12 +5,15 @@ import java.util.Map;
 import java.util.Set;
 
 import thejavalistener.fwkutils.various.MyReflection;
+import thejavalistener.mtr.doc.DocNamespace;
 
 public abstract class NamespaceHandler
 {
 	public abstract String getNamespace();
 	public abstract String resolve(String payload) throws Exception;
-
+	public abstract DocNamespace getNamespaceDoc();
+	
+	
 	private Map<String,NamespaceOperation> operations=new HashMap<>();
 
 	public NamespaceHandler()

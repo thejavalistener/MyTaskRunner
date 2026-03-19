@@ -1,9 +1,9 @@
-package thejavalistener.mtr.actions;
+package thejavalistener.mtr.actions.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import thejavalistener.mtr.core.MyActionDoc;
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.doc.DocOperator;
 import thejavalistener.mtr.doc.DocParam;
 
@@ -16,11 +16,15 @@ public class DownloadDoc extends MyActionDoc
 	}
 
 	@Override
-	public String getActionDescription()
+	public List<String> getExamples()
 	{
-		return "Descarga un archivo desde una URL y lo guarda en el sistema de archivos";
+		String examples="""
+				{"action":"Download", "from":"https://example.com/a.zip"  , "to":"c:/tmp/a.zip"     }
+				{"action":"Download", "from":"https://example.com/img.png", "to":"c:/tmp/imagen.png"}
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
 	}
-
+	
 	@Override
 	public List<DocParam> getParams()
 	{

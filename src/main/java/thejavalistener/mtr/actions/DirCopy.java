@@ -10,6 +10,8 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import thejavalistener.fwkutils.console.Progress;
+import thejavalistener.mtr.actions.doc.DirCopyDoc;
+import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ValidationContext;
 
@@ -120,55 +122,13 @@ public class DirCopy extends MyAction
 
         return sum[0];
     }
-
-//    @Override
-//    public String validate(ValidationContext ctx)
-//    {
-//        if (from == null || from.isBlank())
-//            return "'from' es obligatorio";
-//
-//        if (to == null || to.isBlank())
-//            return "'to' es obligatorio";
-//
-//        Path srcRoot;
-//        Path dstBase;
-//
-//        try
-//        {
-//            srcRoot = Paths.get(from).normalize();
-//        }
-//        catch(Exception e)
-//        {
-//            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
-//        }
-//
-//        try
-//        {
-//            dstBase = Paths.get(to).normalize();
-//        }
-//        catch(Exception e)
-//        {
-//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
-//        }
-//
-//        if (!ctx.exists(srcRoot) && !Files.exists(srcRoot))
-//            return "no existe el directorio origen (según script): " + from;
-//
-//        if (!ctx.isDirectory(srcRoot, true) && !Files.isDirectory(srcRoot))
-//            return "el origen no es un directorio: " + from;
-//
-//        if (ctx.exists(dstBase) && !ctx.isDirectory(dstBase, true))
-//            return "el destino existe y no es un directorio: " + to;
-//
-//        // Simulación: se crea dstBase y luego dstBase/srcName
-//        ctx.addDirectory(dstBase);
-//
-//        Path dstRoot = dstBase.resolve(srcRoot.getFileName()).normalize();
-//        ctx.addDirectory(dstRoot);
-//
-//        return null;
-//    }
     
+    @Override
+    public MyActionDoc getActionDoc()
+    {
+    	return new DirCopyDoc();
+    }
+
     @Override
     public String validate(ValidationContext ctx)
     {

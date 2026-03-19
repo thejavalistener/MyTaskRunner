@@ -1,8 +1,10 @@
 package thejavalistener.mtr.json.expr.ns;
 import java.util.Arrays;
 
+import thejavalistener.mtr.doc.DocNamespace;
 import thejavalistener.mtr.json.expr.NamespaceHandler;
 import thejavalistener.mtr.json.expr.NamespaceOperation;
+import thejavalistener.mtr.json.expr.ns.doc.SysNamespaceHandlerDoc;
 
 public class SysNamespaceHandler extends NamespaceHandler
 {
@@ -10,6 +12,12 @@ public class SysNamespaceHandler extends NamespaceHandler
     public String getNamespace()
     {
         return "sys";
+    }
+    
+    @Override
+    public DocNamespace getNamespaceDoc()
+    {
+    	return new SysNamespaceHandlerDoc();
     }
     
     @Override

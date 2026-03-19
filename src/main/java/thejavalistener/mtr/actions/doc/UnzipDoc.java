@@ -1,9 +1,9 @@
-package thejavalistener.mtr.actions;
+package thejavalistener.mtr.actions.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import thejavalistener.mtr.core.MyActionDoc;
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.doc.DocOperator;
 import thejavalistener.mtr.doc.DocParam;
 
@@ -16,11 +16,14 @@ public class UnzipDoc extends MyActionDoc
 	}
 
 	@Override
-	public String getActionDescription()
+	public List<String> getExamples()
 	{
-		return "Descomprime un archivo ZIP en un directorio destino, preservando la estructura interna";
+		String examples="""
+				{"action":"Unzip", "from":"c:/tmp/out.zip"   , "to":"c:/tmp/destino"   }
+				{"action":"Unzip", "from":"c:/tmp/backup.zip", "to":"c:/tmp/restaurado"}
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
 	}
-
 	@Override
 	public List<DocParam> getParams()
 	{

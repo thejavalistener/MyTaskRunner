@@ -1,8 +1,9 @@
-package thejavalistener.mtr.json.expr.ns;
+package thejavalistener.mtr.json.expr.ns.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.doc.DocNamespace;
 import thejavalistener.mtr.doc.DocParam;
 import thejavalistener.mtr.doc.NamespaceDocOperation;
@@ -35,4 +36,14 @@ public class VarNamespaceHandlerDoc implements DocNamespace
 
 		return ret;
 	}
-}
+
+	@Override
+	public List<String> getExamples()
+	{
+		String examples="""
+				${var:get:nombre}
+				${var:nombre}
+				${var:baseDir}
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
+	}}

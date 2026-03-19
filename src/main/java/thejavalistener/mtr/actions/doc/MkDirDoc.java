@@ -1,9 +1,9 @@
-package thejavalistener.mtr.actions;
+package thejavalistener.mtr.actions.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import thejavalistener.mtr.core.MyActionDoc;
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.doc.DocOperator;
 import thejavalistener.mtr.doc.DocParam;
 
@@ -16,11 +16,15 @@ public class MkDirDoc extends MyActionDoc
 	}
 
 	@Override
-	public String getActionDescription()
+	public List<String> getExamples()
 	{
-		return "Crea un directorio y, si hace falta, también sus directorios padres";
+		String examples="""
+				{"action":"MkDir", "to":"c:/tmp/nuevaCarpeta" }
+				{"action":"MkDir", "to":"c:/tmp/base/sub/sub2"}
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
 	}
-
+	
 	@Override
 	public List<DocParam> getParams()
 	{

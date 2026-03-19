@@ -1,9 +1,9 @@
-package thejavalistener.mtr.actions;
+package thejavalistener.mtr.actions.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import thejavalistener.mtr.core.MyActionDoc;
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.doc.DocOperator;
 import thejavalistener.mtr.doc.DocParam;
 
@@ -16,11 +16,15 @@ public class GoogleDriveDownloadDoc extends MyActionDoc
 	}
 
 	@Override
-	public String getActionDescription()
+	public List<String> getExamples()
 	{
-		return "Descarga un archivo desde Google Drive a partir de un link público";
+		String examples="""
+				{"action":"GoogleDriveDownload", "from":"https://drive.google.com/file/d/1AbYz/view?usp=sharing", "to":"c:/tmp/archivo.zip" }
+				{"action":"GoogleDriveDownload", "from":"https://drive.google.com/open?id=1AvWxYz"              , "to":"c:/tmp/descarga.bin"}
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
 	}
-
+	
 	@Override
 	public List<DocParam> getParams()
 	{

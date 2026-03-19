@@ -1,9 +1,10 @@
-package thejavalistener.mtr.actions;
+package thejavalistener.mtr.actions.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import thejavalistener.mtr.core.MyActionDoc;
+import thejavalistener.fwkutils.string.MyString;
+import thejavalistener.mtr.actions.DirCopy;
 import thejavalistener.mtr.doc.DocOperator;
 import thejavalistener.mtr.doc.DocParam;
 
@@ -16,11 +17,14 @@ public class DirCopyDoc extends MyActionDoc
 	}
 
 	@Override
-	public String getActionDescription()
+	public List<String> getExamples()
 	{
-		return "Crea una copia de un directorio";
+		String examples="""
+				{"action":"DirCopy", "from":"c:/tmp/origen"  , "to":"c:/tmp/destino"}
+				{"action":"DirCopy", "from":"c:/tmp/proyecto", "to":"d:/backup"     }
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
 	}
-
 	@Override
 	public List<DocParam> getParams()
 	{

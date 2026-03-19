@@ -1,9 +1,9 @@
-package thejavalistener.mtr.actions;
+package thejavalistener.mtr.actions.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import thejavalistener.mtr.core.MyActionDoc;
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.doc.DocOperator;
 import thejavalistener.mtr.doc.DocParam;
 
@@ -16,11 +16,14 @@ public class ExecDoc extends MyActionDoc
 	}
 
 	@Override
-	public String getActionDescription()
+	public List<String> getExamples()
 	{
-		return "Ejecuta un comando del sistema operativo";
+		String examples="""
+				{"action":"Exec", "command":"cmd /c echo hola"                }
+				{"action":"Exec", "command":"cmd /c dir c:/tmp", "opts":"WAIT"}
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
 	}
-
 	@Override
 	public List<DocParam> getParams()
 	{

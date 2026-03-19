@@ -5,8 +5,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import thejavalistener.mtr.doc.DocNamespace;
 import thejavalistener.mtr.json.expr.NamespaceHandler;
 import thejavalistener.mtr.json.expr.NamespaceOperation;
+import thejavalistener.mtr.json.expr.ns.doc.TimeNamespaceHandlerDoc;
 
 public class TimeNamespaceHandler extends NamespaceHandler
 {
@@ -14,6 +16,12 @@ public class TimeNamespaceHandler extends NamespaceHandler
     public String getNamespace()
     {
         return "time";
+    }
+    
+    @Override
+    public DocNamespace getNamespaceDoc()
+    {
+    	return new TimeNamespaceHandlerDoc();
     }
 
     @Override

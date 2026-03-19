@@ -6,7 +6,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 import thejavalistener.fwkutils.console.Progress;
-import thejavalistener.fwkutils.various.MyFile;
+import thejavalistener.mtr.actions.doc.ExecDoc;
+import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ValidationContext;
 
@@ -39,6 +40,12 @@ public class Exec extends MyAction
         return new String[]{command};
     }
 
+    @Override
+    public MyActionDoc getActionDoc()
+    {
+    	return new ExecDoc();
+    }
+    
     @Override
     public void doAction(Progress pl) throws Exception
     {

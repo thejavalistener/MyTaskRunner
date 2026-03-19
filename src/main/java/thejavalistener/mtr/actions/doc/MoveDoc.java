@@ -1,9 +1,9 @@
-package thejavalistener.mtr.actions;
+package thejavalistener.mtr.actions.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import thejavalistener.mtr.core.MyActionDoc;
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.doc.DocOperator;
 import thejavalistener.mtr.doc.DocParam;
 
@@ -16,11 +16,15 @@ public class MoveDoc extends MyActionDoc
 	}
 
 	@Override
-	public String getActionDescription()
+	public List<String> getExamples()
 	{
-		return "Mueve un archivo o directorio desde una ubicación a otra";
+		String examples="""
+				{"action":"Move", "from":"c:/tmp/a.txt"  , "to":"c:/tmp/b.txt"   }
+				{"action":"Move", "from":"c:/tmp/a.txt"  , "to":"c:/tmp/"        }
+				{"action":"Move", "from":"c:/tmp/carpeta", "to":"c:/tmp/carpeta2"}
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
 	}
-
 	@Override
 	public List<DocParam> getParams()
 	{

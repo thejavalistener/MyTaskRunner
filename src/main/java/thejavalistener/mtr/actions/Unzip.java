@@ -13,6 +13,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import thejavalistener.fwkutils.console.Progress;
+import thejavalistener.mtr.actions.doc.MyActionDoc;
+import thejavalistener.mtr.actions.doc.UnzipDoc;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ValidationContext;
 
@@ -107,62 +109,12 @@ public class Unzip extends MyAction
 		if(p!=null) p.setPercent(100,"");
 	}
 
-//	@Override
-//	public String validate(ValidationContext ctx)
-//	{
-//		if(from==null||from.isBlank())
-//		{
-//			return "'from' es obligatorio";
-//		}
-//
-//		if(to==null||to.isBlank())
-//		{
-//			return "'to' es obligatorio";
-//		}
-//
-//		Path zipPath;
-//		Path destDir;
-//
-//		try
-//		{
-//			zipPath=Paths.get(from).normalize();
-//		}
-//		catch(Exception e)
-//		{
-//			return "path 'from' inválido: "+from+" ("+e.getMessage()+")";
-//		}
-//
-//		try
-//		{
-//			destDir=Paths.get(to).normalize();
-//		}
-//		catch(Exception e)
-//		{
-//			return "path 'to' inválido: "+to+" ("+e.getMessage()+")";
-//		}
-//
-//		if(!ctx.exists(zipPath))
-//		{
-//			return "no existe el archivo (según script): "+from;
-//		}
-//
-//		if(!ctx.isFile(zipPath))
-//		{
-//			return "el origen no es un archivo: "+from;
-//		}
-//
-//		if(ctx.exists(destDir)&&!ctx.isDirectory(destDir))
-//		{
-//			return "el destino existe y no es un directorio: "+to;
-//		}
-//
-//		ctx.addDirectory(destDir);
-//		
-//		_registerZipEntries(zipPath,destDir,ctx);
-//
-//		return null;
-//	}
-
+    @Override
+    public MyActionDoc getActionDoc()
+    {
+    	return new UnzipDoc();
+    }
+	
 	@Override
 	public String validate(ValidationContext ctx)
 	{

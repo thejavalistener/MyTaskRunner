@@ -1,9 +1,9 @@
-package thejavalistener.mtr.actions;
+package thejavalistener.mtr.actions.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import thejavalistener.mtr.core.MyActionDoc;
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.doc.DocOperator;
 import thejavalistener.mtr.doc.DocParam;
 
@@ -16,11 +16,16 @@ public class ZipDoc extends MyActionDoc
 	}
 
 	@Override
-	public String getActionDescription()
+	public List<String> getExamples()
 	{
-		return "Comprime un archivo o directorio en un archivo ZIP. Si es un directorio, incluye todo su contenido recursivamente";
+		String examples = """
+				{"action":"Zip", "from":"c:/tmp/origen", "to":"c:/tmp/out.zip"}
+				{"action":"Zip", "from":"c:/tmp/a.txt" , "to":"c:/tmp/a.zip"  }
+				{"action":"Zip", "from":"${sys:prop:user.home}/bkp_${time:now:yyyyMMdd-HHmm}.zip"}
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
 	}
-
+	
 	@Override
 	public List<DocParam> getParams()
 	{

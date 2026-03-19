@@ -11,6 +11,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import thejavalistener.fwkutils.console.Progress;
+import thejavalistener.mtr.actions.doc.MyActionDoc;
+import thejavalistener.mtr.actions.doc.ZipDoc;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ValidationContext;
 
@@ -161,67 +163,14 @@ public class Zip extends MyAction
         }
 
         if (pl != null) pl.setPercent(100,"");
-    }    
+    }
     
-//    @Override
-//    public String validate(ValidationContext ctx)
-//    {
-//        if(from == null || from.isBlank())
-//        {
-//            return "'from' es obligatorio";
-//        }
-//
-//        if(to == null || to.isBlank())
-//        {
-//            return "'to' es obligatorio";
-//        }
-//
-//        Path sourcePath;
-//        Path zipPath;
-//
-//        try
-//        {
-//            sourcePath = Paths.get(from);
-//        }
-//        catch(Exception e)
-//        {
-//            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
-//        }
-//
-//        try
-//        {
-//            zipPath = Paths.get(to);
-//        }
-//        catch(Exception e)
-//        {
-//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
-//        }
-//
-//        if(!ctx.exists(sourcePath) && !java.nio.file.Files.exists(sourcePath))
-//        {
-//            return "no existe el origen: " + from;
-//        }
-//
-//        if(!ctx.isDirectory(sourcePath) && !java.nio.file.Files.isDirectory(sourcePath))
-//        {
-//            return "el origen no es un directorio: " + from;
-//        }
-//        
-//        if(!ctx.isDirectory(sourcePath))
-//        {
-//            return "el origen no es un directorio: " + from;
-//        }
-//
-////        if(ctx.exists(zipPath))
-////        {
-////            return "el destino ya fue creado previamente en el script: " + to;
-////        }
-//
-//        ctx.addFile(zipPath);
-//
-//        return null;
-//    }
-
+    @Override
+    public MyActionDoc getActionDoc()
+    {
+    	return new ZipDoc();
+    }
+    
     @Override
     public String validate(ValidationContext ctx)
     {

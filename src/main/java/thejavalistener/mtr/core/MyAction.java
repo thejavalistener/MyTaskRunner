@@ -3,6 +3,7 @@ package thejavalistener.mtr.core;
 import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.fwkutils.console.MyConsoles;
 import thejavalistener.fwkutils.console.Progress;
+import thejavalistener.mtr.doc.DocAction;
 
 public abstract class MyAction 
 {
@@ -20,7 +21,9 @@ public abstract class MyAction
 	public abstract String[] getDescription();
 	public abstract String validate(ValidationContext ctx); // null = OK
 	protected abstract void doAction(Progress p) throws Exception;
-
+	public abstract DocAction getActionDoc();
+	
+	
 	public void execute() throws Exception
 	{
 		MyConsole console=MyConsoles.get();

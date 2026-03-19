@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
 import thejavalistener.fwkutils.console.Progress;
+import thejavalistener.mtr.actions.doc.FileCopyDoc;
+import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ValidationContext;
 
@@ -40,6 +42,12 @@ public class FileCopy extends MyAction
 	{
 		return new String[] {from, "to "+to};
 	}
+	
+    @Override
+    public MyActionDoc getActionDoc()
+    {
+    	return new FileCopyDoc();
+    }
 
 	@Override
 	protected void doAction(Progress p) throws Exception

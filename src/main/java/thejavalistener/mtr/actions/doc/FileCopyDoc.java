@@ -1,9 +1,9 @@
-package thejavalistener.mtr.actions;
+package thejavalistener.mtr.actions.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import thejavalistener.mtr.core.MyActionDoc;
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.doc.DocOperator;
 import thejavalistener.mtr.doc.DocParam;
 
@@ -16,11 +16,15 @@ public class FileCopyDoc extends MyActionDoc
 	}
 
 	@Override
-	public String getActionDescription()
+	public List<String> getExamples()
 	{
-		return "Copia un archivo a un destino. El destino puede ser un archivo o un directorio";
+		String examples="""
+				{"action":"FileCopy", "from":"c:/tmp/a.txt" , "to":"c:/tmp/b.txt"    }
+				{"action":"FileCopy", "from":"c:/tmp/a.txt" , "to":"c:/tmp/destino/" }
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
 	}
-
+	
 	@Override
 	public List<DocParam> getParams()
 	{

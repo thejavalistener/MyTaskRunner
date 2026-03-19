@@ -7,4 +7,5 @@ public interface DocNamespace
     public String getNamespace();
     public String getDescription();
     public List<NamespaceDocOperation> getOperations();
+    public List<String> getExamples();
 }

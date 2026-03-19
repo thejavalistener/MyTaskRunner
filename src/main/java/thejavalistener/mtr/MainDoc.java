@@ -43,22 +43,20 @@ public class MainDoc
 		{
 			System.out.println("[" + h.getNamespace() + "]");
 
-			DocNamespace doc = resolveNamespaceDoc(h);
+			DocNamespace doc=h.getNamespaceDoc();
 
 			if(doc!=null)
 			{
-				printText(doc.getDescription(),"  ");
-
 				List<NamespaceDocOperation> ops=new ArrayList<>(doc.getOperations());
 				ops.sort(Comparator.comparing(o->o.name));
 
 				for(NamespaceDocOperation op:ops)
 				{
 					System.out.println("  - " + op.name);
-					printText(op.description,"      ");
 
 					if(op.params!=null && !op.params.isEmpty())
 					{
+						System.out.println("      params:");
 						for(DocParam p:op.params)
 						{
 							printParam(p,"        ");
@@ -95,13 +93,11 @@ public class MainDoc
 			MyAction action=ActionRegistry.create(name);
 
 			System.out.println("[" + name + "]");
-
-			DocAction doc = resolveActionDoc(action);
+			
+			DocAction doc=action.getActionDoc();///resolveActionDoc(action);
 
 			if(doc!=null)
 			{
-				printText(doc.getActionDescription(),"  ");
-
 				List<DocParam> params=doc.getParams();
 				if(params!=null && !params.isEmpty())
 				{
@@ -122,10 +118,22 @@ public class MainDoc
 						printText(op.description,"        ");
 					}
 				}
+
+				List<String> examples=doc.getExamples();
+				if(examples!=null && !examples.isEmpty())
+				{
+					System.out.println("  examples:");
+					for(String ex:examples)
+					{
+						if(ex!=null && !ex.isBlank())
+						{
+							System.out.println("    " + ex.trim());
+						}
+					}
+				}
 			}
 			else
 			{
-				// fallback reflection
 				for(var m:action.getClass().getMethods())
 				{
 					if(!m.getName().startsWith("set")) continue;
@@ -146,33 +154,19 @@ public class MainDoc
 
 	// ================= DOC RESOLUTION =================
 
-	private static DocAction resolveActionDoc(MyAction action)
-	{
-		try
-		{
-			String docClassName = action.getClass().getName() + "Doc";
-			Class<?> docClass = Class.forName(docClassName);
-			return (DocAction) docClass.getDeclaredConstructor().newInstance();
-		}
-		catch(Exception e)
-		{
-			return null;
-		}
-	}
-
-	private static DocNamespace resolveNamespaceDoc(NamespaceHandler h)
-	{
-		try
-		{
-			String docClassName = h.getClass().getName() + "Doc";
-			Class<?> docClass = Class.forName(docClassName);
-			return (DocNamespace) docClass.getDeclaredConstructor().newInstance();
-		}
-		catch(Exception e)
-		{
-			return null;
-		}
-	}
+//	private static DocNamespace resolveNamespaceDoc(NamespaceHandler h)
+//	{
+//		try
+//		{
+//			String docClassName=h.getClass().getName()+"Doc";
+//			Class<?> docClass=Class.forName(docClassName);
+//			return (DocNamespace)docClass.getDeclaredConstructor().newInstance();
+//		}
+//		catch(Exception e)
+//		{
+//			return null;
+//		}
+//	}
 
 	// ================= HELPERS =================
 

@@ -6,7 +6,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import thejavalistener.fwkutils.console.Progress;
-import thejavalistener.fwkutils.various.MyFile;
+import thejavalistener.mtr.actions.doc.MoveDoc;
+import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ValidationContext;
 
@@ -56,62 +57,13 @@ public class Move extends MyAction
 
         if (p != null) p.setPercent(100,"");
     }
+
+    @Override
+    public MyActionDoc getActionDoc()
+    {
+    	return new MoveDoc();
+    }
     
-//    @Override
-//    public String validate(ValidationContext ctx)
-//    {
-//        if(from == null || from.isBlank())
-//        {
-//            return "'from' es obligatorio";
-//        }
-//
-//        if(to == null || to.isBlank())
-//        {
-//            return "'to' es obligatorio";
-//        }
-//
-//        Path pFrom;
-//        Path pTo;
-//
-//        try
-//        {
-//            pFrom = Paths.get(from);
-//        }
-//        catch(Exception e)
-//        {
-//            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
-//        }
-//
-//        try
-//        {
-//            pTo = Paths.get(to);
-//        }
-//        catch(Exception e)
-//        {
-//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
-//        }
-//
-//        if(!ctx.exists(pFrom))
-//        {
-//            return "no existe el origen (según script): " + from;
-//        }
-//
-//        if(ctx.exists(pTo))
-//        {
-//            return "el destino ya existe (según script): " + to;
-//        }
-//
-//        if(ctx.isDirectory(pFrom))
-//        {
-//            ctx.addDirectory(pTo);
-//        }
-//        else
-//        {
-//            ctx.addFile(pTo);
-//        }
-//
-//        return null;
-//    }
     @Override
     public String validate(ValidationContext ctx)
     {

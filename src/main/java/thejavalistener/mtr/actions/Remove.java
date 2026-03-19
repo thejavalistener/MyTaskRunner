@@ -9,6 +9,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import thejavalistener.fwkutils.console.Progress;
+import thejavalistener.mtr.actions.doc.MyActionDoc;
+import thejavalistener.mtr.actions.doc.RemoveDoc;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ValidationContext;
 
@@ -74,44 +76,12 @@ public class Remove extends MyAction
             }
         });
     }
-    
-//    @Override
-//    public String validate(ValidationContext ctx)
-//    {
-//        if(from == null || from.isBlank())
-//        {
-//            return "'from' es obligatorio";
-//        }
-//
-//        Path p;
-//
-//        try
-//        {
-//            p = Paths.get(from);
-//        }
-//        catch(Exception e)
-//        {
-//            return "from inválido: " + from + " (" + e.getMessage() + ")";
-//        }
-//
-//        if(ctx.exists(p))
-//        {
-//            ctx.remove(p);
-//            return null;
-//        }
-//
-//        if(Files.exists(p))
-//        {
-//            return null;
-//        }
-//
-//        if(isStopScriptOnError())
-//        {
-//            return "no existe: " + from;
-//        }
-//
-//        return null;
-//    }
+
+    @Override
+    public MyActionDoc getActionDoc()
+    {
+    	return new RemoveDoc();
+    }
     
     @Override
     public String validate(ValidationContext ctx)

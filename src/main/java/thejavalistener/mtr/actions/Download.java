@@ -12,7 +12,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import thejavalistener.fwkutils.console.Progress;
-import thejavalistener.fwkutils.various.MyFile;
+import thejavalistener.mtr.actions.doc.DownloadDoc;
+import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
 import thejavalistener.mtr.core.ValidationContext;
 
@@ -42,6 +43,13 @@ public class Download extends MyAction
     {
         return new String[]{from, "to " + to};
     }
+    
+    @Override
+    public MyActionDoc getActionDoc()
+    {
+    	return new DownloadDoc();
+    }
+
 
     @Override
     protected void doAction(Progress p) throws Exception

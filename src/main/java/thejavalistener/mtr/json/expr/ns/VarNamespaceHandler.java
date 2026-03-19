@@ -1,11 +1,12 @@
 package thejavalistener.mtr.json.expr.ns;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
+import thejavalistener.mtr.doc.DocNamespace;
 import thejavalistener.mtr.json.expr.NamespaceHandler;
 import thejavalistener.mtr.json.expr.NamespaceOperation;
+import thejavalistener.mtr.json.expr.ns.doc.VarNamespaceHandlerDoc;
 
 public class VarNamespaceHandler extends NamespaceHandler
 {
@@ -22,6 +23,12 @@ public class VarNamespaceHandler extends NamespaceHandler
 	{
 		return "var";
 	}
+	
+    @Override
+    public DocNamespace getNamespaceDoc()
+    {
+    	return new VarNamespaceHandlerDoc();
+    }
 
 	@Override
 	public String resolve(String payload) throws Exception

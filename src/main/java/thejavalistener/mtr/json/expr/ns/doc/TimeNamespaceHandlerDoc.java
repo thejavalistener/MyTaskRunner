@@ -1,8 +1,9 @@
-package thejavalistener.mtr.json.expr.ns;
+package thejavalistener.mtr.json.expr.ns.doc;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.doc.DocNamespace;
 import thejavalistener.mtr.doc.DocParam;
 import thejavalistener.mtr.doc.NamespaceDocOperation;
@@ -62,4 +63,19 @@ public class TimeNamespaceHandlerDoc implements DocNamespace
 
 		return ret;
 	}
+
+	@Override
+	public List<String> getExamples()
+	{
+		String examples="""
+				${time:epochMillis}
+				${time:now}
+				${time:now:yyyyMMdd_HHmm}
+				${time:today:yyyy-MM-dd}
+				${time:tomorrow}
+				${time:yesterday:yyyy-MM}
+				""";
+		return new ArrayList<>(MyString.split(examples,"\n"));
+	}
+	
 }
