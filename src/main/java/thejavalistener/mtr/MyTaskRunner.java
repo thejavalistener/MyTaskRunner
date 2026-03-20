@@ -16,18 +16,10 @@ public class MyTaskRunner
 
 		try
 		{
-			// usage
-			if(args==null||args.length==0)
+			if( _isHelp(args) )
 			{
-				System.out.println("Usage:");
-				System.out.println(" java thejavalistener.mtr.MyTaskRunner <script.json>");
-				System.out.println(" java thejavalistener.mtr.MyTaskRunner <ScriptClass>");
-				System.exit(MyScript.ERROR);
-			}
-
-			if(args[0].equals("-?"))
-			{
-				_help();
+				MyTaskRunnerDoc.doc();
+				System.exit(0);
 			}
 
 			// qué script voy a ejecutar
@@ -78,8 +70,14 @@ public class MyTaskRunner
 		return script;
 	}
 	
-	private static void _help()
+	private static boolean _isHelp(String[] args)
 	{
-		
-	}
+	    String a = args.length==0?"-?":args[0].toLowerCase();
+
+	    return a.equals("-?")
+	        || a.equals("--?")
+	        || a.equals("/?")
+	        || a.equals("-help")
+	        || a.equals("/help");
+	}	
 }
