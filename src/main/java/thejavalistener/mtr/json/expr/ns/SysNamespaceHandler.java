@@ -57,6 +57,10 @@ public class SysNamespaceHandler extends NamespaceHandler
             if (val == null)
                 throw new IllegalArgumentException("System property not found: " + key);
 
+            int lastIdx = val.length()-1;
+            if( val.length()>1 && val.charAt(lastIdx)=='\\' || val.charAt(lastIdx)=='/') 
+				val = val.substring(0,lastIdx);            
+            
             return val.replace("\\", "/");
         }        
     }

@@ -9,6 +9,8 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import thejavalistener.fwkutils.console.MyConsole;
+import thejavalistener.fwkutils.console.MyConsoles;
 import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.mtr.json.expr.ExpressionEngine;
 import thejavalistener.mtr.json.expr.ns.SysNamespaceHandler;
@@ -20,7 +22,7 @@ public class MyJsonScriptImple extends MyScript
 	private final ScriptJson sj;
 	private final Map<String,String> vars;
 	private final String jsonFile;
-	
+
 	private ExpressionEngine engine;
 
 	public MyJsonScriptImple(String jsonFile) throws Exception
@@ -38,10 +40,12 @@ public class MyJsonScriptImple extends MyScript
 	    Gson gson = new Gson();
 	    this.sj = gson.fromJson(raw, ScriptJson.class);
 
+	    this.options = sj != null && sj.options != null ? sj.options : new ScriptOptions();
+
 	    this.vars = new HashMap<>();
 	    if (sj != null && sj.vars != null)
 	        this.vars.putAll(sj.vars);
-
+	    
 	    engine = new ExpressionEngine();
 	    engine.register(new SysNamespaceHandler());
 	    engine.register(new TimeNamespaceHandler());
@@ -67,10 +71,6 @@ public class MyJsonScriptImple extends MyScript
 			{
 				String actionName=engine.resolve((String)st.get("action"));
 
-//				Class<?> clazz=Class.forName("thejavalistener.mtr.actions."+actionName);
-//				MyAction action=(MyAction)clazz.getDeclaredConstructor().newInstance();
-
-				
 				if(!ActionRegistry.exists(actionName))
 				    throw new RuntimeException("Unknown action: "+actionName);
 				
@@ -140,9 +140,35 @@ public class MyJsonScriptImple extends MyScript
 		}
 
 		return ret;
-	}	
-	
-	
+	}
+
+	@Override
+	protected void beforeRun()
+	{
+
+		if( !options.isShowVarValues() ) return;
+
+		MyConsole c=MyConsoles.get();
+		
+
+		c.println("[fg(CYAN)]Variables:[x]");
+
+		vars.entrySet().stream()
+			.sorted(Map.Entry.comparingByKey())
+			.forEach(e -> {
+				try
+				{
+					String val = engine.resolve(e.getValue());
+					c.println("  "+e.getKey()+" = "+val);						
+				}
+				catch(Exception e2)
+				{
+					e2.printStackTrace();
+					throw new RuntimeException(e2);
+				}
+			});
+			
+	}
 	/*
 	 * ===================== Reflection helper =====================
 	 */
@@ -289,5 +315,6 @@ public class MyJsonScriptImple extends MyScript
 	{
 		Map<String,String> vars;
 		List<Map<String,Object>> steps;
+		ScriptOptions options;
 	}
 }

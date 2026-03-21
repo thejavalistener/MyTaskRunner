@@ -12,7 +12,8 @@ public abstract class MyScript
 	public static final int SUCCESS=0;
 	public static final int ERROR=1;
 
-	public abstract List<MyAction> getScriptActions();
+	protected ScriptOptions options = new ScriptOptions();
+	protected abstract List<MyAction> getScriptActions();
 
 	public void validateSyntax() throws Exception {};
 
@@ -20,13 +21,19 @@ public abstract class MyScript
 	{
 		return getClass().getSimpleName();
 	}
-
-	// MyScript.java
+	
+	protected void beforeRun() {}
+	protected void afterRun() {}
 
 	public int run()
 	{
 		MyConsole console=MyConsoles.get();
 
+		int delay = options.getCloseDelaySeconds();
+
+		Runnable rDelay = delay==0?()->console.print("\nPress any key to exit...").pressAnyKey():()->console.print("\nClosing in ").countdown(delay);
+		
+		
 		try
 		{
 			// comienza script
@@ -35,27 +42,39 @@ public abstract class MyScript
 			// valido la sintaxis del script
 			validateSyntax();
 
+			
 			// obtengo la lista de acciones del script
 			List<MyAction> actions=getScriptActions();
 
+			// hook
+			beforeRun();
+			
 			// valido las acciones del script
 			validateActions(actions);
 
 			int step=1;
 
+			
 			// ejecuto cada acción del script
 			for(MyAction action:actions)
 			{
-				console.print("[fg(CYAN)]Step: "+step+".[x] ");
+				console.println("[fg(CYAN)]Step: "+step+".[x] ");
+				
 				_executeAction(action);
+				
 				step++;
 			}
+			
 
 			// finaliza script OK
 			console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. ");
 			System.out.println(console.getTextPane().getText());
 
-			console.print("Closing in ").countdown(10);
+			// hook
+			afterRun();
+			
+//			console.print("Closing in ").countdown(delay);
+			rDelay.run();
 			return SUCCESS;
 		}
 		catch(Exception e)
@@ -66,7 +85,8 @@ public abstract class MyScript
 			console.print("[fg(YELLOW)]Returned value: [x][fg(RED)][b]ERROR[x][x]. ");
 			System.out.println(console.getTextPane().getText());
 
-			console.print("Closing in ").countdown(10);
+//			console.print("Closing in ").countdown(delay);
+			rDelay.run();
 			return ERROR;
 		}
 	}
@@ -90,8 +110,12 @@ public abstract class MyScript
 			}
 			
 			// ejecuto la acción
-			a.execute();
 
+			if( !options.isSimulationMode() )
+			{
+				a.execute();
+			}
+			
 			// exito
 			console.println("[b][fg(GREEN)]OK[x][x] ");
 		}
