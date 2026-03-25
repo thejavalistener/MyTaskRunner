@@ -12,12 +12,18 @@ repositories {
     mavenCentral()
 }
 
-tasks.shadowJar {
-  manifest {
-    attributes 'Main-Class': 'thejavalistener.mtr.MyTaskRunner'
-  }
-}
+def gitTag = 'git describe --tags --abbrev=0'.execute().text.trim()
+version = gitTag ? gitTag : '1.0'
 
+tasks.shadowJar {
+    archiveBaseName.set("MyTaskRunner")
+    archiveVersion.set(version.toString())
+    archiveClassifier.set("")
+
+    manifest {
+        attributes 'Main-Class': 'thejavalistener.mtr.MyTaskRunner'
+    }
+}
 dependencies 
 {
     implementation 'com.google.code.gson:gson:2.10.1'
