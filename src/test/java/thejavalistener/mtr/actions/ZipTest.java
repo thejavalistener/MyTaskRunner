@@ -1,7 +1,6 @@
 package thejavalistener.mtr.actions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -60,19 +59,20 @@ class ZipTest {
         assertTrue(foundA, "No encontró a.txt dentro del zip");
         assertTrue(foundB, "No encontró dir/b.txt dentro del zip");
     }
-    @Test
-    void validate_requires_from() {
-        Zip z = new Zip();
-        z.setTo("algo");
-        assertNotNull(z.validate(null));
-    }
-
-    @Test
-    void validate_requires_to() {
-        Zip z = new Zip();
-        z.setFrom("algo");
-        assertNotNull(z.validate(null));
-    }
+    
+//    @Test
+//    void validate_requires_from() {
+//        Zip z = new Zip();
+//        z.setTo("algo");
+//        assertNotNull(z.validate(null));
+//    }
+//
+//    @Test
+//    void validate_requires_to() {
+//        Zip z = new Zip();
+//        z.setFrom("algo");
+//        assertNotNull(z.validate(null));
+//    }
 
     @Test
     void doAction_fails_if_source_missing() {

@@ -15,7 +15,6 @@ import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.actions.doc.DownloadDoc;
 import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ValidationContext;
 
 public class Download extends MyAction
 {
@@ -135,63 +134,19 @@ public class Download extends MyAction
 //            return "url inválida: " + from + " (" + e.getMessage() + ")";
 //        }
 //
-//        Path dest;
-//
 //        try
 //        {
-//            dest = Paths.get(to);
+//            Paths.get(to);
 //        }
 //        catch(Exception e)
 //        {
 //            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
 //        }
 //
-//        if(ctx.exists(dest) && ctx.isDirectory(dest))
-//        {
-//            return "el destino existe y es un directorio: " + to;
-//        }
-//
+//        // tracking liviano
+//        Path dest = Paths.get(to).normalize();
 //        ctx.addFile(dest);
 //
 //        return null;
 //    }
-
-    
-    @Override
-    public String validate(ValidationContext ctx)
-    {
-        if(from == null || from.isBlank())
-        {
-            return "'from' es obligatorio";
-        }
-
-        if(to == null || to.isBlank())
-        {
-            return "'to' es obligatorio";
-        }
-
-        try
-        {
-            URI.create(from);
-        }
-        catch(Exception e)
-        {
-            return "url inválida: " + from + " (" + e.getMessage() + ")";
-        }
-
-        try
-        {
-            Paths.get(to);
-        }
-        catch(Exception e)
-        {
-            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
-        }
-
-        // tracking liviano
-        Path dest = Paths.get(to).normalize();
-        ctx.addFile(dest);
-
-        return null;
-    }
 }

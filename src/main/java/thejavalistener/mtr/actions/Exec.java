@@ -9,7 +9,6 @@ import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.actions.doc.ExecDoc;
 import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ValidationContext;
 
 public class Exec extends MyAction
 {
@@ -130,23 +129,23 @@ public class Exec extends MyAction
         return out;
     }
     
-    @Override
-    public String validate(ValidationContext ctx)
-    {
-        if(command == null || command.isBlank())
-        {
-            return "'command' es obligatorio";
-        }
-
-        try
-        {
-            parseOpts(opts);
-        }
-        catch(Exception e)
-        {
-            return "opts inválido: " + opts + " (" + e.getMessage() + ")";
-        }
-
-        return null;
-    }
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if(command == null || command.isBlank())
+//        {
+//            return "'command' es obligatorio";
+//        }
+//
+//        try
+//        {
+//            parseOpts(opts);
+//        }
+//        catch(Exception e)
+//        {
+//            return "opts inválido: " + opts + " (" + e.getMessage() + ")";
+//        }
+//
+//        return null;
+//    }
 }

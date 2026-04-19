@@ -1,0 +1,131 @@
+{
+  "options":
+  {
+     "closeDelaySeconds":0,
+     "showVarValues":true,
+     "simulationMode":true
+  },
+
+  "vars": {
+
+	  
+	-- ********************* -- 
+	-- *      FUENTES      * -- 
+    -- ********************* -- 
+	  
+	-- http
+	"server":"192.168.3.178",
+	"port":8080,
+		      
+    -- instalador de vscode 
+    "vscodeZip": "VSCode_v2.0.2.zip",
+
+	-- ********************* -- 
+	-- *      DESTINOS     * -- 
+    -- ********************* -- 
+
+    -- carpeta temporal dónde voy a copiar e instalar provisoriamente
+    "tempDir": "${sys:prop:java.io.tmpdir}/algoritmos",
+    
+	-- home temporal TEMP
+    "tempHome": "${tempDir}/vscode",
+
+    -- disco destinatario (toda la instalación será relativa a este disco)
+    "targetDrive": "C:",
+    
+    -- vscode home FINAL
+    "vscodeHome": "${targetDrive}/vscode",
+    
+    -- vscode workspace  FINAL
+    "vscodeWorkspace": "${vscodeHome}/Workspace",
+
+	-- filename para backupear el viejo workspace (antes de borrarlo)
+    "workspaceBkp":"${sys:prop:user.home}/workspaceBkp_${time:now:yyyyMMdd-HHmm}.zip"
+
+  },  
+
+  "steps": [    
+    
+    
+	-- **************** --
+	-- * Copio al tmp * --
+	-- **************** --
+	
+	-- Copio vscode.zip a la carpeta temporal
+	-- 1: vscode 
+	{ "action":"HttpDownload",
+	  "from":"${server}:${port}/${vscodeZip}",
+	  "to":"${tempDir}/",
+	  "executeIf":"notExists || isNewer || isDifferentSize",
+	  "showProgress": true,
+	  "stopScriptOnError":true
+	},
+		
+	-- **************** --
+	-- * Backup y rmv * --
+	-- **************** --
+	
+	-- Backupeo el viejo workspace
+	-- 5: workspaceBkp 
+	{ "action": "Zip", 
+	  "from":"${vscodeWorkspace}",
+	  "to":"${workspaceBkp}",
+	  "showProgress":true,
+	  "stopScriptOnError":false
+	},
+	
+	// Borro el viejo VSCodeHome
+	-- 6: Rmv anterior 
+	{ "action":"Remove",
+	  "from":"${vscodeHome}",
+	  "showProgress":true,
+	  "stopScriptOnError":false
+	},
+	
+	
+	// Borro el temp
+	-- 7: Rmv temp anterior 
+	{ "action":"Remove",
+	  "from":"${tempHome}",
+	  "showProgress":true,
+	  "stopScriptOnError":false
+	},
+	
+	-- **************** --
+	-- * Inst. VSCode * --
+	-- **************** --
+	
+	
+	-- Dezipeo el zip
+	-- 8: unzip vsCode 
+	{ "action":"Unzip",
+	  "from":"${tempDir}/${vscodeZip}",
+	  "to":"${tempDir}/",
+	  "showProgress": true,
+	  "stopScriptOnError":true
+	},
+		
+	-- 13: copy temp->final
+	{ 
+	  "action":"DirCopy",
+	  "from":"${tempHome}",
+	  "to":"${targetDrive}/",
+	  "showProgress": true,
+	  "stopScriptOnError":true
+	},
+	
+	-- 14: cleanup temp
+	{
+	  "action":"Remove",
+	  "from":"${tempHome}",
+	  "showProgress": true,
+	  "stopScriptOnError":true
+	},
+
+    -- 15: levanto vscode 
+    { 
+    	"action":"Exec",
+    	"command":"${vscodeHome}/RunVSCode.bat ${targetDrive}" 
+    }
+  ]
+}

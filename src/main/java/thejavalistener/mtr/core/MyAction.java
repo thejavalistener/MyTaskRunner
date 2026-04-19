@@ -19,7 +19,7 @@ public abstract class MyAction
 	
 	public abstract String getVerb();
 	public abstract String[] getDescription();
-	public abstract String validate(ValidationContext ctx); // null = OK
+//	public abstract String validate(ValidationContext ctx); // null = OK
 	protected abstract void doAction(Progress p) throws Exception;
 	public abstract DocAction getActionDoc();
 	

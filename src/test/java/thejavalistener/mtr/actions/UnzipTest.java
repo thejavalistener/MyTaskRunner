@@ -1,14 +1,16 @@
 package thejavalistener.mtr.actions;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.OutputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class UnzipTest {
 
@@ -34,19 +36,19 @@ class UnzipTest {
         assertEquals("mundo", Files.readString(dest.resolve("dir/b.txt")));
     }
 
-    @Test
-    void validate_requires_from() {
-        Unzip u = new Unzip();
-        u.setTo("algo");
-        assertNotNull(u.validate(null));
-    }
-
-    @Test
-    void validate_requires_to() {
-        Unzip u = new Unzip();
-        u.setFrom("algo");
-        assertNotNull(u.validate(null));
-    }
+//    @Test
+//    void validate_requires_from() {
+//        Unzip u = new Unzip();
+//        u.setTo("algo");
+//        assertNotNull(u.validate(null));
+//    }
+//
+//    @Test
+//    void validate_requires_to() {
+//        Unzip u = new Unzip();
+//        u.setFrom("algo");
+//        assertNotNull(u.validate(null));
+//    }
 
     @Test
     void doAction_fails_if_zip_missing() {

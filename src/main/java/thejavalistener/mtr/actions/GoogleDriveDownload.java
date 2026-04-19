@@ -21,7 +21,6 @@ import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.actions.doc.GoogleDriveDownloadDoc;
 import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ValidationContext;
 
 public class GoogleDriveDownload extends MyAction
 {
@@ -52,40 +51,40 @@ public class GoogleDriveDownload extends MyAction
     	return new GoogleDriveDownloadDoc();
     }
 
-    @Override
-    public String validate(ValidationContext ctx)
-    {
-        if (from == null || from.isBlank())
-            return "'url' es obligatorio";
-
-        if (to == null || to.isBlank())
-            return "'to' es obligatorio";
-
-        if (!from.contains("drive.google.com"))
-            return "no es un link válido de Google Drive";
-
-        String fileId = extractFileId(from);
-        if (fileId == null || fileId.isBlank())
-            return "no se pudo extraer el fileId del link";
-
-        try
-        {
-            Paths.get(to);
-        }
-        catch (Exception e)
-        {
-            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
-        }
-
-        // tracking liviano
-        Path dest = Paths.get(to).normalize();
-        if (dest.getParent() != null)
-            ctx.addDirectory(dest.getParent());
-
-        ctx.addFile(dest);
-
-        return null;
-    }    
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if (from == null || from.isBlank())
+//            return "'url' es obligatorio";
+//
+//        if (to == null || to.isBlank())
+//            return "'to' es obligatorio";
+//
+//        if (!from.contains("drive.google.com"))
+//            return "no es un link válido de Google Drive";
+//
+//        String fileId = extractFileId(from);
+//        if (fileId == null || fileId.isBlank())
+//            return "no se pudo extraer el fileId del link";
+//
+//        try
+//        {
+//            Paths.get(to);
+//        }
+//        catch (Exception e)
+//        {
+//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+//        }
+//
+//        // tracking liviano
+//        Path dest = Paths.get(to).normalize();
+//        if (dest.getParent() != null)
+//            ctx.addDirectory(dest.getParent());
+//
+//        ctx.addFile(dest);
+//
+//        return null;
+//    }    
     
     @Override
     protected void doAction(Progress p) throws Exception

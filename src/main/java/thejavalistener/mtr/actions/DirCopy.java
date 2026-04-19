@@ -13,7 +13,6 @@ import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.actions.doc.DirCopyDoc;
 import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ValidationContext;
 
 public class DirCopy extends MyAction
 {
@@ -129,41 +128,41 @@ public class DirCopy extends MyAction
     	return new DirCopyDoc();
     }
 
-    @Override
-    public String validate(ValidationContext ctx)
-    {
-        if (from == null || from.isBlank())
-            return "'from' es obligatorio";
-
-        if (to == null || to.isBlank())
-            return "'to' es obligatorio";
-
-        try
-        {
-            Paths.get(from).normalize();
-        }
-        catch(Exception e)
-        {
-            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
-        }
-
-        try
-        {
-            Paths.get(to).normalize();
-        }
-        catch(Exception e)
-        {
-            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
-        }
-
-        // tracking liviano (opcional)
-        Path dstBase = Paths.get(to).normalize();
-        Path srcRoot = Paths.get(from).normalize();
-        Path dstRoot = dstBase.resolve(srcRoot.getFileName()).normalize();
-
-        ctx.addDirectory(dstBase);
-        ctx.addDirectory(dstRoot);
-
-        return null;
-    }    
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if (from == null || from.isBlank())
+//            return "'from' es obligatorio";
+//
+//        if (to == null || to.isBlank())
+//            return "'to' es obligatorio";
+//
+//        try
+//        {
+//            Paths.get(from).normalize();
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+//        }
+//
+//        try
+//        {
+//            Paths.get(to).normalize();
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+//        }
+//
+//        // tracking liviano (opcional)
+//        Path dstBase = Paths.get(to).normalize();
+//        Path srcRoot = Paths.get(from).normalize();
+//        Path dstRoot = dstBase.resolve(srcRoot.getFileName()).normalize();
+//
+//        ctx.addDirectory(dstBase);
+//        ctx.addDirectory(dstRoot);
+//
+//        return null;
+//    }    
 }

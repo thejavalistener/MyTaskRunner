@@ -14,7 +14,6 @@ import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.actions.doc.ZipDoc;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ValidationContext;
 
 public class Zip extends MyAction
 {
@@ -171,48 +170,48 @@ public class Zip extends MyAction
     	return new ZipDoc();
     }
     
-    @Override
-    public String validate(ValidationContext ctx)
-    {
-        if(from == null || from.isBlank())
-        {
-            return "'from' es obligatorio";
-        }
-
-        if(to == null || to.isBlank())
-        {
-            return "'to' es obligatorio";
-        }
-
-        try
-        {
-            Paths.get(from);
-        }
-        catch(Exception e)
-        {
-            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
-        }
-
-        try
-        {
-            Paths.get(to);
-        }
-        catch(Exception e)
-        {
-            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
-        }
-
-        // tracking liviano
-        if(ctx != null)
-        {
-            Path zipPath = Paths.get(to).normalize();
-            Path parent = zipPath.getParent();
-
-            if(parent != null) ctx.addDirectory(parent);
-            ctx.addFile(zipPath);
-        }
-
-        return null;
-    }    
-    
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if(from == null || from.isBlank())
+//        {
+//            return "'from' es obligatorio";
+//        }
+//
+//        if(to == null || to.isBlank())
+//        {
+//            return "'to' es obligatorio";
+//        }
+//
+//        try
+//        {
+//            Paths.get(from);
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+//        }
+//
+//        try
+//        {
+//            Paths.get(to);
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+//        }
+//
+//        // tracking liviano
+//        if(ctx != null)
+//        {
+//            Path zipPath = Paths.get(to).normalize();
+//            Path parent = zipPath.getParent();
+//
+//            if(parent != null) ctx.addDirectory(parent);
+//            ctx.addFile(zipPath);
+//        }
+//
+//        return null;
+//    }    
+//    
 }

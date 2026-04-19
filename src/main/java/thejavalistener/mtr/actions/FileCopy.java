@@ -7,14 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
 import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.actions.doc.FileCopyDoc;
 import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ValidationContext;
 
 public class FileCopy extends MyAction
 {
@@ -106,17 +104,14 @@ public class FileCopy extends MyAction
 
 		if(forceDir)
 		{
-			// si hay un archivo con ese nombre => error
 			if(Files.exists(target)&&!Files.isDirectory(target)) throw new IllegalArgumentException("'to' es un directorio pero existe como archivo: "+rawTo);
 
 			Files.createDirectories(target);
 			return target.resolve(source.getFileName()).normalize();
 		}
 
-		// no forzado: si existe y es dir => adentro
 		if(Files.exists(target)&&Files.isDirectory(target)) return target.resolve(source.getFileName()).normalize();
 
-		// si no existe => se interpreta como archivo destino
 		return target.normalize();
 	}
 
@@ -137,105 +132,57 @@ public class FileCopy extends MyAction
 		catch(Exception e)
 		{
 		    throw new RuntimeException(e);
-		}		
-		
-		
-		ExecuteIf opt = ExecuteIf.valueOf(c);
-		switch(opt)
-		{
-			case exists:
-				return Files.exists(dest);
-			case notExists:
-				return !Files.exists(dest);
-
-			case notExistsOrIsNewer:
-				if(!Files.exists(dest)) return true;
-
-				if(!Files.exists(src)) throw new RuntimeException("Source no existe: "+from);
-
-				try
-				{
-					return Files.getLastModifiedTime(src).toMillis()>Files.getLastModifiedTime(dest).toMillis();
-				}
-				catch(IOException e)
-				{
-					throw new RuntimeException(e);
-				}
-
-			default:
-                throw new RuntimeException("Invalid executeIf option: "+opt+". Allowed values are: "+Arrays.toString(ExecuteIf.values()));
 		}
+
+		String[] conditions = c.split("\\|\\|");
+
+		for(String cond : conditions)
+		{
+			String op = cond.trim();
+
+			switch(op)
+			{
+				case "exists":
+					if(Files.exists(dest)) return true;
+					break;
+
+				case "notExists":
+					if(!Files.exists(dest)) return true;
+					break;
+
+				case "isNewer":
+					if(!Files.exists(dest)) return true;
+
+					try
+					{
+						if(Files.getLastModifiedTime(src).toMillis() > Files.getLastModifiedTime(dest).toMillis())
+							return true;
+					}
+					catch(IOException e)
+					{
+						throw new RuntimeException(e);
+					}
+					break;
+
+				case "isDifferentSize":
+					if(!Files.exists(dest)) return true;
+
+					try
+					{
+						if(Files.size(src) != Files.size(dest))
+							return true;
+					}
+					catch(IOException e)
+					{
+						throw new RuntimeException(e);
+					}
+					break;
+
+				default:
+					throw new RuntimeException("Invalid executeIf condition: "+op);
+			}
+		}
+
+		return false;
 	}
-
-	@Override
-	public String validate(ValidationContext ctx)
-	{
-	    String c = getExecuteIf();
-	    if(c != null && !c.isBlank())
-	    {
-	        switch(c)
-	        {
-	            case "exists":
-	            case "notExists":
-	            case "notExistsOrIsNewer":
-	                break;
-	            default:
-	                return "executeIf inválido: " + c;
-	        }
-	    }
-
-	    if(from == null || from.isBlank())
-	        return "'from' es obligatorio";
-
-	    if(to == null || to.isBlank())
-	        return "'to' es obligatorio";
-
-	    Path pFrom;
-	    Path pTo;
-
-	    try
-	    {
-	        pFrom = Paths.get(from).normalize();
-	    }
-	    catch(Exception e)
-	    {
-	        return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
-	    }
-
-	    try
-	    {
-	        pTo = Paths.get(to).normalize();
-	    }
-	    catch(Exception e)
-	    {
-	        return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
-	    }
-
-	    // tracking liviano
-	    boolean forceDir = endsWithSep(to);
-	    Path finalDest;
-
-	    if(forceDir)
-	    {
-	        finalDest = pTo.resolve(pFrom.getFileName()).normalize();
-	        ctx.addDirectory(pTo);
-	    }
-	    else
-	    {
-	        finalDest = pTo.normalize();
-	    }
-
-	    Path parent = finalDest.getParent();
-	    if(parent != null) ctx.addDirectory(parent);
-
-	    ctx.addFile(finalDest);
-
-	    return null;
-	}
-	
-	private enum ExecuteIf
-	{
-		exists, notExists, notExistsOrIsNewer
-	}
-	
 }

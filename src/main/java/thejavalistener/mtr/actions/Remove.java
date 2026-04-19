@@ -12,7 +12,6 @@ import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.actions.doc.RemoveDoc;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ValidationContext;
 
 public class Remove extends MyAction
 {
@@ -83,30 +82,30 @@ public class Remove extends MyAction
     	return new RemoveDoc();
     }
     
-    @Override
-    public String validate(ValidationContext ctx)
-    {
-        if(from == null || from.isBlank())
-        {
-            return "'from' es obligatorio";
-        }
-
-        try
-        {
-            Paths.get(from);
-        }
-        catch(Exception e)
-        {
-            return "from inválido: " + from + " (" + e.getMessage() + ")";
-        }
-
-        // tracking liviano: eliminamos del ctx si estaba
-        if(ctx != null)
-        {
-            Path p = Paths.get(from).normalize();
-            ctx.remove(p);
-        }
-
-        return null;
-    }    
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if(from == null || from.isBlank())
+//        {
+//            return "'from' es obligatorio";
+//        }
+//
+//        try
+//        {
+//            Paths.get(from);
+//        }
+//        catch(Exception e)
+//        {
+//            return "from inválido: " + from + " (" + e.getMessage() + ")";
+//        }
+//
+//        // tracking liviano: eliminamos del ctx si estaba
+//        if(ctx != null)
+//        {
+//            Path p = Paths.get(from).normalize();
+//            ctx.remove(p);
+//        }
+//
+//        return null;
+//    }    
 }

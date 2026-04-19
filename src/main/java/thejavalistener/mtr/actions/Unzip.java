@@ -1,6 +1,5 @@
 package thejavalistener.mtr.actions;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -16,7 +15,6 @@ import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.actions.doc.UnzipDoc;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ValidationContext;
 
 public class Unzip extends MyAction
 {
@@ -115,99 +113,99 @@ public class Unzip extends MyAction
     	return new UnzipDoc();
     }
 	
-	@Override
-	public String validate(ValidationContext ctx)
-	{
-	    if(from == null || from.isBlank())
-	    {
-	        return "'from' es obligatorio";
-	    }
-
-	    if(to == null || to.isBlank())
-	    {
-	        return "'to' es obligatorio";
-	    }
-
-	    Path zipPath;
-	    Path destDir;
-
-	    try
-	    {
-	        zipPath = Paths.get(from).normalize();
-	    }
-	    catch(Exception e)
-	    {
-	        return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
-	    }
-
-	    try
-	    {
-	        destDir = Paths.get(to).normalize();
-	    }
-	    catch(Exception e)
-	    {
-	        return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
-	    }
-
-	    // tracking liviano
-	    if(ctx != null)
-	    {
-	        ctx.addDirectory(destDir);
-	        _registerZipEntries(zipPath, destDir, ctx);
-	    }
-
-	    return null;
-	}	
-	
-	private void _registerZipEntries(Path zipPath, Path destDir, ValidationContext ctx) 
-	{
-		try
-		{
-		    ctx.addDirectory(destDir);
-
-		    try (ZipFile zipFile = new ZipFile(zipPath.toFile()))
-		    {
-		        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-
-		        while (entries.hasMoreElements())
-		        {
-		            ZipEntry entry = entries.nextElement();
-
-		            String name = entry.getName().replace("\\", "/");
-		            if (name.isBlank()) continue;
-
-		            Path outPath = destDir.resolve(name).normalize();
-
-		            if (entry.isDirectory())
-		            {
-		                ctx.addDirectory(outPath);
-		                registerParents(outPath, destDir, ctx);
-		            }
-		            else
-		            {
-		                ctx.addFile(outPath);
-		                registerParents(outPath.getParent(), destDir, ctx);
-		            }
-		        }
-		    }			
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-		}
-		
-	}
-
-	private void registerParents(Path path, Path root, ValidationContext ctx)
-	{
-	    Path p = path;
-
-	    while (p != null && !p.equals(root.getParent()))
-	    {
-	        ctx.addDirectory(p);
-	        if (p.equals(root)) break;
-	        p = p.getParent();
-	    }
-	}	
-	
+//	@Override
+//	public String validate(ValidationContext ctx)
+//	{
+//	    if(from == null || from.isBlank())
+//	    {
+//	        return "'from' es obligatorio";
+//	    }
+//
+//	    if(to == null || to.isBlank())
+//	    {
+//	        return "'to' es obligatorio";
+//	    }
+//
+//	    Path zipPath;
+//	    Path destDir;
+//
+//	    try
+//	    {
+//	        zipPath = Paths.get(from).normalize();
+//	    }
+//	    catch(Exception e)
+//	    {
+//	        return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+//	    }
+//
+//	    try
+//	    {
+//	        destDir = Paths.get(to).normalize();
+//	    }
+//	    catch(Exception e)
+//	    {
+//	        return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+//	    }
+//
+//	    // tracking liviano
+//	    if(ctx != null)
+//	    {
+//	        ctx.addDirectory(destDir);
+//	        _registerZipEntries(zipPath, destDir, ctx);
+//	    }
+//
+//	    return null;
+//	}	
+//	
+//	private void _registerZipEntries(Path zipPath, Path destDir, ValidationContext ctx) 
+//	{
+//		try
+//		{
+//		    ctx.addDirectory(destDir);
+//
+//		    try (ZipFile zipFile = new ZipFile(zipPath.toFile()))
+//		    {
+//		        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+//
+//		        while (entries.hasMoreElements())
+//		        {
+//		            ZipEntry entry = entries.nextElement();
+//
+//		            String name = entry.getName().replace("\\", "/");
+//		            if (name.isBlank()) continue;
+//
+//		            Path outPath = destDir.resolve(name).normalize();
+//
+//		            if (entry.isDirectory())
+//		            {
+//		                ctx.addDirectory(outPath);
+//		                registerParents(outPath, destDir, ctx);
+//		            }
+//		            else
+//		            {
+//		                ctx.addFile(outPath);
+//		                registerParents(outPath.getParent(), destDir, ctx);
+//		            }
+//		        }
+//		    }			
+//		}
+//		catch(IOException e)
+//		{
+//			e.printStackTrace();
+//		}
+//		
+//	}
+//
+//	private void registerParents(Path path, Path root, ValidationContext ctx)
+//	{
+//	    Path p = path;
+//
+//	    while (p != null && !p.equals(root.getParent()))
+//	    {
+//	        ctx.addDirectory(p);
+//	        if (p.equals(root)) break;
+//	        p = p.getParent();
+//	    }
+//	}	
+//	
 }

@@ -9,7 +9,6 @@ import thejavalistener.fwkutils.console.Progress;
 import thejavalistener.mtr.actions.doc.MoveDoc;
 import thejavalistener.mtr.actions.doc.MyActionDoc;
 import thejavalistener.mtr.core.MyAction;
-import thejavalistener.mtr.core.ValidationContext;
 
 public class Move extends MyAction
 {
@@ -64,50 +63,50 @@ public class Move extends MyAction
     	return new MoveDoc();
     }
     
-    @Override
-    public String validate(ValidationContext ctx)
-    {
-        if(from == null || from.isBlank())
-        {
-            return "'from' es obligatorio";
-        }
-
-        if(to == null || to.isBlank())
-        {
-            return "'to' es obligatorio";
-        }
-
-        Path pFrom;
-        Path pTo;
-
-        try
-        {
-            pFrom = Paths.get(from).normalize();
-        }
-        catch(Exception e)
-        {
-            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
-        }
-
-        try
-        {
-            pTo = Paths.get(to).normalize();
-        }
-        catch(Exception e)
-        {
-            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
-        }
-
-        // tracking liviano
-        if(ctx != null)
-        {
-            Path parent = pTo.getParent();
-            if(parent != null) ctx.addDirectory(parent);
-
-            // no sabemos si es file o dir → asumimos file por defecto
-            ctx.addFile(pTo);
-        }
-
-        return null;
-    }
+//    @Override
+//    public String validate(ValidationContext ctx)
+//    {
+//        if(from == null || from.isBlank())
+//        {
+//            return "'from' es obligatorio";
+//        }
+//
+//        if(to == null || to.isBlank())
+//        {
+//            return "'to' es obligatorio";
+//        }
+//
+//        Path pFrom;
+//        Path pTo;
+//
+//        try
+//        {
+//            pFrom = Paths.get(from).normalize();
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'from' inválido: " + from + " (" + e.getMessage() + ")";
+//        }
+//
+//        try
+//        {
+//            pTo = Paths.get(to).normalize();
+//        }
+//        catch(Exception e)
+//        {
+//            return "path 'to' inválido: " + to + " (" + e.getMessage() + ")";
+//        }
+//
+//        // tracking liviano
+//        if(ctx != null)
+//        {
+//            Path parent = pTo.getParent();
+//            if(parent != null) ctx.addDirectory(parent);
+//
+//            // no sabemos si es file o dir → asumimos file por defecto
+//            ctx.addFile(pTo);
+//        }
+//
+//        return null;
+//    }
 }

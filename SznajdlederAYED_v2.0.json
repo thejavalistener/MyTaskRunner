@@ -18,7 +18,7 @@
     "sourceDir":"D:/temp/MyTaskRunner", 
     
     -- instalador de vscode 
-    "vscodeZip": "VSCode_v1.9.9.zip",
+    "vscodeZip": "VSCode_v2.0.2.zip",
 
     -- proyecto empty 
     "emptyProject": "AlgoritmosAFondo_EMPTY_v2.7.27.zip",
@@ -74,7 +74,7 @@
 	-- 1: Primer parcial  | vscode+1C.zip 
 	-- 2: Segundo parcial | vscode+2C.zip 
 
-	"installType":1
+	"installType":0
   },  
 
   "steps": [    
@@ -84,33 +84,35 @@
 	-- * Copio al tmp * --
 	-- **************** --
 	
-		
+	
+	-- Copio vscode.zip a la carpeta temporal
 	-- 1: vscode 
 	{ "action":"FileCopy",
 	  "from":"${sourceDir}/${vscodeZip}",
 	  "to":"${tempDir}/",
-	  "executeIf":"notExistsOrIsNewer",
+	  "executeIf":"notExists || isNewer || isDifferentSize",
 	  "showProgress": true,
 	  "stopScriptOnError":true
-	  
 	},
 	
+	-- Si installType IN (1,2) => copio el archivo de configuracion del workspace
 	-- 2: workspaceConfigFile 
 	{ "action":"FileCopy",
 	  "from":"${sourceDir}/${workspaceConfigFile}",
 	  "to":"${tempDir}/",
 	  "ifvar":"${installType} in (1,2)",
-	  "executeIf":"notExistsOrIsNewer",
+	  "executeIf":"notExists || isNewer || isDifferentSize",
 	  "showProgress": true,
 	  "stopScriptOnError":true
 	},
 	  
+	-- Si installType==1 => copio el setup del 1er. Parcial 
 	-- 3: 1C.zip 
 	{ "action":"FileCopy",
 	  "from":"${sourceDir}/${fullProject1C}",
 	  "to":"${tempDir}/",
 	  "ifvar":"${installType}==1",
-	  "executeIf":"notExistsOrIsNewer",
+	  "executeIf":"notExists || isNewer || isDifferentSize",
 	  "showProgress": true,
 	  "stopScriptOnError":true
 	},
@@ -120,17 +122,18 @@
 	  "from":"${sourceDir}/${fullProject2C}",
 	  "to":"${tempDir}/",
 	  "ifvar":"${installType}==2",
-	  "executeIf":"notExistsOrIsNewer",
+	  "executeIf":"notExists || isNewer || isDifferentSize",
 	  "showProgress": true,
 	  "stopScriptOnError":true
 	},
 	
-	
+		
 	-- **************** --
 	-- * Backup y rmv * --
 	-- **************** --
 	
 	
+	-- Backupeo el viejo workspace
 	-- 5: workspaceBkp 
 	{ "action": "Zip", 
 	  "from":"${vscodeWorkspace}",
@@ -139,18 +142,21 @@
 	  "stopScriptOnError":false
 	},
 	
+	// Borro el viejo VSCodeHome
 	-- 6: Rmv anterior 
 	{ "action":"Remove",
 	  "from":"${vscodeHome}",
 	  "showProgress":true,
-	  "stopScriptOnError":true
+	  "stopScriptOnError":false
 	},
 	
+	
+	// Borro el temp
 	-- 7: Rmv temp anterior 
 	{ "action":"Remove",
 	  "from":"${tempHome}",
 	  "showProgress":true,
-	  "stopScriptOnError":true
+	  "stopScriptOnError":false
 	},
 	
 	
@@ -159,6 +165,7 @@
 	-- **************** --
 	
 	
+	-- Dezipeo el zip
 	-- 8: unzip vsCode 
 	{ "action":"Unzip",
 	  "from":"${tempDir}/${vscodeZip}",

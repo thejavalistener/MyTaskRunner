@@ -1,7 +1,6 @@
 package thejavalistener.mtr.actions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,8 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.sun.net.httpserver.HttpServer;
-
-import thejavalistener.mtr.core.ValidationContext;
 
 class DownloadTest {
 
@@ -82,18 +79,18 @@ class DownloadTest {
     }
     
     
-    @Test
-    void validate_requires_from_and_to() {
-        Download d = new Download();
-        ValidationContext ctx = new ValidationContext();
-
-        assertNotNull(d.validate(ctx)); // sin from ni to
-
-        d.setFrom("http://x");
-        assertNotNull(d.validate(ctx)); // falta to
-
-        d = new Download();
-        d.setTo("x.txt");
-        assertNotNull(d.validate(ctx)); // falta from
-    }
+//    @Test
+//    void validate_requires_from_and_to() {
+//        Download d = new Download();
+//        ValidationContext ctx = new ValidationContext();
+//
+//        assertNotNull(d.validate(ctx)); // sin from ni to
+//
+//        d.setFrom("http://x");
+//        assertNotNull(d.validate(ctx)); // falta to
+//
+//        d = new Download();
+//        d.setTo("x.txt");
+//        assertNotNull(d.validate(ctx)); // falta from
+//    }
 }

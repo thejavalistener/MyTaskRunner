@@ -49,8 +49,8 @@ public abstract class MyScript
 			// hook
 			beforeRun();
 			
-			// valido las acciones del script
-			validateActions(actions);
+//			// valido las acciones del script
+//			validateActions(actions);
 
 			int step=1;
 
@@ -176,26 +176,24 @@ public abstract class MyScript
 	    return true;
 	}
 
-	public void validateActions(List<MyAction> actions) throws Exception
-	{
-		// creo un FS ficticio para validar los parámetros
-		ValidationContext ctx=new ValidationContext();
-
-		for(int i=0; i<actions.size(); i++)
-		{
-			MyAction action=actions.get(i);
-
-			// cada acción se valida a sí misma
-			String err=action.validate(ctx);
-			if(err!=null&&action.isStopScriptOnError())
-			{
-				int nroPaso=i+1;
-
-				// Paso 4. Remove: No existe el archivo o carpeta a remover
-				String mssg="Step "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
-				throw new RuntimeException(mssg);
-			}
-		}
-
-	}
+//	public void validateActions(List<MyAction> actions) throws Exception
+//	{
+//		// creo un FS ficticio para validar los parámetros
+//		ValidationContext ctx=new ValidationContext();
+//
+//		for(int i=0; i<actions.size(); i++)
+//		{
+//			MyAction action=actions.get(i);
+//
+//			// cada acción se valida a sí misma
+//			String err=action.validate(ctx);
+//			if(err!=null&&action.isStopScriptOnError())
+//			{
+//				int nroPaso=i+1;
+//
+//				// Paso 4. Remove: No existe el archivo o carpeta a remover
+//				String mssg="Step "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
+//				throw new RuntimeException(mssg);
+//			}
+//	}
 }

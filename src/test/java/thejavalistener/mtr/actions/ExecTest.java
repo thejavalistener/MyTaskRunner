@@ -6,24 +6,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ExecTest {
 
-    @Test
-    void validate_requires_command() {
-        Exec e = new Exec();
-        String result = e.validate(null);
+//    @Test
+//    void validate_requires_command() {
+//        Exec e = new Exec();
+//        String result = e.validate(null);
+//
+//        assertNotNull(result);
+//    }
 
-        assertNotNull(result);
-    }
-
-    @Test
-    void validate_rejects_invalid_opts() {
-        Exec e = new Exec();
-        e.setCommand("echo hola");
-        e.setOpts("NO_EXISTE");
-
-        String result = e.validate(null);
-
-        assertNotNull(result);
-    }
+//    @Test
+//    void validate_rejects_invalid_opts() {
+//        Exec e = new Exec();
+//        e.setCommand("echo hola");
+//        e.setOpts("NO_EXISTE");
+//
+//        String result = e.validate(null);
+//
+//        assertNotNull(result);
+//    }
 
     @Test
     void wait_option_executes_and_waits_ok() throws Exception {
