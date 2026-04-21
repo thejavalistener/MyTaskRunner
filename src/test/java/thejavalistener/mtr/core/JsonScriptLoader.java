@@ -6,11 +6,11 @@ public class JsonScriptLoader
 {
     public static MyScript load(String jsonFile) throws Exception
     {
-        return new MyJsonScriptImple(Path.of(jsonFile));
+        return new MyScript(Path.of(jsonFile));
     }
 
     public static MyScript load(Path jsonPath) throws Exception
     {
-        return new MyJsonScriptImple(jsonPath);
+        return new MyScript(jsonPath);
     }
 }

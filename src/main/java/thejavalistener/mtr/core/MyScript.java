@@ -1,38 +1,203 @@
 package thejavalistener.mtr.core;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.google.gson.Gson;
 
 import thejavalistener.fwkutils.console.MyConsole;
 import thejavalistener.fwkutils.console.MyConsoles;
 import thejavalistener.fwkutils.string.MyString;
 import thejavalistener.fwkutils.various.MyException;
+import thejavalistener.fwkutils.various.Pair;
+import thejavalistener.mtr.json.expr.ExpressionEngine;
+import thejavalistener.mtr.json.expr.ns.SysNamespaceHandler;
+import thejavalistener.mtr.json.expr.ns.TimeNamespaceHandler;
+import thejavalistener.mtr.json.expr.ns.VarNamespaceHandler;
 
-public abstract class MyScript
+public class MyScript extends MyScriptBase
 {
 	public static final int SUCCESS=0;
 	public static final int ERROR=1;
+	
+	private final String jsonFile;
 
-	protected ScriptOptions options = new ScriptOptions();
-	protected abstract List<MyAction> getScriptActions();
-
-	public void validateSyntax() throws Exception {};
-
-	public String getScriptName()
+	public MyScript(String jsonFile) throws Exception
 	{
-		return getClass().getSimpleName();
+		this(Path.of(jsonFile));
+	}
+
+	public MyScript(Path jsonPath) throws Exception
+	{
+	    this.jsonFile = jsonPath.getFileName().toString();
+
+	    String raw = Files.readString(jsonPath);
+	    raw = MyString.removeLinesWithPrefix(raw, new String[]{"--","//","#"}, true);
+
+	    Gson gson = new Gson();
+	    this.sj = gson.fromJson(raw, ScriptJson.class);
+
+	    this.options = sj != null && sj.options != null ? sj.options : new ScriptOptions();
+
+	    this.vars = new HashMap<>();
+	    if(sj != null && sj.vars != null)
+	    {
+	        this.vars.putAll(sj.vars);
+	    }
+	    
+	    engine = new ExpressionEngine();
+	    engine.register(new SysNamespaceHandler());
+	    engine.register(new TimeNamespaceHandler());
+	    engine.register(new VarNamespaceHandler().setVars(vars));
 	}
 	
-	protected void beforeRun() {}
+	public String getScriptName()
+	{
+		return jsonFile;
+	}
+	
+	public List<String[]> getVars(boolean expandedValues) 
+	{
+		List<String[]> ret = new ArrayList<>();
+		vars.forEach((k,v)->{
+			try
+			{
+				v = expandedValues?   engine.resolve(v):v;				
+				ret.add(new String[]{k,v});
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+		});
+
+		return ret;
+	}
+
+	public List<MyAction> getScriptActions()
+	{
+		List<MyAction> ret=new ArrayList<>();
+
+		if(sj==null||sj.steps==null) return ret;
+
+		for(Map<String,Object> st:sj.steps)
+		{
+			try
+			{
+				String actionName=engine.resolve((String)st.get("action"));
+
+				if(!ActionRegistry.exists(actionName))
+				    throw new RuntimeException("Unknown action: "+actionName);
+				
+				MyAction action=ActionRegistry.create(actionName);
+				
+				boolean mustSkipped=false;
+
+				// evalúo ifdef
+				Object ifdefRaw=st.get("ifdef");
+				if(!mustSkipped && ifdefRaw instanceof String s)
+				{
+					String ifdef=engine.resolve(s);
+					if(!vars.containsKey(ifdef)) mustSkipped=true;
+				}
+
+				// evalúo ifndef
+				Object ifndefRaw=st.get("ifndef");
+				if(!mustSkipped && ifndefRaw instanceof String s)
+				{
+					String ifndef=engine.resolve(s);
+					if(vars.containsKey(ifndef)) mustSkipped=true;
+				}
+				
+				// evalúo ifvar
+				Object ifVarRaw = st.get("ifvar");
+				if(!mustSkipped && ifVarRaw instanceof String s)
+				{
+					String expr = engine.resolve(s).trim();
+
+					if(!_evalIfVar(expr))
+					{
+						mustSkipped = true;						
+					}
+				}
+				
+				action.setMustSkipped(mustSkipped);
+
+				for(var entry:st.entrySet())
+				{
+					String name=entry.getKey();
+					if("action".equals(name)) continue;
+					if("ifdef".equals(name)) continue;
+					if("ifndef".equals(name)) continue;
+					//if("executeIf".equals(name)) continue;
+				    if("ifvar".equals(name)) continue;   
+
+					Object raw=entry.getValue();
+					if(raw==null) continue;
+
+					Object value=raw;
+
+					if(raw instanceof String s) value=engine.resolve(s);
+
+					String setter="set"+Character.toUpperCase(name.charAt(0))+name.substring(1);
+
+					var m=findSetter(action.getClass(),setter,value);
+
+					if(m!=null) m.invoke(action,value);
+				}
+
+				ret.add(action);
+			}
+			catch(Exception e)
+			{
+				throw new RuntimeException("Error ejecutando acción: "+st.get("action"),e);
+			}
+		}
+
+		return ret;
+	}
+	
 	protected void afterRun() {}
 
+	protected void beforeRun()
+	{
+
+		if( !options.isShowVarValues() ) return;
+
+		MyConsole c=MyConsoles.get();
+		
+
+		c.println("[fg(CYAN)]Variables:[x]");
+
+		vars.entrySet().stream()
+			.sorted(Map.Entry.comparingByKey())
+			.forEach(e -> {
+				try
+				{
+					String val = engine.resolve(e.getValue());
+					c.println("  "+e.getKey()+" = "+val);						
+				}
+				catch(Exception e2)
+				{
+					e2.printStackTrace();
+					throw new RuntimeException(e2);
+				}
+			});
+			
+	}
+	
 	public int run()
 	{
 		MyConsole console=MyConsoles.get();
 
 		int delay = options.getCloseDelaySeconds();
 
-		Runnable rDelay = delay==0?()->console.print("\nPress any key to exit...").pressAnyKey():()->console.print("\nClosing in ").countdown(delay);
-		
+		Runnable rDelay = delay==0?()->console.print("\nPress any key to exit...").pressAnyKey():()->console.print("\nClosing in ").countdown(delay);		
 		
 		try
 		{
@@ -40,20 +205,15 @@ public abstract class MyScript
 			console.println("[fg(YELLOW)]Running: [x][b]"+getScriptName()+"[x]");
 
 			// valido la sintaxis del script
-			validateSyntax();
+			_validateSyntax();
 
 			
 			// obtengo la lista de acciones del script
 			List<MyAction> actions=getScriptActions();
 
-			// hook
 			beforeRun();
-			
-//			// valido las acciones del script
-//			validateActions(actions);
 
 			int step=1;
-
 			
 			// ejecuto cada acción del script
 			for(MyAction action:actions)
@@ -69,11 +229,9 @@ public abstract class MyScript
 			// finaliza script OK
 			console.print("[fg(YELLOW)]Returned value: [x][b]SUCCESS[x]. ");
 			System.out.println(console.getTextPane().getText());
-
-			// hook
-			afterRun();
 			
-//			console.print("Closing in ").countdown(delay);
+			afterRun();
+
 			rDelay.run();
 			return SUCCESS;
 		}
@@ -85,115 +243,10 @@ public abstract class MyScript
 			console.print("[fg(YELLOW)]Returned value: [x][fg(RED)][b]ERROR[x][x]. ");
 			System.out.println(console.getTextPane().getText());
 
-//			console.print("Closing in ").countdown(delay);
 			rDelay.run();
 			return ERROR;
 		}
 	}
 
-	private void _executeAction(MyAction a) throws Exception
-	{
-		MyConsole console=MyConsoles.get();
 
-		try
-		{
-			// presentación: Copiando D:/temp/equis a C:/unDir/zeta
-			_log(a);
-			
-			a.checkExecuteIf();
-
-			
-			if( a.isMustSkipped() || !a.checkExecuteIf() )
-			{
-	            console.println("[b][fg(GREEN)]Skiped[x][x] ");
-	            return;				
-			}
-			
-			// ejecuto la acción
-
-			if( !options.isSimulationMode() )
-			{
-				a.execute();
-			}
-			
-			// exito
-			console.println("[b][fg(GREEN)]OK[x][x] ");
-		}
-		catch(Exception e)
-		{
-			// error (fatal o recuperable)
-			console.println("[fg(RED)][b]FAILED:[x] "+e.getMessage()+"[x] ");
-
-			// stacktrace
-			String stackTrace=MyException.stackTraceToString(e);
-			console.println("[fg(RED)]"+stackTrace+"[x]");
-
-			if(a.isStopScriptOnError())
-			{
-				throw new IllegalStateException(e);
-			}
-		}
-	}
-
-	private void _log(MyAction a)
-	{
-		MyConsole console=MyConsoles.get();
-
-		String mssg="";
-
-		int maxLength=(int)(console.getTextPane().cols()*0.9);
-		String vervo="[fg(GREEN)]"+a.getVerb()+"[x]";
-		String mssgs[]=a.getDescription();
-		if(mssgs.length>1)
-		{
-			mssg=vervo+"\n";
-			for(int i=0; i<mssgs.length; i++)
-			{
-				mssg+="\t"+MyString.trimMiddle(mssgs[i],maxLength);
-				mssg+=i<mssgs.length-1?"\n":" ";
-			}
-		}
-		else
-		{
-			mssg=MyString.trimMiddle(vervo+" "+mssgs[0],maxLength)+" ";
-		}
-
-		console.print(mssg);
-	}
-	
-	private boolean _checkDefines(MyAction a)
-	{
-		
-	    String ifdef=a.getIfdef();
-	    String ifndef=a.getIfndef();
-
-	    if(ifdef!=null && System.getProperty(ifdef)==null)
-	        return false;
-
-	    if(ifndef!=null && System.getProperty(ifndef)!=null)
-	        return false;
-
-	    return true;
-	}
-
-//	public void validateActions(List<MyAction> actions) throws Exception
-//	{
-//		// creo un FS ficticio para validar los parámetros
-//		ValidationContext ctx=new ValidationContext();
-//
-//		for(int i=0; i<actions.size(); i++)
-//		{
-//			MyAction action=actions.get(i);
-//
-//			// cada acción se valida a sí misma
-//			String err=action.validate(ctx);
-//			if(err!=null&&action.isStopScriptOnError())
-//			{
-//				int nroPaso=i+1;
-//
-//				// Paso 4. Remove: No existe el archivo o carpeta a remover
-//				String mssg="Step "+nroPaso+". "+action.getClass().getSimpleName()+": "+err;
-//				throw new RuntimeException(mssg);
-//			}
-//	}
 }
